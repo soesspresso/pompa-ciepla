@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#0a1628">
+<title>PC Monitor – Pompa Ciepła</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Space+Grotesk:wght@300;400;600;700&display=swap');
+  :root {
+    --bg:#070f1e; --surface:#0d1a2e; --surface2:#132035; --border:#1e3050;
+    --accent:#00d4ff; --accent2:#ff6b35; --accent3:#00ff88;
+    --text:#e2eaf5; --muted:#5a7a9a; --danger:#ff4060;
+    --mono:'JetBrains Mono',monospace; --sans:'Space Grotesk',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+  .app{position:relative;z-index:1;max-width:500px;margin:0 auto;padding:0 0 100px;}
+  .header{padding:20px 20px 0;background:linear-gradient(180deg,rgba(0,212,255,0.08) 0%,transparent 100%);border-bottom:1px solid var(--border);margin-bottom:20px;}
+  .header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+  .logo{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:3px;text-transform:uppercase;}
+  .sync-status{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9px;color:var(--muted);}
+  .status-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);transition:all 0.3s;}
+  .status-dot.ok{background:var(--accent3);box-shadow:0 0 8px var(--accent3);animation:pulse 2s infinite;}
+  .status-dot.syncing{background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse 0.5s infinite;}
+  .status-dot.err{background:var(--danger);box-shadow:0 0 8px var(--danger);}
+  .status-dot.none{background:var(--muted);}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+  .header h1{font-size:22px;font-weight:700;letter-spacing:-0.5px;margin-bottom:4px;}
+  .header h1 span{color:var(--accent);}
+  .header-sub{font-size:12px;color:var(--muted);font-family:var(--mono);padding-bottom:16px;}
+  .nav{display:flex;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:10;}
+  .nav::-webkit-scrollbar{display:none;}
+  .nav-btn{flex:1;padding:12px 6px;background:none;border:none;color:var(--muted);font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all 0.2s;}
+  .nav-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+  .page{display:none;padding:16px;}
+  .page.active{display:block;}
+  .notify-banner{background:linear-gradient(135deg,rgba(255,107,53,0.15),rgba(255,107,53,0.05));border:1px solid rgba(255,107,53,0.4);border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;cursor:pointer;animation:slideIn 0.3s ease;}
+  @keyframes slideIn{from{transform:translateY(-10px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+  .notify-icon{font-size:24px;flex-shrink:0;}
+  .notify-text strong{display:block;font-size:13px;margin-bottom:2px;color:var(--accent2);}
+  .notify-text span{font-size:11px;color:var(--muted);}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;position:relative;overflow:hidden;}
+  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0.4;}
+  .card-title{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
+  .card-title span{color:var(--accent);font-size:9px;}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+  .stat-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;}
+  .stat-label{font-size:9px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+  .stat-value{font-family:var(--mono);font-size:22px;font-weight:700;line-height:1;}
+  .stat-value.accent{color:var(--accent);}
+  .stat-value.green{color:var(--accent3);}
+  .stat-value.orange{color:var(--accent2);}
+  .stat-unit{font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:2px;}
+  .chart-wrap{position:relative;height:180px;margin-top:8px;}
+  canvas{width:100%!important;}
+  .data-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px;}
+  .data-table th{color:var(--muted);font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:8px 6px;text-align:right;border-bottom:1px solid var(--border);}
+  .data-table th:first-child{text-align:left;}
+  .data-table td{padding:8px 6px;text-align:right;border-bottom:1px solid rgba(30,48,80,0.5);font-size:12px;}
+  .data-table td:first-child{text-align:left;}
+  .data-table tr:last-child td{border-bottom:none;}
+  .data-table tr.highlight td{color:var(--accent);}
+  .form-group{margin-bottom:16px;}
+  .form-label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;}
+  .form-sublabel{font-size:10px;color:var(--muted);margin-top:4px;opacity:0.7;}
+  .form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-family:var(--mono);font-size:18px;outline:none;transition:border-color 0.2s;-webkit-appearance:none;}
+  .form-input:focus{border-color:var(--accent);}
+  .form-input::placeholder{color:var(--muted);font-size:14px;}
+  .form-input.small{font-size:13px;}
+  .btn{width:100%;padding:14px;border:none;border-radius:10px;font-family:var(--mono);font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-weight:600;transition:all 0.2s;}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),#0099cc);color:#000;}
+  .btn-primary:active{transform:scale(0.98);}
+  .btn-secondary{background:var(--surface2);border:1px solid var(--border);color:var(--muted);margin-top:8px;}
+  .month-pills{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin-bottom:12px;}
+  .month-pill{flex-shrink:0;padding:5px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;font-family:var(--mono);font-size:10px;color:var(--muted);cursor:pointer;transition:all 0.2s;}
+  .month-pill.active{background:rgba(0,212,255,0.15);border-color:var(--accent);color:var(--accent);}
+  .divider{height:1px;background:var(--border);margin:14px 0;}
+  .info-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(30,48,80,0.4);}
+  .info-row:last-child{border-bottom:none;}
+  .info-row .label{font-size:12px;color:var(--muted);}
+  .info-row .value{font-family:var(--mono);font-size:13px;font-weight:600;}
+  .year-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+  .year-label{font-family:var(--mono);font-size:11px;color:var(--muted);width:36px;flex-shrink:0;}
+  .year-bar-wrap{flex:1;height:28px;background:var(--surface2);border-radius:6px;overflow:hidden;}
+  .year-bar{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:8px;font-family:var(--mono);font-size:11px;font-weight:600;transition:width 1s ease;white-space:nowrap;}
+  .year-bar.y2022{background:linear-gradient(90deg,rgba(100,100,200,0.6),rgba(100,100,200,0.2));color:#aaaaff;}
+  .year-bar.y2023{background:linear-gradient(90deg,rgba(0,153,204,0.6),rgba(0,153,204,0.3));color:var(--accent);}
+  .year-bar.y2024{background:linear-gradient(90deg,rgba(0,255,136,0.5),rgba(0,255,136,0.2));color:var(--accent3);}
+  .year-bar.y2025{background:linear-gradient(90deg,rgba(255,107,53,0.6),rgba(255,107,53,0.3));color:var(--accent2);}
+  .year-bar.y2026{background:linear-gradient(90deg,rgba(200,100,255,0.6),rgba(200,100,255,0.2));color:#dd88ff;}
+  .step-list{counter-reset:steps;list-style:none;}
+  .step-list li{counter-increment:steps;display:flex;gap:12px;margin-bottom:14px;font-size:12px;color:var(--muted);line-height:1.6;}
+  .step-list li::before{content:counter(steps);flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(0,212,255,0.15);border:1px solid var(--accent);color:var(--accent);font-family:var(--mono);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+  .step-list li b{color:var(--text);}
+  .code-block{background:#050d18;border:1px solid var(--border);border-radius:8px;padding:12px;font-family:var(--mono);font-size:10px;color:#7ec8e3;line-height:1.8;white-space:pre;overflow-x:auto;margin:8px 0;max-height:200px;overflow-y:auto;}
+  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--accent3);color:#000;padding:12px 24px;border-radius:40px;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:1px;opacity:0;transition:all 0.3s;pointer-events:none;z-index:100;white-space:nowrap;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.err{background:var(--danger);color:#fff;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-top">
+      <div class="logo">PC Monitor v2.0</div>
+      <div class="sync-status">
+        <div class="status-dot none" id="syncDot"></div>
+        <span id="syncLabel">brak konfiguracji</span>
+      </div>
+    </div>
+    <h1>Pompa <span>Ciepła</span></h1>
+    <div class="header-sub" id="currentDate">Ładowanie...</div>
+  </div>
+
+  <nav class="nav">
+    <button class="nav-btn active" onclick="showPage('dashboard')">Dashboard</button>
+    <button class="nav-btn" onclick="showPage('dodaj')">+ Wpis</button>
+    <button class="nav-btn" onclick="showPage('historia')">Historia</button>
+    <button class="nav-btn" onclick="showPage('analityka')">Analityka</button>
+    <button class="nav-btn" onclick="showPage('setup')">⚙ Setup</button>
+  </nav>
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dashboard">
+    <div id="notifyBanner" class="notify-banner" style="display:none;" onclick="showPage('dodaj')">
+      <div class="notify-icon">🔔</div>
+      <div class="notify-text">
+        <strong>Czas na miesięczny odczyt!</strong>
+        <span>Nowy miesiąc – wpisz stan licznika</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Ostatni odczyt <span id="lastReadLabel">—</span></div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-label">Stan licznika</div><div class="stat-value accent" id="lastKwh">—</div><div class="stat-unit">kWh narastająco</div></div>
+        <div class="stat-box"><div class="stat-label">Zużycie m-c</div><div class="stat-value green" id="lastMonth">—</div><div class="stat-unit">kWh</div></div>
+        <div class="stat-box"><div class="stat-label">Starty sprężarki</div><div class="stat-value orange" id="lastStarts">—</div><div class="stat-unit">w miesiącu</div></div>
+        <div class="stat-box"><div class="stat-label">Śr. dziennie</div><div class="stat-value" id="lastDaily">—</div><div class="stat-unit">kWh/dzień</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">COP szacowany <span>×4 kWh ciepła / kWh prądu</span></div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-label">Ciepło (est.)</div><div class="stat-value green" id="dashHeat">—</div><div class="stat-unit">kWh/miesiąc</div></div>
+        <div class="stat-box"><div class="stat-label">Koszt (est.)</div><div class="stat-value" id="dashCost">—</div><div class="stat-unit">PLN @ ~0.85/kWh</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Trend – ostatnie 6 miesięcy</div>
+      <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Porównanie roczne</div>
+      <div id="yearCompare"></div>
+    </div>
+  </div>
+
+  <!-- DODAJ WPIS -->
+  <div class="page" id="page-dodaj">
+    <div class="card">
+      <div class="card-title">Nowy miesięczny odczyt</div>
+      <div id="formPeriodInfo" style="margin-bottom:14px;font-size:12px;color:var(--muted);font-family:var(--mono);"></div>
+      <div class="form-group">
+        <label class="form-label">Stan licznika (kWh narastająco)</label>
+        <input class="form-input" type="number" id="inputKwh" placeholder="np. 9500" step="1">
+        <div class="form-sublabel" id="prevKwhHint"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Liczba startów sprężarki (narastająco)</label>
+        <input class="form-input" type="number" id="inputStarts" placeholder="np. 1650" step="1">
+        <div class="form-sublabel" id="prevStartsHint"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Uwagi (opcjonalnie)</label>
+        <input class="form-input small" type="text" id="inputNote" placeholder="np. mróz, awaria, itp.">
+      </div>
+      <div id="calcPreview" class="card" style="background:var(--surface2);margin-bottom:14px;display:none;">
+        <div class="card-title">Podgląd wyliczeń</div>
+        <div id="calcContent"></div>
+      </div>
+      <button class="btn btn-primary" onclick="saveEntry()">💾 Zapisz i wyślij do Sheets</button>
+      <button class="btn btn-secondary" onclick="showPage('dashboard')">Anuluj</button>
+    </div>
+  </div>
+
+  <!-- HISTORIA -->
+  <div class="page" id="page-historia">
+    <div class="card">
+      <div class="card-title">Wszystkie odczyty</div>
+      <div class="month-pills">
+        <div class="month-pill active" onclick="filterYear(0,this)">Wszystkie</div>
+        <div class="month-pill" onclick="filterYear(2022,this)">2022</div>
+        <div class="month-pill" onclick="filterYear(2023,this)">2023</div>
+        <div class="month-pill" onclick="filterYear(2024,this)">2024</div>
+        <div class="month-pill" onclick="filterYear(2025,this)">2025</div>
+        <div class="month-pill" onclick="filterYear(2026,this)">2026</div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead><tr><th>Miesiąc</th><th>Stan kWh</th><th>kWh m-c</th><th>Śr/dzień</th><th>Starty</th><th style="text-align:center;">Usuń</th></tr></thead>
+          <tbody id="historyTable"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card" style="border-color:rgba(255,64,96,0.3);">
+      <div class="card-title" style="color:var(--danger);">Strefa niebezpieczna</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6;">
+        Usuwa tylko własne wpisy dodane w aplikacji.<br>Dane historyczne z arkusza pozostają nienaruszone.
+      </div>
+      <button class="btn" style="background:rgba(255,64,96,0.15);border:1px solid rgba(255,64,96,0.4);color:var(--danger);" onclick="resetUserData()">🗑 Usuń moje wpisy</button>
+    </div>
+  </div>
+
+  <!-- ANALITYKA -->
+  <div class="page" id="page-analityka">
+    <div class="card">
+      <div class="card-title">Zużycie miesięczne – porównanie lat</div>
+      <div class="chart-wrap" style="height:220px;"><canvas id="compareChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Statystyki roczne</div>
+      <div id="yearStats"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Rekordy</div>
+      <div id="records"></div>
+    </div>
+  </div>
+
+  <!-- SETUP -->
+  <div class="page" id="page-setup">
+    <div class="card">
+      <div class="card-title">Status połączenia</div>
+      <div class="info-row"><span class="label">Webhook URL</span><span class="value" id="settingsWebhookStatus" style="font-size:11px;color:var(--muted);">nie ustawiony</span></div>
+      <div class="info-row"><span class="label">Ostatnia synchronizacja</span><span class="value" id="settingsLastSync" style="font-size:11px;color:var(--muted);">—</span></div>
+      <div class="info-row"><span class="label">Wpisy oczekujące</span><span class="value" id="settingsPending">0</span></div>
+      <button class="btn btn-secondary" style="margin-top:10px;" onclick="retryPending()">🔄 Wyślij ponownie oczekujące</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Webhook URL – Google Apps Script</div>
+      <div class="form-group" style="margin-bottom:10px;">
+        <label class="form-label">Wklej URL swojego Web App</label>
+        <input class="form-input small" type="url" id="webhookInput" placeholder="https://script.google.com/macros/s/...">
+      </div>
+      <button class="btn btn-primary" onclick="saveWebhook()">💾 Zapisz URL</button>
+      <button class="btn btn-secondary" onclick="testWebhook()">🧪 Testuj połączenie</button>
+      <div id="webhookTestResult" style="margin-top:10px;font-family:var(--mono);font-size:11px;min-height:16px;"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Jak skonfigurować – krok po kroku</div>
+      <ol class="step-list">
+        <li>Otwórz swój arkusz Google Sheets → kliknij <b>Rozszerzenia → Apps Script</b></li>
+        <li>Usuń domyślny kod, wklej kod poniżej i kliknij 💾 Zapisz</li>
+        <li>Kliknij <b>Wdróż → Nowe wdrożenie</b>, typ: <b>Aplikacja internetowa</b></li>
+        <li>W polu „Kto ma dostęp" wybierz <b>Wszyscy</b>, kliknij <b>Wdróż</b></li>
+        <li>Skopiuj wygenerowany URL i wklej go powyżej w polu Webhook URL</li>
+        <li>Kliknij „Testuj połączenie" – powinieneś zobaczyć potwierdzenie ✓</li>
+      </ol>
+      <div class="divider"></div>
+      <div class="card-title">Kod Apps Script</div>
+      <div class="code-block" id="appsScriptCode"></div>
+      <button class="btn btn-secondary" onclick="copyScript()">📋 Kopiuj kod</button>
+      <div id="copyScriptConfirm" style="text-align:center;font-size:11px;color:var(--accent3);margin-top:6px;min-height:16px;"></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================
+// DANE HISTORYCZNE Z ARKUSZA
+// ============================================
+const HISTORICAL = [
+  {rok:2022,miesiac:'Październik', dzien:new Date(2022,10,17),stan:276,  starts:null},
+  {rok:2022,miesiac:'Listopad',    dzien:new Date(2022,11,1), stan:450,  starts:null},
+  {rok:2022,miesiac:'Grudzień',    dzien:new Date(2023,0,1),  stan:909,  starts:null},
+  {rok:2023,miesiac:'Styczeń',     dzien:new Date(2023,1,1),  stan:1352, starts:null},
+  {rok:2023,miesiac:'Luty',        dzien:new Date(2023,2,1),  stan:1746, starts:null},
+  {rok:2023,miesiac:'Marzec',      dzien:new Date(2023,3,1),  stan:2138, starts:null},
+  {rok:2023,miesiac:'Kwiecień',    dzien:new Date(2023,4,1),  stan:2342, starts:null},
+  {rok:2023,miesiac:'Maj',         dzien:new Date(2023,5,1),  stan:2445, starts:null},
+  {rok:2023,miesiac:'Czerwiec',    dzien:new Date(2023,6,1),  stan:2488, starts:null},
+  {rok:2023,miesiac:'Lipiec',      dzien:new Date(2023,7,1),  stan:2523, starts:null},
+  {rok:2023,miesiac:'Sierpień',    dzien:new Date(2023,8,1),  stan:2564, starts:null},
+  {rok:2023,miesiac:'Wrzesień',    dzien:new Date(2023,9,1),  stan:2607, starts:null},
+  {rok:2023,miesiac:'Październik', dzien:new Date(2023,10,1), stan:2783, starts:174},
+  {rok:2023,miesiac:'Listopad',    dzien:new Date(2023,11,1), stan:3077, starts:262},
+  {rok:2023,miesiac:'Grudzień',    dzien:new Date(2024,0,1),  stan:3450, starts:337},
+  {rok:2024,miesiac:'Styczeń',     dzien:new Date(2024,1,1),  stan:3830, starts:null},
+  {rok:2024,miesiac:'Luty',        dzien:new Date(2024,2,1),  stan:4105, starts:null},
+  {rok:2024,miesiac:'Marzec',      dzien:new Date(2024,3,1),  stan:4367, starts:0},
+  {rok:2024,miesiac:'Kwiecień',    dzien:new Date(2024,4,1),  stan:4492, starts:52},
+  {rok:2024,miesiac:'Maj',         dzien:new Date(2024,5,1),  stan:4540, starts:116},
+  {rok:2024,miesiac:'Czerwiec',    dzien:new Date(2024,6,1),  stan:4584, starts:187},
+  {rok:2024,miesiac:'Lipiec',      dzien:new Date(2024,7,1),  stan:4616, starts:null},
+  {rok:2024,miesiac:'Sierpień',    dzien:new Date(2024,8,1),  stan:4658, starts:298},
+  {rok:2024,miesiac:'Wrzesień',    dzien:new Date(2024,9,1),  stan:4714, starts:366},
+  {rok:2024,miesiac:'Październik', dzien:new Date(2024,10,1), stan:4905, starts:434},
+  {rok:2024,miesiac:'Listopad',    dzien:new Date(2024,11,1), stan:5219, starts:540},
+  {rok:2024,miesiac:'Grudzień',    dzien:new Date(2025,0,1),  stan:5615, starts:650},
+  {rok:2025,miesiac:'Styczeń',     dzien:new Date(2025,1,1),  stan:6034, starts:740},
+  {rok:2025,miesiac:'Luty',        dzien:new Date(2025,2,1),  stan:6439, starts:809},
+  {rok:2025,miesiac:'Marzec',      dzien:new Date(2025,3,1),  stan:6738, starts:880},
+  {rok:2025,miesiac:'Kwiecień',    dzien:new Date(2025,4,1),  stan:6887, starts:952},
+  {rok:2025,miesiac:'Maj',         dzien:new Date(2025,5,1),  stan:7000, starts:1015},
+  {rok:2025,miesiac:'Czerwiec',    dzien:new Date(2025,6,1),  stan:7051, starts:1085},
+  {rok:2025,miesiac:'Lipiec',      dzien:new Date(2025,7,1),  stan:7097, starts:1149},
+  {rok:2025,miesiac:'Sierpień',    dzien:new Date(2025,8,1),  stan:7138, starts:1201},
+  {rok:2025,miesiac:'Wrzesień',    dzien:new Date(2025,9,1),  stan:7215, starts:1273},
+  {rok:2025,miesiac:'Październik', dzien:new Date(2025,10,1), stan:7454, starts:1349},
+  {rok:2025,miesiac:'Listopad',    dzien:new Date(2025,11,1), stan:7752, starts:1430},
+  {rok:2025,miesiac:'Grudzień',    dzien:new Date(2026,0,1),  stan:8143, starts:1508},
+  {rok:2026,miesiac:'Styczeń',     dzien:new Date(2026,1,1),  stan:8614, starts:1578},
+];
+
+const CENA_KWH = 0.85;
+const COP_EST = 4;
+const MIESIAC_PL = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
+
+const APPS_SCRIPT_CODE = `// PC Monitor – Pompa Ciepła – webhook
+// Wklej w: Arkusz → Rozszerzenia → Apps Script
+
+const SHEET_NAME = 'PC_mobile'; // zmień na nazwę swojej zakładki
+
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sheet = ss.getSheetByName(SHEET_NAME);
+    if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
+
+    // Dodaj nagłówki jeśli arkusz pusty
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow([
+        'ID (RRRR-MM)','Rok','Miesiąc','Data odczytu',
+        'Stan kWh (narastająco)','Zużycie m-c (kWh)',
+        'Śr. dziennie','Starty (narastająco)','Starty w m-cu',
+        'Koszt PLN (est.)','Ciepło kWh (est.)','Uwagi','Wysłano z tel.'
+      ]);
+    }
+
+    // Szukaj wiersza z tym samym ID – jeśli znajdzie, aktualizuje
+    const id = data.id; // format: "2026-03"
+    const allValues = sheet.getDataRange().getValues();
+    let existingRow = -1;
+    for (let i = 1; i < allValues.length; i++) {
+      if (String(allValues[i][0]) === String(id)) {
+        existingRow = i + 1; // +1 bo Sheets indeksuje od 1
+        break;
+      }
+    }
+
+    const row = [
+      data.id, data.rok, data.miesiac, data.dataOdczytu,
+      data.stan, data.kwhMc, data.srDzien,
+      data.starts, data.startsMc,
+      data.kosztPLN, data.cieplo,
+      data.note || '', new Date().toLocaleString('pl-PL')
+    ];
+
+    if (existingRow > 0) {
+      // Aktualizuj istniejący wiersz
+      sheet.getRange(existingRow, 1, 1, row.length).setValues([row]);
+    } else {
+      // Nowy wpis – dopisz na koniec
+      sheet.appendRow(row);
+    }
+
+    return ContentService
+      .createTextOutput(JSON.stringify({status:'ok', id}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({status:'error', message:err.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// Test GET – sprawdza czy webhook żyje
+function doGet() {
+  return ContentService
+    .createTextOutput(JSON.stringify({status:'ok', message:'PC Monitor webhook aktywny'}))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+
+// ============================================
+// STATE
+// ============================================
+let allData = [];
+let activeYearFilter = 0;
+
+// ============================================
+// DATA MANAGEMENT
+// ============================================
+function loadData() {
+  const saved = localStorage.getItem('pc_entries');
+  let userEntries = saved ? JSON.parse(saved) : [];
+  allData = [...HISTORICAL];
+  for (const ue of userEntries) {
+    const ueTime = new Date(ue.dzien).getTime();
+    const idx = allData.findIndex(d => new Date(d.dzien).getTime() === ueTime);
+    const entry = {...ue, dzien: new Date(ue.dzien), user: true};
+    if (idx >= 0) allData[idx] = entry;
+    else allData.push(entry);
+  }
+  allData.sort((a,b) => new Date(a.dzien) - new Date(b.dzien));
+}
+
+function persistEntry(entry) {
+  const saved = localStorage.getItem('pc_entries');
+  const userEntries = saved ? JSON.parse(saved) : [];
+  const ueTime = new Date(entry.dzien).getTime();
+  const idx = userEntries.findIndex(e => new Date(e.dzien).getTime() === ueTime);
+  if (idx >= 0) userEntries[idx] = entry;
+  else userEntries.push(entry);
+  localStorage.setItem('pc_entries', JSON.stringify(userEntries));
+}
+
+function enrichData(data) {
+  return data.map((d, i) => {
+    const prev = i > 0 ? data[i-1] : null;
+    const kwhMc = prev ? d.stan - prev.stan : null;
+    const dni = prev ? Math.round((new Date(d.dzien) - new Date(prev.dzien)) / 86400000) : null;
+    const srDzien = (kwhMc && dni) ? Math.round(kwhMc/dni*10)/10 : null;
+    const startsMc = (d.starts != null && prev && prev.starts != null) ? d.starts - prev.starts : null;
+    return {...d, kwhMc, dni, srDzien, startsMc};
+  });
+}
+
+// ============================================
+// WEBHOOK
+// ============================================
+function getWebhookUrl() { return localStorage.getItem('pc_webhook_url') || ''; }
+
+function setSyncStatus(state, label) {
+  document.getElementById('syncDot').className = 'status-dot ' + state;
+  document.getElementById('syncLabel').textContent = label;
+}
+
+// Pending queue (offline / błąd)
+function getPending() { return JSON.parse(localStorage.getItem('pc_pending') || '[]'); }
+function addPending(p) {
+  const q = getPending();
+  if (!q.find(x => x.id === p.id)) q.push(p);
+  localStorage.setItem('pc_pending', JSON.stringify(q));
+}
+function removePending(id) {
+  localStorage.setItem('pc_pending', JSON.stringify(getPending().filter(p => p.id !== id)));
+}
+
+async function sendToSheets(entry, rich) {
+  const url = getWebhookUrl();
+  if (!url) return;
+
+  const d = rich.find(r => new Date(r.dzien).getTime() === new Date(entry.dzien).getTime());
+  if (!d) return;
+
+  const dateObj = new Date(d.dzien);
+  const id = `${d.rok}-${String(dateObj.getMonth()+1).padStart(2,'0')}`;
+  const payload = {
+    id, rok: d.rok, miesiac: d.miesiac,
+    dataOdczytu: dateObj.toLocaleDateString('pl-PL'),
+    stan: d.stan,
+    kwhMc: d.kwhMc ?? '',
+    srDzien: d.srDzien ?? '',
+    starts: d.starts ?? '',
+    startsMc: d.startsMc ?? '',
+    kosztPLN: d.kwhMc ? Math.round(d.kwhMc * CENA_KWH) : '',
+    cieplo: d.kwhMc ? d.kwhMc * COP_EST : '',
+    note: d.note || ''
+  };
+
+  setSyncStatus('syncing', 'wysyłanie...');
+  try {
+    await fetch(url, {
+      method: 'POST', mode: 'no-cors',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const now = new Date().toLocaleTimeString('pl-PL');
+    localStorage.setItem('pc_last_sync', now);
+    removePending(id);
+    setSyncStatus('ok', 'zsynchronizowano ' + now);
+  } catch(err) {
+    addPending(payload);
+    setSyncStatus('err', 'błąd – w kolejce (' + getPending().length + ')');
+  }
+  updateSettingsStatus();
+}
+
+async function retryPending() {
+  const url = getWebhookUrl();
+  if (!url) { showToast('⚠ Brak webhook URL', true); return; }
+  const q = getPending();
+  if (!q.length) { showToast('✅ Brak oczekujących'); return; }
+  setSyncStatus('syncing', 'wysyłanie ' + q.length + '...');
+  let sent = 0;
+  for (const p of q) {
+    try {
+      await fetch(url, {method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(p)});
+      removePending(p.id); sent++;
+    } catch(e) {}
+  }
+  const now = new Date().toLocaleTimeString('pl-PL');
+  localStorage.setItem('pc_last_sync', now);
+  setSyncStatus('ok', 'zsynchronizowano ' + now);
+  updateSettingsStatus();
+  showToast(`✅ Wysłano ${sent} z ${q.length}`);
+}
+
+// ============================================
+// WEBHOOK SETTINGS
+// ============================================
+function saveWebhook() {
+  const url = document.getElementById('webhookInput').value.trim();
+  if (!url.startsWith('https://script.google.com/')) {
+    showToast('⚠ Nieprawidłowy URL', true); return;
+  }
+  localStorage.setItem('pc_webhook_url', url);
+  updateSettingsStatus();
+  showToast('✅ URL zapisany!');
+}
+
+async function testWebhook() {
+  const url = document.getElementById('webhookInput').value.trim() || getWebhookUrl();
+  if (!url) { showToast('⚠ Wpisz URL', true); return; }
+  const el = document.getElementById('webhookTestResult');
+  el.style.color = 'var(--muted)'; el.textContent = 'Testowanie...';
+  try {
+    await fetch(url, {mode:'no-cors'});
+    el.style.color = 'var(--accent3)';
+    el.textContent = '✓ Serwer odpowiada – webhook aktywny!';
+    setSyncStatus('ok', 'połączono');
+  } catch(e) {
+    el.style.color = 'var(--danger)';
+    el.textContent = '✗ Błąd: ' + e.message;
+    setSyncStatus('err', 'brak połączenia');
+  }
+}
+
+function updateSettingsStatus() {
+  const url = getWebhookUrl();
+  const whEl = document.getElementById('settingsWebhookStatus');
+  whEl.textContent = url ? '✓ ustawiony' : 'nie ustawiony';
+  whEl.style.color = url ? 'var(--accent3)' : 'var(--muted)';
+  document.getElementById('settingsLastSync').textContent = localStorage.getItem('pc_last_sync') || '—';
+  const pend = getPending().length;
+  const pEl = document.getElementById('settingsPending');
+  pEl.textContent = pend;
+  pEl.style.color = pend > 0 ? 'var(--accent2)' : 'var(--accent3)';
+  if (url) document.getElementById('webhookInput').value = url;
+  if (!url) setSyncStatus('none', 'brak konfiguracji');
+  else if (pend > 0) setSyncStatus('err', pend + ' oczekujących');
+  else {
+    const ls = localStorage.getItem('pc_last_sync');
+    setSyncStatus(ls ? 'ok' : 'none', ls ? 'zsynchronizowano ' + ls : 'skonfigurowany');
+  }
+}
+
+function copyScript() {
+  navigator.clipboard.writeText(APPS_SCRIPT_CODE).then(() => {
+    document.getElementById('copyScriptConfirm').textContent = '✓ Skopiowano kod!';
+    setTimeout(() => document.getElementById('copyScriptConfirm').textContent = '', 3000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = APPS_SCRIPT_CODE; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    document.getElementById('copyScriptConfirm').textContent = '✓ Skopiowano!';
+    setTimeout(() => document.getElementById('copyScriptConfirm').textContent = '', 3000);
+  });
+}
+
+// ============================================
+// PAGES
+// ============================================
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  const pages = ['dashboard','dodaj','historia','analityka','setup'];
+  document.querySelectorAll('.nav-btn')[pages.indexOf(name)].classList.add('active');
+  if (name==='dashboard') renderDashboard();
+  if (name==='historia')  renderHistory();
+  if (name==='analityka') renderAnalityka();
+  if (name==='setup')     { updateSettingsStatus(); document.getElementById('appsScriptCode').textContent = APPS_SCRIPT_CODE; }
+  if (name==='dodaj')     renderForm();
+}
+
+// ============================================
+// DASHBOARD
+// ============================================
+function renderDashboard() {
+  const now = new Date();
+  document.getElementById('currentDate').textContent =
+    now.toLocaleDateString('pl-PL',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  const rich = enrichData(allData);
+  const last = rich[rich.length-1];
+  document.getElementById('lastReadLabel').textContent = `${last.miesiac} ${last.rok}`;
+  document.getElementById('lastKwh').textContent = last.stan.toLocaleString();
+  document.getElementById('lastMonth').textContent = last.kwhMc ?? '—';
+  document.getElementById('lastStarts').textContent = last.startsMc ?? '—';
+  document.getElementById('lastDaily').textContent = last.srDzien ?? '—';
+  document.getElementById('dashHeat').textContent = last.kwhMc ? (last.kwhMc*COP_EST).toLocaleString() : '—';
+  document.getElementById('dashCost').textContent = last.kwhMc ? Math.round(last.kwhMc*CENA_KWH)+' zł' : '—';
+
+  if (now.getDate()===1) document.getElementById('notifyBanner').style.display='flex';
+
+  const yearTotals = {};
+  for (const d of rich) { if (d.kwhMc===null) continue; yearTotals[d.rok]=(yearTotals[d.rok]||0)+d.kwhMc; }
+  const maxY = Math.max(...Object.values(yearTotals));
+  const cmap = {2022:'y2022',2023:'y2023',2024:'y2024',2025:'y2025',2026:'y2026'};
+  document.getElementById('yearCompare').innerHTML = Object.entries(yearTotals).sort()
+    .map(([yr,total]) => `<div class="year-row"><div class="year-label">${yr}</div><div class="year-bar-wrap"><div class="year-bar ${cmap[yr]||'y2025'}" style="width:${Math.round(total/maxY*100)}%">${total.toLocaleString()} kWh</div></div></div>`)
+    .join('');
+
+  const last6 = rich.filter(d=>d.kwhMc!==null).slice(-6);
+  drawBarChart('trendChart',{
+    labels: last6.map(d=>d.miesiac.slice(0,3)+' '+String(d.rok).slice(2)),
+    values: last6.map(d=>d.kwhMc), color:'#00d4ff'
+  });
+}
+
+// ============================================
+// FORM
+// ============================================
+function renderForm() {
+  const rich = enrichData(allData);
+  const last = rich[rich.length-1];
+  const nextDate = new Date(last.dzien);
+  nextDate.setMonth(nextDate.getMonth()+1);
+  const miesiac = MIESIAC_PL[nextDate.getMonth()];
+  document.getElementById('formPeriodInfo').textContent =
+    `Oczekiwany wpis: ${miesiac} ${nextDate.getFullYear()} (po ${last.miesiac} ${last.rok})`;
+  document.getElementById('prevKwhHint').textContent = `Poprzedni stan: ${last.stan.toLocaleString()} kWh`;
+  document.getElementById('prevStartsHint').textContent = `Poprzedni stan: ${last.starts!=null?last.starts.toLocaleString():'brak'} startów`;
+
+  document.getElementById('inputKwh').oninput = () => {
+    const kwh = parseInt(document.getElementById('inputKwh').value);
+    if (!kwh || kwh <= last.stan) { document.getElementById('calcPreview').style.display='none'; return; }
+    const kwhMc = kwh - last.stan;
+    const dni = Math.round((nextDate - new Date(last.dzien)) / 86400000);
+    const srDzien = Math.round(kwhMc/dni*10)/10;
+    document.getElementById('calcPreview').style.display='block';
+    document.getElementById('calcContent').innerHTML = `
+      <div class="info-row"><span class="label">Zużycie w miesiącu</span><span class="value" style="color:var(--accent3)">${kwhMc} kWh</span></div>
+      <div class="info-row"><span class="label">Śr. dziennie</span><span class="value">${srDzien} kWh/d</span></div>
+      <div class="info-row"><span class="label">Ciepło (COP×4)</span><span class="value" style="color:var(--accent3)">${kwhMc*COP_EST} kWh</span></div>
+      <div class="info-row"><span class="label">Koszt (est.)</span><span class="value" style="color:var(--accent2)">${Math.round(kwhMc*CENA_KWH)} PLN</span></div>`;
+  };
+}
+
+function saveEntry() {
+  const rich = enrichData(allData);
+  const last = rich[rich.length-1];
+  const kwhVal = parseInt(document.getElementById('inputKwh').value);
+  const startsVal = document.getElementById('inputStarts').value;
+  const note = document.getElementById('inputNote').value;
+  if (!kwhVal || kwhVal <= last.stan) { showToast('⚠ Stan > '+last.stan, true); return; }
+  const nextDate = new Date(last.dzien);
+  nextDate.setMonth(nextDate.getMonth()+1);
+  const entry = {
+    rok: nextDate.getFullYear(),
+    miesiac: MIESIAC_PL[nextDate.getMonth()],
+    dzien: nextDate.toISOString(),
+    stan: kwhVal,
+    starts: startsVal ? parseInt(startsVal) : null,
+    note: note || null,
+    user: true
+  };
+  persistEntry(entry);
+  loadData();
+  sendToSheets(entry, enrichData(allData));
+  ['inputKwh','inputStarts','inputNote'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('calcPreview').style.display='none';
+  showToast('✅ Wpis zapisany!');
+  setTimeout(() => showPage('dashboard'), 800);
+}
+
+// ============================================
+// HISTORIA
+// ============================================
+function filterYear(yr, el) {
+  activeYearFilter = yr;
+  document.querySelectorAll('.month-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderHistory();
+}
+
+function renderHistory() {
+  const rich = enrichData(allData);
+  let filtered = activeYearFilter ? rich.filter(d=>d.rok==activeYearFilter) : rich;
+  document.getElementById('historyTable').innerHTML = [...filtered].reverse().map(d => {
+    const deleteBtn = d.user
+      ? `<button class="del-btn" data-iso="${new Date(d.dzien).toISOString()}" style="background:rgba(255,64,96,0.15);border:1px solid rgba(255,64,96,0.3);border-radius:6px;cursor:pointer;font-size:11px;padding:3px 7px;color:var(--danger);font-family:var(--mono);">✕</button>`
+      : '—';
+    return `<tr class="${d.user?'highlight':''}">
+      <td>${d.user?'⭐ ':''}${d.miesiac.slice(0,3)} ${d.rok}</td>
+      <td>${d.stan.toLocaleString()}</td>
+      <td>${d.kwhMc??'—'}</td>
+      <td>${d.srDzien??'—'}</td>
+      <td>${d.startsMc??'—'}</td>
+      <td style="text-align:center;">${deleteBtn}</td>
+    </tr>`;
+  }).join('');
+
+  // Podepnij eventy do przycisków po wyrenderowaniu
+  document.querySelectorAll('.del-btn').forEach(btn => {
+    btn.addEventListener('click', () => deleteEntry(btn.dataset.iso));
+  });
+}
+
+function deleteEntry(isoDate) {
+  if (!confirm('Usunąć ten wpis?\n\nOperacji nie można cofnąć.')) return;
+  const saved = localStorage.getItem('pc_entries');
+  const userEntries = saved ? JSON.parse(saved) : [];
+  const filtered = userEntries.filter(e => new Date(e.dzien).toISOString() !== isoDate);
+  localStorage.setItem('pc_entries', JSON.stringify(filtered));
+  loadData();
+  renderHistory();
+  renderDashboard();
+  showToast('🗑 Wpis usunięty');
+}
+
+function resetUserData() {
+  if (!confirm('Usuń własne wpisy?\n\nDane historyczne pozostaną.')) return;
+  localStorage.removeItem('pc_entries');
+  loadData(); renderDashboard(); showPage('dashboard');
+  showToast('🗑 Własne wpisy usunięte');
+}
+
+// ============================================
+// ANALITYKA
+// ============================================
+function renderAnalityka() {
+  const rich = enrichData(allData).filter(d=>d.kwhMc!==null);
+  const yearMap = {};
+  for (const d of rich) { if (!yearMap[d.rok]) yearMap[d.rok]=[]; yearMap[d.rok].push(d); }
+
+  document.getElementById('yearStats').innerHTML = Object.entries(yearMap).sort().map(([yr,entries]) => {
+    const total = entries.reduce((s,e)=>s+e.kwhMc,0);
+    const max = Math.max(...entries.map(e=>e.kwhMc));
+    const min = Math.min(...entries.map(e=>e.kwhMc));
+    return `
+      <div class="info-row"><span class="label">${yr} (${entries.length} m-cy)</span><span class="value" style="color:var(--accent)">${total.toLocaleString()} kWh</span></div>
+      <div class="info-row" style="padding-top:0;padding-bottom:8px;"><span class="label" style="font-size:10px;">min ${min} / max ${max} kWh</span><span class="value" style="font-size:10px;color:var(--muted)">~${Math.round(total*CENA_KWH)} PLN</span></div>`;
+  }).join('');
+
+  const sorted = [...rich].sort((a,b)=>b.kwhMc-a.kwhMc);
+  const r1=sorted[0], r2=sorted[sorted.length-1];
+  document.getElementById('records').innerHTML = `
+    <div class="info-row"><span class="label">🔴 Rekord MAX</span><span class="value" style="color:var(--danger)">${r1.kwhMc} kWh</span></div>
+    <div class="info-row"><span class="label" style="font-size:11px;color:var(--muted)">${r1.miesiac} ${r1.rok}</span><span></span></div>
+    <div class="info-row"><span class="label">🟢 Rekord MIN</span><span class="value" style="color:var(--accent3)">${r2.kwhMc} kWh</span></div>
+    <div class="info-row"><span class="label" style="font-size:11px;color:var(--muted)">${r2.miesiac} ${r2.rok}</span><span></span></div>`;
+
+  const years = [...new Set(rich.map(d=>d.rok))];
+  const cols = ['rgba(100,100,220,0.8)','rgba(0,153,204,0.8)','rgba(0,255,136,0.7)','rgba(255,107,53,0.8)','rgba(200,100,255,0.7)'];
+  drawGroupedChart('compareChart', years.map((yr,i)=>({
+    year:yr, color:cols[i%cols.length],
+    values: MIESIAC_PL.map((_,mi)=>{ const f=rich.find(d=>d.rok==yr&&new Date(d.dzien).getMonth()==mi); return f?f.kwhMc:null; })
+  })));
+}
+
+// ============================================
+// CHARTS
+// ============================================
+function drawBarChart(id,{labels,values,color}) {
+  const canvas=document.getElementById(id); if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.parentElement.clientWidth, H=180;
+  canvas.width=W; canvas.height=H;
+  const pad={top:10,right:10,bottom:40,left:36};
+  const cw=W-pad.left-pad.right, ch=H-pad.top-pad.bottom;
+  const max=Math.max(...values)*1.1;
+  const gap=Math.floor(cw/values.length), bw=Math.floor(gap*0.65);
+  ctx.clearRect(0,0,W,H);
+  for(let i=0;i<=4;i++){
+    const y=pad.top+ch*(1-i/4);
+    ctx.strokeStyle='rgba(30,48,80,0.8)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(W-pad.right,y); ctx.stroke();
+    ctx.fillStyle='#3a5a7a'; ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='right';
+    ctx.fillText(Math.round(max*i/4),pad.left-4,y+3);
+  }
+  values.forEach((v,i)=>{
+    const x=pad.left+i*gap+gap/2-bw/2, bh=(v/max)*ch, y=pad.top+ch-bh;
+    const grad=ctx.createLinearGradient(0,y,0,y+bh);
+    grad.addColorStop(0,color); grad.addColorStop(1,color+'55');
+    ctx.fillStyle=grad; ctx.beginPath(); ctx.roundRect(x,y,bw,bh,[4,4,0,0]); ctx.fill();
+    ctx.fillStyle='#5a7a9a'; ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText(labels[i],pad.left+i*gap+gap/2,H-8);
+  });
+}
+
+function drawGroupedChart(id,datasets) {
+  const canvas=document.getElementById(id); if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.parentElement.clientWidth, H=220;
+  canvas.width=W; canvas.height=H;
+  const pad={top:20,right:10,bottom:50,left:36};
+  const cw=W-pad.left-pad.right, ch=H-pad.top-pad.bottom;
+  const months=['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
+  const allVals=datasets.flatMap(d=>d.values.filter(v=>v!==null));
+  const max=Math.max(...allVals)*1.1;
+  ctx.clearRect(0,0,W,H);
+  for(let i=0;i<=3;i++){
+    const y=pad.top+ch*(1-i/3);
+    ctx.strokeStyle='rgba(30,48,80,0.8)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(W-pad.right,y); ctx.stroke();
+    ctx.fillStyle='#3a5a7a'; ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='right';
+    ctx.fillText(Math.round(max*i/3),pad.left-4,y+3);
+  }
+  const slotW=cw/12, bw=Math.max(3,Math.floor(slotW/datasets.length)-1);
+  datasets.forEach((ds,di)=>{
+    ds.values.forEach((v,mi)=>{
+      if(v===null)return;
+      const x=pad.left+mi*slotW+di*(bw+1)+2, bh=(v/max)*ch, y=pad.top+ch-bh;
+      ctx.fillStyle=ds.color; ctx.beginPath(); ctx.roundRect(x,y,bw,bh,[2,2,0,0]); ctx.fill();
+    });
+  });
+  months.forEach((m,i)=>{ ctx.fillStyle='#3a5a7a'; ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='center'; ctx.fillText(m,pad.left+i*slotW+slotW/2,H-32); });
+  datasets.forEach((ds,i)=>{ const lx=pad.left+i*52; ctx.fillStyle=ds.color; ctx.fillRect(lx,H-18,14,10); ctx.fillStyle='#5a7a9a'; ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='left'; ctx.fillText(ds.year,lx+17,H-9); });
+}
+
+// ============================================
+// TOAST
+// ============================================
+function showToast(msg, isErr) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast'+(isErr?' err':'');
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ============================================
+// INIT – jednorazowe czyszczenie danych demo
+// ============================================
+if (!localStorage.getItem('pc_v2_initialized')) {
+  localStorage.removeItem('pc_entries');
+  localStorage.removeItem('pc_pending');
+  localStorage.removeItem('pc_last_sync');
+  localStorage.setItem('pc_v2_initialized', '1');
+}
+loadData();
+renderDashboard();
+updateSettingsStatus();
+</script>
+</body>
+</html>
