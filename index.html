@@ -3,122 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pompa Ciepla</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Space+Grotesk&display=swap" rel="stylesheet">
+    <title>Aplikacja Pomiarowa</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Aplikacja Pomiarowa</h1>
+        <div id="authButtons"></div>
+    </header>
+    <main>
+        <div id="dashboard"></div>
+        <div id="formPage"></div>
+        <div id="historyPage"></div>
+        <div id="analyticsPage"></div>
+    </main>
+
+    <script>
+        // Fade in the page
+        document.body.style.opacity = 0;
+        window.onload = function() {
+            document.body.style.opacity = 1;
+        };
+
+        // Initialize Supabase client
+        (async () => {
+            const { createClient } = window.supabase;
+            const supabaseUrl = 'YOUR_SUPABASE_URL';
+            const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+            const supabase = createClient(supabaseUrl, supabaseKey);
+
+            // UI Handling
+            setupAuthButtons();
+            await loadDashboard();
+            setupFormPage();
+            setupHistoryPage();
+            setupAnalyticsPage();
+        })();
+
+        async function loadDashboard() {
+            // Fetch and display the last reading from Supabase
+            const { data, error } = await supabase
+                .from('readings')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(1);
+
+            if (error) {
+                console.error("Error loading dashboard data:", error);
+                return;
+            }
+
+            const lastReading = data[0];
+            document.getElementById('dashboard').innerHTML = `<h2>Ostatni Odczyt</h2><p>${lastReading.kWh} kWh</p><p>Zużycie: ${lastReading.consumption}</p><p>Uruchomienia Sprężarki: ${lastReading.compressor_starts}</p><p>Średnia Dzienna: ${calculateDailyAverage(lastReading)}</p>`;
+        }
+
+        function calculateDailyAverage(reading) {
+            // Calculation logic here
+            return reading.kWh / 30; // Placeholder
+        }
+
+        function setupFormPage() {
+            // Form and calculations handling
+        }
+
+        function setupHistoryPage() {
+            // Display reading history with delete buttons
+        }
+
+        function setupAnalyticsPage() {
+            // Display yearly stats and records
+        }
+
+        function setupAuthButtons() {
+            // Google OAuth authentication handling
+        }
+    </script>
     <style>
         body {
             background-color: #121212;
             color: white;
-            font-family: 'JetBrains Mono', monospace;
+            font-family: Arial, sans-serif;
         }
-        h1, h2 {
-            color: #f1c40f;
-        }
-        .nav {
-            display: flex;
-            justify-content: space-around;
-            background-color: #1e1e1e;
+        header {
+            background-color: #1E1E1E;
             padding: 10px;
+            text-align: center;
         }
-        .nav a {
-            color: #f1c40f;
-            text-decoration: none;
+        h1 {
+            color: cyan;
         }
-        .loading-spinner {
-            display: none;
-            margin: auto;
-            border: 8px solid #e0e0e0;
-            border-top: 8px solid #3498db;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 2s linear infinite;
+        #authButtons button {
+            margin: 5px;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        main { padding: 20px; }
     </style>
-</head>
-<body>
-    <header class="auth-container">
-        <h1>Logowanie do aplikacji</h1>
-        <button id="loginBtn">Zaloguj się</button>
-    </header>
-    <nav class="nav">
-        <a href="#dashboard">Dashboard</a>
-        <a href="#addEntry">Dodaj Wpis</a>
-        <a href="#history">Historia</a>
-        <a href="#analytics">Analityka</a>
-    </nav>
-    <div id="content"></div>
-    <div class="loading-spinner" id="loadingSpinner"></div>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0/dist/supabase.js"></script>
-    <script>
-        const SUPABASE_URL = 'https://gmipfhbfvorzpmpwuxfl.supabase.co';
-        const SUPABASE_KEY = 'your_supabase_key_here';
-        const TABLE = 'odczyty';
-        const CENA_KWH = 0.5; // example value
-        const COP_EST = 3.5; // example value
-        const MIESIAC_PL = 12; // example value
-
-        const { createClient } = supabase;
-        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        async function initAuth() {
-            // TODO: Initialize authentication
-        }
-
-        function renderDashboard() {
-            document.getElementById('content').innerHTML = '<h2>Dashboard</h2>';
-            // Logic to render dashboard statistics and loading spinner
-        }
-
-        function renderForm() {
-            // Logic to render form with calculation preview
-        }
-
-        function renderHistory() {
-            // Logic to render history with delete buttons
-        }
-
-        function renderAnalityka() {
-            // Logic to render analytics with statistics and records
-        }
-
-        function drawBarChart() {
-            // Logic for drawing bar chart using canvas
-        }
-
-        function drawGroupedChart() {
-            // Logic for drawing grouped chart using canvas
-        }
-
-        function saveEntry() {
-            // Logic for saving entry with validation
-        }
-
-        function deleteEntry() {
-            // Logic for deleting entry with currentUser checks
-        }
-
-        function enrichData() {
-            // Function for calculations
-        }
-
-        // Adding Google OAuth functions
-        function signInWithOAuth() {
-            // Sign in logic
-        }
-
-        function signOut() {
-            // Sign out logic
-        }
-
-        window.onload = function () {
-            initAuth();
-            renderDashboard();
-        };
-    </script>
 </body>
 </html>
