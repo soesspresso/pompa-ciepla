@@ -1,0 +1,19 @@
+{
+  "name": "PC Monitor – Pompa Ciepła",
+  "short_name": "PC Monitor",
+  "description": "Monitorowanie zużycia energii pompy ciepła",
+  "start_url": "/pompa-ciepla/",
+  "scope": "/pompa-ciepla/",
+  "display": "standalone",
+  "background_color": "#070f1e",
+  "theme_color": "#0a1628",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
