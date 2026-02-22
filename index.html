@@ -500,7 +500,7 @@ function drawGroupedChart(id,datasets) {
   canvas.width=W; canvas.height=H;
   const pad={top:20,right:10,bottom:50,left:36};
   const cw=W-pad.left-pad.right, ch=H-pad.top-pad.bottom;
-  const months=['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gdu'];
+  const months=['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
   const allVals=datasets.flatMap(d=>d.values.filter(v=>v!==null));
   const max=Math.max(...allVals)*1.1;
   ctx.clearRect(0,0,W,H);
