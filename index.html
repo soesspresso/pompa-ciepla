@@ -3,28 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pompa Ciepla</title>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.29.0/dist/umd/supabase.js"></script>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+        header, nav, footer {
+            background-color: #1e1e1e;
+            padding: 1em;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ffffff;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .chart {
+            margin: 20px;
+        }
+    </style>
 </head>
 <body>
-    <!-- Import biblioteki Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
+    <header>
+        <h1>Dashboard</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Analytics</a></li>
+            <li><a href="#">History</a></li>
+            <li><a href="#">Forms</a></li>
+        </ul>
+    </nav>
+    <main>
+        <div id="dashboard" class="chart"></div>
+        <div id="history"></div>
+        <div id="form"></div>
+    </main>
+    <footer>
+        <p>&copy; 2026</p>
+    </footer>
     <script>
-        // Inicjalizacja klienta Supabase
-        const { createClient } = supabase;
-        const supabaseClient = createClient(
-            'https://gmipfhbfvorzpmpwuxfl.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtaXBmaGJmdm9yenBtcHd1eGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3NzE5NzUsImV4cCI6MjA4NzM0Nzk3NX0.vZ91Cx-kpY57rdV6Lk94tZZkqo-QfSWiEhJeHLqvKWE'
-        );
+        const SUPABASE_URL = 'https://gmipfhbfvorzpmpwuxfl.supabase.co';
+        const SUPABASE_KEY = 'your_supabase_key_here'; // replace with original key
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const HEADERS = { 'Authorization': `Bearer ${localStorage.getItem('token')}` };
 
-        // Authentication Section
-        async function signIn() {
-            // Sign-in logic here
-        }
+        const showToast = (message) => {
+            alert(message);
+        };
 
-        async function signOut() {
-            // Sign-out logic here
-        }
+        const initAuth = () => {
+            // Authentication initialization
+        };
+
+        const signInWithGoogle = async () => {
+            // Google sign in logic
+        };
+
+        const signOut = async () => {
+            // Sign out logic
+        };
+
+        const currentUser = supabase.auth.user();
+
+        const loadData = async () => {
+            // data loading logic
+        };
+
+        const renderDashboard = () => {
+            loadData();
+            // additional rendering logic
+        };
+
+        const renderForm = () => {
+            // render form logic
+        };
+
+        const saveEntry = async () => {
+            // save entry logic
+        };
+
+        const renderHistory = () => {
+            // render history logic
+        };
+
+        const deleteEntry = async () => {
+            // delete entry logic
+        };
+
+        const renderAnalityka = () => {
+            // analytics rendering logic
+        };
+
+        const drawBarChart = () => {
+            // bar chart drawing logic
+        };
+
+        const drawGroupedChart = () => {
+            // grouped chart drawing logic
+        };
+
+        renderDashboard();
+        initAuth();
     </script>
 </body>
 </html>
