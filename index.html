@@ -1,44 +1,696 @@
-<!DOCTYPE html lang="pl">
-<html>
+<!DOCTYPE html>
+<html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pompa Ciepła</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://js.supabase.io/<SUPABASE_PROJECT_ID>.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#0a1628">
+<meta name="apple-mobile-web-app-title" content="PC Monitor">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>PC Monitor – Pompa Ciepła</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Space+Grotesk:wght@300;400;600;700&display=swap');
+  :root {
+    --bg:#070f1e; --surface:#0d1a2e; --surface2:#132035; --border:#1e3050;
+    --accent:#00d4ff; --accent2:#ff6b35; --accent3:#00ff88;
+    --text:#e2eaf5; --muted:#5a7a9a; --danger:#ff4060;
+    --mono:'JetBrains Mono',monospace; --sans:'Space Grotesk',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+  .app{position:relative;z-index:1;max-width:500px;margin:0 auto;padding:0 0 100px;}
+  .header{padding:20px 20px 0;background:linear-gradient(180deg,rgba(0,212,255,0.08) 0%,transparent 100%);border-bottom:1px solid var(--border);margin-bottom:20px;}
+  .header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+  .logo{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:3px;text-transform:uppercase;}
+  .header-right{display:flex;gap:12px;align-items:center;}
+  .sync-status{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9px;color:var(--muted);}
+  .status-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);transition:all 0.3s;}
+  .status-dot.ok{background:var(--accent3);box-shadow:0 0 8px var(--accent3);animation:pulse 2s infinite;}
+  .status-dot.syncing{background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse 0.5s infinite;}
+  .status-dot.err{background:var(--danger);box-shadow:0 0 8px var(--danger);}
+  .status-dot.none{background:var(--muted);}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+  .auth-btn{background:rgba(0,212,255,0.1);border:1px solid var(--accent);color:var(--accent);padding:6px 10px;border-radius:6px;font-family:var(--mono);font-size:9px;cursor:pointer;transition:all 0.2s;text-transform:uppercase;letter-spacing:1px;}
+  .auth-btn:hover{background:rgba(0,212,255,0.2);}
+  .auth-btn.logout{background:rgba(255,64,96,0.1);border-color:var(--danger);color:var(--danger);}
+  .auth-status{font-size:10px;color:var(--muted);font-family:var(--mono);}
+  .header h1{font-size:22px;font-weight:700;letter-spacing:-0.5px;margin-bottom:4px;}
+  .header h1 span{color:var(--accent);}
+  .header-sub{font-size:12px;color:var(--muted);font-family:var(--mono);padding-bottom:16px;}
+  .nav{display:flex;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:10;}
+  .nav::-webkit-scrollbar{display:none;}
+  .nav-btn{flex:1;padding:12px 6px;background:none;border:none;color:var(--muted);font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all 0.2s;}
+  .nav-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+  .page{display:none;padding:16px;}
+  .page.active{display:block;}
+  .loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;gap:16px;}
+  .loading-spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading-text{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:2px;}
+  .notify-banner{background:linear-gradient(135deg,rgba(255,107,53,0.15),rgba(255,107,53,0.05));border:1px solid rgba(255,107,53,0.4);border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;cursor:pointer;animation:slideIn 0.3s ease;}
+  @keyframes slideIn{from{transform:translateY(-10px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+  .notify-icon{font-size:24px;flex-shrink:0;}
+  .notify-text strong{display:block;font-size:13px;margin-bottom:2px;color:var(--accent2);}
+  .notify-text span{font-size:11px;color:var(--muted);}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;position:relative;overflow:hidden;}
+  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0.4;}
+  .card-title{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
+  .card-title span{color:var(--accent);font-size:9px;}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+  .stat-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;}
+  .stat-label{font-size:9px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+  .stat-value{font-family:var(--mono);font-size:22px;font-weight:700;line-height:1;}
+  .stat-value.accent{color:var(--accent);}
+  .stat-value.green{color:var(--accent3);}
+  .stat-value.orange{color:var(--accent2);}
+  .stat-unit{font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:2px;}
+  .chart-wrap{position:relative;height:180px;margin-top:8px;}
+  canvas{width:100%!important;}
+  .data-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px;}
+  .data-table th{color:var(--muted);font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:8px 6px;text-align:right;border-bottom:1px solid var(--border);}
+  .data-table th:first-child{text-align:left;}
+  .data-table td{padding:8px 6px;text-align:right;border-bottom:1px solid rgba(30,48,80,0.5);font-size:12px;}
+  .data-table td:first-child{text-align:left;}
+  .data-table tr:last-child td{border-bottom:none;}
+  .data-table tr.highlight td{color:var(--accent);}
+  .form-group{margin-bottom:16px;}
+  .form-label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;}
+  .form-sublabel{font-size:10px;color:var(--muted);margin-top:4px;opacity:0.7;}
+  .form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-family:var(--mono);font-size:18px;outline:none;transition:border-color 0.2s;-webkit-appearance:none;}
+  .form-input:focus{border-color:var(--accent);}
+  .form-input::placeholder{color:var(--muted);font-size:14px;}
+  .form-input.small{font-size:13px;}
+  .btn{width:100%;padding:14px;border:none;border-radius:10px;font-family:var(--mono);font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-weight:600;transition:all 0.2s;}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),#0099cc);color:#000;}
+  .btn-primary:active{transform:scale(0.98);}
+  .btn-secondary{background:var(--surface2);border:1px solid var(--border);color:var(--muted);margin-top:8px;}
+  .month-pills{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin-bottom:12px;}
+  .month-pill{flex-shrink:0;padding:5px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;font-family:var(--mono);font-size:10px;color:var(--muted);cursor:pointer;transition:all 0.2s;}
+  .month-pill.active{background:rgba(0,212,255,0.15);border-color:var(--accent);color:var(--accent);}
+  .divider{height:1px;background:var(--border);margin:14px 0;}
+  .info-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(30,48,80,0.4);}
+  .info-row:last-child{border-bottom:none;}
+  .info-row .label{font-size:12px;color:var(--muted);}
+  .info-row .value{font-family:var(--mono);font-size:13px;font-weight:600;}
+  .year-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+  .year-label{font-family:var(--mono);font-size:11px;color:var(--muted);width:36px;flex-shrink:0;}
+  .year-bar-wrap{flex:1;height:28px;background:var(--surface2);border-radius:6px;overflow:hidden;}
+  .year-bar{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:8px;font-family:var(--mono);font-size:11px;font-weight:600;transition:width 1s ease;white-space:nowrap;}
+  .year-bar.y2022{background:linear-gradient(90deg,rgba(100,100,200,0.6),rgba(100,100,200,0.2));color:#aaaaff;}
+  .year-bar.y2023{background:linear-gradient(90deg,rgba(0,153,204,0.6),rgba(0,153,204,0.3));color:var(--accent);}
+  .year-bar.y2024{background:linear-gradient(90deg,rgba(0,255,136,0.5),rgba(0,255,136,0.2));color:var(--accent3);}
+  .year-bar.y2025{background:linear-gradient(90deg,rgba(255,107,53,0.6),rgba(255,107,53,0.3));color:var(--accent2);}
+  .year-bar.y2026{background:linear-gradient(90deg,rgba(200,100,255,0.6),rgba(200,100,255,0.2));color:#dd88ff;}
+  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--accent3);color:#000;padding:12px 24px;border-radius:40px;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:1px;opacity:0;transition:all 0.3s;pointer-events:none;z-index:100;white-space:nowrap;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.err{background:var(--danger);color:#fff;}
+</style>
 </head>
 <body>
-    <header>
-        <button id="google-login">Zaloguj się przez Google</button>
-    </header>
-    <nav>
-        <ul>
-            <li><a href="#dashboard">Dashboard</a></li>
-            <li><a href="#dodaj">Dodaj</a></li>
-            <li><a href="#historia">Historia</a></li>
-            <li><a href="#analityka">Analityka</a></li>
-        </ul>
-    </nav>
-    <div id="content">
-        <!-- Dashboard content --><div id="dashboard">...</div>
-        <!-- Add new record form --><div id="dodaj">...</div>
-        <!-- History section --><div id="historia">...</div>
-        <!-- Analytics charts --><div id="analityka">...</div>
+<div class="app">
+  <div class="header">
+    <div class="header-top">
+      <div class="logo">PC Monitor v3.0</div>
+      <div class="header-right">
+        <div class="sync-status">
+          <div class="status-dot none" id="syncDot"></div>
+          <span id="syncLabel">łączenie...</span>
+        </div>
+        <div id="authContainer"></div>
+      </div>
     </div>
-    <script>
-        // Supabase authentication code
-        const { createClient } = supabase;
-        const supabaseUrl = 'https://<SUPABASE_URL>.supabase.co';
-        const supabaseKey = '<SUPABASE_ANON_KEY>';
-        const supabase = createClient(supabaseUrl, supabaseKey);
+    <h1>Pompa <span>Ciepła</span></h1>
+    <div class="header-sub" id="currentDate">Ładowanie...</div>
+  </div>
 
-        document.getElementById('google-login').onclick = async () => {
-            const { user, session, error } = await supabase.auth.signIn({ provider: 'google' });
-            if (error) console.log('Error logging in:', error);
-        };
-        
-        // JavaScript for charts and forms
-    </script>
+  <nav class="nav">
+    <button class="nav-btn active" onclick="showPage('dashboard')">Dashboard</button>
+    <button class="nav-btn" onclick="showPage('dodaj')">+ Wpis</button>
+    <button class="nav-btn" onclick="showPage('historia')">Historia</button>
+    <button class="nav-btn" onclick="showPage('analityka')">Analityka</button>
+  </nav>
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dashboard">
+    <div id="loadingDashboard" class="loading-screen">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Ładowanie danych...</div>
+    </div>
+    <div id="dashboardContent" style="display:none;">
+      <div id="notifyBanner" class="notify-banner" style="display:none;" onclick="showPage('dodaj')">
+        <div class="notify-icon">🔔</div>
+        <div class="notify-text">
+          <strong>Czas na miesięczny odczyt!</strong>
+          <span>Nowy miesiąc – wpisz stan licznika</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Ostatni odczyt <span id="lastReadLabel">—</span></div>
+        <div class="stat-grid">
+          <div class="stat-box"><div class="stat-label">Stan licznika</div><div class="stat-value accent" id="lastKwh">—</div><div class="stat-unit">kWh narastająco</div></div>
+          <div class="stat-box"><div class="stat-label">Zużycie m-c</div><div class="stat-value green" id="lastMonth">—</div><div class="stat-unit">kWh</div></div>
+          <div class="stat-box"><div class="stat-label">Starty sprężarki</div><div class="stat-value orange" id="lastStarts">—</div><div class="stat-unit">w miesiącu</div></div>
+          <div class="stat-box"><div class="stat-label">Śr. dziennie</div><div class="stat-value" id="lastDaily">—</div><div class="stat-unit">kWh/dzień</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">COP szacowany <span>×4 kWh ciepła / kWh prądu</span></div>
+        <div class="stat-grid">
+          <div class="stat-box"><div class="stat-label">Ciepło (est.)</div><div class="stat-value green" id="dashHeat">—</div><div class="stat-unit">kWh/miesiąc</div></div>
+          <div class="stat-box"><div class="stat-label">Koszt (est.)</div><div class="stat-value" id="dashCost">—</div><div class="stat-unit">PLN @ ~0.85/kWh</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Trend – ostatnie 6 miesięcy</div>
+        <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Porównanie roczne</div>
+        <div id="yearCompare"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DODAJ WPIS -->
+  <div class="page" id="page-dodaj">
+    <div class="card">
+      <div class="card-title">Nowy miesięczny odczyt</div>
+      <div id="authWarning" class="notify-banner" style="display:none;background:rgba(255,64,96,0.15);border-color:rgba(255,64,96,0.4);">
+        <div class="notify-icon">🔒</div>
+        <div class="notify-text">
+          <strong>Zaloguj się!</strong>
+          <span>Musisz być zalogowany przez Google aby dodawać wpisy</span>
+        </div>
+      </div>
+      <div id="formPeriodInfo" style="margin-bottom:14px;font-size:12px;color:var(--muted);font-family:var(--mono);"></div>
+      <div class="form-group">
+        <label class="form-label">Stan licznika (kWh narastająco)</label>
+        <input class="form-input" type="number" id="inputKwh" placeholder="np. 9500" step="1">
+        <div class="form-sublabel" id="prevKwhHint"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Liczba startów sprężarki (narastająco)</label>
+        <input class="form-input" type="number" id="inputStarts" placeholder="np. 1650" step="1">
+        <div class="form-sublabel" id="prevStartsHint"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Uwagi (opcjonalnie)</label>
+        <input class="form-input small" type="text" id="inputNote" placeholder="np. mróz, awaria, itp.">
+      </div>
+      <div id="calcPreview" class="card" style="background:var(--surface2);margin-bottom:14px;display:none;">
+        <div class="card-title">Podgląd wyliczeń</div>
+        <div id="calcContent"></div>
+      </div>
+      <button class="btn btn-primary" onclick="saveEntry()">💾 Zapisz i wyślij do bazy</button>
+      <button class="btn btn-secondary" onclick="showPage('dashboard')">Anuluj</button>
+    </div>
+  </div>
+
+  <!-- HISTORIA -->
+  <div class="page" id="page-historia">
+    <div class="card">
+      <div class="card-title">Wszystkie odczyty</div>
+      <div class="month-pills">
+        <div class="month-pill active" onclick="filterYear(0,this)">Wszystkie</div>
+        <div class="month-pill" onclick="filterYear(2022,this)">2022</div>
+        <div class="month-pill" onclick="filterYear(2023,this)">2023</div>
+        <div class="month-pill" onclick="filterYear(2024,this)">2024</div>
+        <div class="month-pill" onclick="filterYear(2025,this)">2025</div>
+        <div class="month-pill" onclick="filterYear(2026,this)">2026</div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead><tr><th>Miesiąc</th><th>Stan kWh</th><th>kWh m-c</th><th>Śr/dzień</th><th>Starty</th><th style="text-align:center;">Usuń</th></tr></thead>
+          <tbody id="historyTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALITYKA -->
+  <div class="page" id="page-analityka">
+    <div class="card">
+      <div class="card-title">Zużycie miesięczne – porównanie lat</div>
+      <div class="chart-wrap" style="height:220px;"><canvas id="compareChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Statystyki roczne</div>
+      <div id="yearStats"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Rekordy</div>
+      <div id="records"></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================
+// SUPABASE CONFIG + GOOGLE OAUTH
+// ============================================
+const SUPABASE_URL = 'https://gmipfhbfvorzpmpwuxfl.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtaXBmaGJmdm9yenBtcHd1eGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3NzE5NzUsImV4cCI6MjA4NzM0Nzk3NX0.vZ91Cx-kpY57rdV6Lk94tZZkqo-QfSWiEhJeHLqvKWE';
+const TABLE = 'odczyty';
+
+const { createClient } = window.supabase;
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const HEADERS = {
+  'Content-Type': 'application/json',
+  'apikey': SUPABASE_KEY,
+  'Authorization': `Bearer ${SUPABASE_KEY}`
+};
+
+// ============================================
+// AUTH STATE
+// ============================================
+let currentUser = null;
+
+async function initAuth() {
+  const { data: { user } } = await supabase.auth.getUser();
+  currentUser = user;
+  updateAuthUI();
+}
+
+function updateAuthUI() {
+  const container = document.getElementById('authContainer');
+  if (currentUser) {
+    container.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;">
+        <div class="auth-status">${currentUser.email}</div>
+        <button class="auth-btn logout" onclick="signOut()">Wyloguj</button>
+      </div>
+    `;
+  } else {
+    container.innerHTML = `<button class="auth-btn" onclick="signInWithGoogle()">🔐 Zaloguj</button>`;
+  }
+}
+
+async function signInWithGoogle() {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href }
+  });
+  if (error) showToast('⚠ Błąd logowania: ' + error.message, true);
+}
+
+async function signOut() {
+  const { error } = await supabase.auth.signOut();
+  if (!error) {
+    currentUser = null;
+    updateAuthUI();
+    showToast('✅ Wylogowano');
+  }
+}
+
+// ============================================
+// CONSTANTS
+// ============================================
+const CENA_KWH = 0.85;
+const COP_EST = 4;
+const MIESIAC_PL = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
+
+// ============================================
+// STATE
+// ============================================
+let allData = [];
+let activeYearFilter = 0;
+
+// ============================================
+// SUPABASE API
+// ============================================
+async function fetchData() {
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/${TABLE}?select=*&order=dzien.asc`,
+    { headers: HEADERS }
+  );
+  if (!res.ok) throw new Error('Błąd pobierania danych: ' + res.status);
+  return await res.json();
+}
+
+async function insertRow(entry) {
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/${TABLE}`,
+    {
+      method: 'POST',
+      headers: { ...HEADERS, 'Prefer': 'return=representation' },
+      body: JSON.stringify(entry)
+    }
+  );
+  if (!res.ok) throw new Error('Błąd zapisu: ' + res.status);
+  return await res.json();
+}
+
+async function deleteRow(id) {
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${id}`,
+    { method: 'DELETE', headers: HEADERS }
+  );
+  if (!res.ok) throw new Error('Błąd usuwania: ' + res.status);
+}
+
+// ============================================
+// LOAD DATA
+// ============================================
+async function loadData() {
+  setSyncStatus('syncing', 'pobieranie...');
+  try {
+    const rows = await fetchData();
+    allData = rows.map(r => ({
+      ...r,
+      dzien: new Date(r.dzien)
+    }));
+    setSyncStatus('ok', 'połączono');
+    return true;
+  } catch(e) {
+    setSyncStatus('err', 'brak połączenia');
+    showToast('⚠ Błąd połączenia z bazą', true);
+    return false;
+  }
+}
+
+// ============================================
+// COMPUTED
+// ============================================
+function enrichData(data) {
+  return data.map((d, i) => {
+    const prev = i > 0 ? data[i-1] : null;
+    const kwhMc = prev ? d.stan - prev.stan : null;
+    const dni = prev ? Math.round((new Date(d.dzien) - new Date(prev.dzien)) / 86400000) : null;
+    const srDzien = (kwhMc && dni) ? Math.round(kwhMc/dni*10)/10 : null;
+    const startsMc = (d.starts != null && prev && prev.starts != null) ? d.starts - prev.starts : null;
+    return {...d, kwhMc, dni, srDzien, startsMc};
+  });
+}
+
+// ============================================
+// SYNC STATUS
+// ============================================
+function setSyncStatus(state, label) {
+  document.getElementById('syncDot').className = 'status-dot ' + state;
+  document.getElementById('syncLabel').textContent = label;
+}
+
+// ============================================
+// PAGES
+// ============================================
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  const pages = ['dashboard','dodaj','historia','analityka'];
+  document.querySelectorAll('.nav-btn')[pages.indexOf(name)].classList.add('active');
+  if (name==='dashboard') renderDashboard();
+  if (name==='historia')  renderHistory();
+  if (name==='analityka') renderAnalityka();
+  if (name==='dodaj')     renderForm();
+}
+
+// ============================================
+// DASHBOARD
+// ============================================
+async function renderDashboard() {
+  document.getElementById('loadingDashboard').style.display = 'flex';
+  document.getElementById('dashboardContent').style.display = 'none';
+
+  const ok = await loadData();
+  if (!ok || allData.length === 0) return;
+
+  document.getElementById('loadingDashboard').style.display = 'none';
+  document.getElementById('dashboardContent').style.display = 'block';
+
+  const now = new Date();
+  document.getElementById('currentDate').textContent =
+    now.toLocaleDateString('pl-PL',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  const rich = enrichData(allData);
+  const last = rich[rich.length-1];
+
+  document.getElementById('lastReadLabel').textContent = `${last.miesiac} ${last.rok}`;
+  document.getElementById('lastKwh').textContent = last.stan.toLocaleString();
+  document.getElementById('lastMonth').textContent = last.kwhMc ?? '—';
+  document.getElementById('lastStarts').textContent = last.startsMc ?? '—';
+  document.getElementById('lastDaily').textContent = last.srDzien ?? '—';
+  document.getElementById('dashHeat').textContent = last.kwhMc ? (last.kwhMc*COP_EST).toLocaleString() : '—';
+  document.getElementById('dashCost').textContent = last.kwhMc ? Math.round(last.kwhMc*CENA_KWH)+' zł' : '—';
+
+  if (now.getDate()===1) document.getElementById('notifyBanner').style.display='flex';
+
+  const yearTotals = {};
+  for (const d of rich) { if (d.kwhMc===null) continue; yearTotals[d.rok]=(yearTotals[d.rok]||0)+d.kwhMc; }
+  const maxY = Math.max(...Object.values(yearTotals));
+  const cmap = {2022:'y2022',2023:'y2023',2024:'y2024',2025:'y2025',2026:'y2026'};
+  document.getElementById('yearCompare').innerHTML = Object.entries(yearTotals).sort()
+    .map(([yr,total]) => `<div class="year-row"><div class="year-label">${yr}</div><div class="year-bar-wrap"><div class="year-bar ${cmap[yr]||'y2026'}" style="width:${Math.round(total/maxY*100)}%">${total.toLocaleString()} kWh</div></div></div>`)
+    .join('');
+
+  const last6 = rich.filter(d=>d.kwhMc!==null).slice(-6);
+  drawBarChart('trendChart',{
+    labels: last6.map(d=>d.miesiac.slice(0,3)+' '+String(d.rok).slice(2)),
+    values: last6.map(d=>d.kwhMc), color:'#00d4ff'
+  });
+}
+
+// ============================================
+// FORM
+// ============================================
+function renderForm() {
+  const authWarn = document.getElementById('authWarning');
+  authWarn.style.display = currentUser ? 'none' : 'flex';
+
+  const rich = enrichData(allData);
+  const last = rich[rich.length-1];
+  const readingDate = new Date(last.dzien);
+  readingDate.setMonth(readingDate.getMonth()+1);
+  const reportedMonthIdx = readingDate.getMonth() - 1 < 0 ? 11 : readingDate.getMonth() - 1;
+  const reportedYear = readingDate.getMonth() === 0 ? readingDate.getFullYear() - 1 : readingDate.getFullYear();
+  const miesiac = MIESIAC_PL[reportedMonthIdx];
+
+  document.getElementById('formPeriodInfo').textContent =
+    `Odczyt za: ${miesiac} ${reportedYear} (data odczytu: 1 ${MIESIAC_PL[readingDate.getMonth()]} ${readingDate.getFullYear()})`;
+  document.getElementById('prevKwhHint').textContent = `Poprzedni stan: ${last.stan.toLocaleString()} kWh`;
+  document.getElementById('prevStartsHint').textContent = `Poprzedni stan: ${last.starts!=null?last.starts.toLocaleString():'brak'} startów`;
+
+  document.getElementById('inputKwh').oninput = () => {
+    const kwh = parseInt(document.getElementById('inputKwh').value);
+    if (!kwh || kwh <= last.stan) { document.getElementById('calcPreview').style.display='none'; return; }
+    const kwhMc = kwh - last.stan;
+    const dni = Math.round((readingDate - new Date(last.dzien)) / 86400000);
+    const srDzien = Math.round(kwhMc/dni*10)/10;
+    document.getElementById('calcPreview').style.display='block';
+    document.getElementById('calcContent').innerHTML = `
+      <div class="info-row"><span class="label">Zużycie w miesiącu</span><span class="value" style="color:var(--accent3)">${kwhMc} kWh</span></div>
+      <div class="info-row"><span class="label">Śr. dziennie</span><span class="value">${srDzien} kWh/d</span></div>
+      <div class="info-row"><span class="label">Ciepło (COP×4)</span><span class="value" style="color:var(--accent3)">${kwhMc*COP_EST} kWh</span></div>
+      <div class="info-row"><span class="label">Koszt (est.)</span><span class="value" style="color:var(--accent2)">${Math.round(kwhMc*CENA_KWH)} PLN</span></div>`;
+  };
+}
+
+async function saveEntry() {
+  if (!currentUser) {
+    showToast('🔒 Musisz się zalogować!', true);
+    return;
+  }
+
+  const rich = enrichData(allData);
+  const last = rich[rich.length-1];
+  const kwhVal = parseInt(document.getElementById('inputKwh').value);
+  const startsVal = document.getElementById('inputStarts').value;
+  const note = document.getElementById('inputNote').value;
+  if (!kwhVal || kwhVal <= last.stan) { showToast('⚠ Stan > '+last.stan, true); return; }
+
+  const readingDate = new Date(last.dzien);
+  readingDate.setMonth(readingDate.getMonth()+1);
+  const reportedMonthIdx = readingDate.getMonth() - 1 < 0 ? 11 : readingDate.getMonth() - 1;
+  const reportedYear = readingDate.getMonth() === 0 ? readingDate.getFullYear() - 1 : readingDate.getFullYear();
+
+  const entry = {
+    rok: reportedYear,
+    miesiac: MIESIAC_PL[reportedMonthIdx],
+    dzien: readingDate.toISOString().slice(0,10),
+    stan: kwhVal,
+    starts: startsVal ? parseInt(startsVal) : null,
+    note: note || null
+  };
+
+  setSyncStatus('syncing', 'zapisywanie...');
+  try {
+    await insertRow(entry);
+    showToast('✅ Wpis zapisany!');
+    setSyncStatus('ok', 'zapisano');
+    ['inputKwh','inputStarts','inputNote'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('calcPreview').style.display='none';
+    setTimeout(() => showPage('dashboard'), 800);
+  } catch(e) {
+    showToast('⚠ Błąd zapisu: ' + e.message, true);
+    setSyncStatus('err', 'błąd zapisu');
+  }
+}
+
+// ============================================
+// HISTORIA
+// ============================================
+function filterYear(yr, el) {
+  activeYearFilter = yr;
+  document.querySelectorAll('.month-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderHistory();
+}
+
+function renderHistory() {
+  const rich = enrichData(allData);
+  let filtered = activeYearFilter ? rich.filter(d=>d.rok==activeYearFilter) : rich;
+
+  document.getElementById('historyTable').innerHTML = [...filtered].reverse().map(d => {
+    const deleteBtn = (d.id && currentUser)
+      ? `<button class="del-btn" data-id="${d.id}" style="background:rgba(255,64,96,0.15);border:1px solid rgba(255,64,96,0.3);border-radius:6px;cursor:pointer;font-size:11px;padding:3px 7px;color:var(--danger);font-family:var(--mono);">✕</button>`
+      : '—';
+    return `<tr>
+      <td>${d.miesiac.slice(0,3)} ${d.rok}</td>
+      <td>${d.stan.toLocaleString()}</td>
+      <td>${d.kwhMc??'—'}</td>
+      <td>${d.srDzien??'—'}</td>
+      <td>${d.startsMc??'—'}</td>
+      <td style="text-align:center;">${deleteBtn}</td>
+    </tr>`;
+  }).join('');
+
+  document.querySelectorAll('.del-btn').forEach(btn => {
+    btn.addEventListener('click', () => deleteEntry(btn.dataset.id));
+  });
+}
+
+async function deleteEntry(id) {
+  if (!currentUser) {
+    showToast('🔒 Musisz się zalogować!', true);
+    return;
+  }
+  if (!confirm('Usunąć ten wpis?\n\nOperacji nie można cofnąć.')) return;
+  setSyncStatus('syncing', 'usuwanie...');
+  try {
+    await deleteRow(id);
+    showToast('🗑 Wpis usunięty');
+    await loadData();
+    renderHistory();
+    setSyncStatus('ok', 'usunięto');
+  } catch(e) {
+    showToast('⚠ Błąd usuwania', true);
+    setSyncStatus('err', 'błąd');
+  }
+}
+
+// ============================================
+// ANALITYKA
+// ============================================
+function renderAnalityka() {
+  const rich = enrichData(allData).filter(d=>d.kwhMc!==null);
+  const yearMap = {};
+  for (const d of rich) { if (!yearMap[d.rok]) yearMap[d.rok]=[]; yearMap[d.rok].push(d); }
+
+  document.getElementById('yearStats').innerHTML = Object.entries(yearMap).sort().map(([yr,entries]) => {
+    const total = entries.reduce((s,e)=>s+e.kwhMc,0);
+    const max = Math.max(...entries.map(e=>e.kwhMc));
+    const min = Math.min(...entries.map(e=>e.kwhMc));
+    return `
+      <div class="info-row"><span class="label">${yr} (${entries.length} m-cy)</span><span class="value" style="color:var(--accent)">${total.toLocaleString()} kWh</span></div>
+      <div class="info-row" style="padding-top:0;padding-bottom:8px;"><span class="label" style="font-size:10px;">min ${min} / max ${max} kWh</span><span class="value" style="font-size:10px;color:var(--muted)">~${Math.round(total*CENA_KWH)} PLN</span></div>`;
+  }).join('');
+
+  const sorted = [...rich].sort((a,b)=>b.kwhMc-a.kwhMc);
+  const r1=sorted[0], r2=sorted[sorted.length-1];
+  document.getElementById('records').innerHTML = `
+    <div class="info-row"><span class="label">🔴 Rekord MAX</span><span class="value" style="color:var(--danger)">${r1.kwhMc} kWh</span></div>
+    <div class="info-row"><span class="label" style="font-size:11px;color:var(--muted)">${r1.miesiac} ${r1.rok}</span><span></span></div>
+    <div class="info-row"><span class="label">🟢 Rekord MIN</span><span class="value" style="color:var(--accent3)">${r2.kwhMc} kWh</span></div>
+    <div class="info-row"><span class="label" style="font-size:11px;color:var(--muted)">${r2.miesiac} ${r2.rok}</span><span></span></div>`;
+
+  const years = [...new Set(rich.map(d=>d.rok))];
+  const cols = ['rgba(100,100,220,0.8)','rgba(0,153,204,0.8)','rgba(0,255,136,0.7)','rgba(255,107,53,0.8)','rgba(200,100,255,0.7)'];
+  drawGroupedChart('compareChart', years.map((yr,i)=>({
+    year:yr, color:cols[i%cols.length],
+    values: MIESIAC_PL.map((_,mi)=>{ const f=rich.find(d=>d.rok==yr&&new Date(d.dzien).getMonth()==mi); return f?f.kwhMc:null; })
+  })));
+}
+
+// ============================================
+// CHARTS
+// ============================================
+function drawBarChart(id,{labels,values,color}) {
+  const canvas=document.getElementById(id); if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.parentElement.clientWidth, H=180;
+  canvas.width=W; canvas.height=H;
+  const pad={top:10,right:10,bottom:40,left:36};
+  const cw=W-pad.left-pad.right, ch=H-pad.top-pad.bottom;
+  const max=Math.max(...values)*1.1;
+  const gap=Math.floor(cw/values.length), bw=Math.floor(gap*0.65);
+  ctx.clearRect(0,0,W,H);
+  for(let i=0;i<=4;i++){
+    const y=pad.top+ch*(1-i/4);
+    ctx.strokeStyle='rgba(30,48,80,0.8)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(W-pad.right,y); ctx.stroke();
+    ctx.fillStyle='#3a5a7a'; ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='right';
+    ctx.fillText(Math.round(max*i/4),pad.left-4,y+3);
+  }
+  values.forEach((v,i)=>{
+    const x=pad.left+i*gap+gap/2-bw/2, bh=(v/max)*ch, y=pad.top+ch-bh;
+    const grad=ctx.createLinearGradient(0,y,0,y+bh);
+    grad.addColorStop(0,color); grad.addColorStop(1,color+'55');
+    ctx.fillStyle=grad; ctx.beginPath(); ctx.roundRect(x,y,bw,bh,[4,4,0,0]); ctx.fill();
+    ctx.fillStyle='#5a7a9a'; ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText(labels[i],pad.left+i*gap+gap/2,H-8);
+  });
+}
+
+function drawGroupedChart(id,datasets) {
+  const canvas=document.getElementById(id); if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.parentElement.clientWidth, H=220;
+  canvas.width=W; canvas.height=H;
+  const pad={top:20,right:10,bottom:50,left:36};
+  const cw=W-pad.left-pad.right, ch=H-pad.top-pad.bottom;
+  const months=['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
+  const allVals=datasets.flatMap(d=>d.values.filter(v=>v!==null));
+  const max=Math.max(...allVals)*1.1;
+  ctx.clearRect(0,0,W,H);
+  for(let i=0;i<=3;i++){
+    const y=pad.top+ch*(1-i/3);
+    ctx.strokeStyle='rgba(30,48,80,0.8)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(W-pad.right,y); ctx.stroke();
+    ctx.fillStyle='#3a5a7a'; ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='right';
+    ctx.fillText(Math.round(max*i/3),pad.left-4,y+3);
+  }
+  const slotW=cw/12, bw=Math.max(3,Math.floor(slotW/datasets.length)-1);
+  datasets.forEach((ds,di)=>{
+    ds.values.forEach((v,mi)=>{
+      if(v===null)return;
+      const x=pad.left+mi*slotW+di*(bw+1)+2, bh=(v/max)*ch, y=pad.top+ch-bh;
+      ctx.fillStyle=ds.color; ctx.beginPath(); ctx.roundRect(x,y,bw,bh,[2,2,0,0]); ctx.fill();
+    });
+  });
+  months.forEach((m,i)=>{ ctx.fillStyle='#3a5a7a'; ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='center'; ctx.fillText(m,pad.left+i*slotW+slotW/2,H-32); });
+  datasets.forEach((ds,i)=>{ const lx=pad.left+i*52; ctx.fillStyle=ds.color; ctx.fillRect(lx,H-18,14,10); ctx.fillStyle='#5a7a9a'; ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='left'; ctx.fillText(ds.year,lx+17,H-9); });
+}
+
+// ============================================
+// TOAST
+// ============================================
+function showToast(msg, isErr) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast'+(isErr?' err':'');
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ============================================
+// INIT
+// ============================================
+initAuth();
+renderDashboard();
+</script>
 </body>
 </html>
