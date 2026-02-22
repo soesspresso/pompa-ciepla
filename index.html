@@ -1,102 +1,103 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikacja Pomiarowa</title>
+    <title>Dashboard</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.js"></script>
 </head>
-<body>
+<body class="dark-theme">
     <header>
-        <h1>Aplikacja Pomiarowa</h1>
-        <div id="authButtons"></div>
+        <h1>Welcome to the Dashboard</h1>
+        <button id="google-signin">Sign in with Google</button>
+        <button id="google-signout">Sign Out</button>
     </header>
+    <nav>
+        <ul>
+            <li><a href="#dashboard">Dashboard</a></li>
+            <li><a href="#form">Form</a></li>
+            <li><a href="#history">History</a></li>
+            <li><a href="#analytics">Analytics</a></li>
+        </ul>
+    </nav>
     <main>
-        <div id="dashboard"></div>
-        <div id="formPage"></div>
-        <div id="historyPage"></div>
-        <div id="analyticsPage"></div>
+        <section id="dashboard">
+            <h2>Dashboard Overview</h2>
+            <!-- Dashboard contents -->
+        </section>
+        <section id="form">
+            <h2>Data Entry Form</h2>
+            <form id="data-entry-form">
+                <label for="data">Enter Data:</label>
+                <input type="text" id="data" name="data" required>
+                <button type="submit">Submit</button>
+            </form>
+        </section>
+        <section id="history">
+            <h2>History</h2>
+            <div id="history-list"></div>
+        </section>
+        <section id="analytics">
+            <h2>Analytics</h2>
+            <canvas id="analytics-chart"></canvas>
+        </section>
     </main>
-
+    <script src="https://js.supabase.co/v1.0.0/supabase.min.js"></script>
     <script>
-        // Fade in the page
-        document.body.style.opacity = 0;
-        window.onload = function() {
-            document.body.style.opacity = 1;
+        const supabaseUrl = 'https://gmipfhbfvorzpmpwuxfl.supabase.co';
+        const supabaseKey = 'your-anon-key'; // Replace with your actual anon key
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        let currentUser = null;
+
+        const googleProvider = new firebase.auth.GoogleAuthProvider();
+        document.getElementById('google-signin').onclick = async () => {
+            const { user, error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
+            currentUser = user;
+            updateUI();
         };
 
-        // Initialize Supabase client
-        (async () => {
-            const { createClient } = window.supabase;
-            const supabaseUrl = 'YOUR_SUPABASE_URL';
-            const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
-            const supabase = createClient(supabaseUrl, supabaseKey);
+        document.getElementById('google-signout').onclick = async () => {
+            await supabase.auth.signOut();
+            currentUser = null;
+            updateUI();
+        };
 
-            // UI Handling
-            setupAuthButtons();
-            await loadDashboard();
-            setupFormPage();
-            setupHistoryPage();
-            setupAnalyticsPage();
-        })();
-
-        async function loadDashboard() {
-            // Fetch and display the last reading from Supabase
-            const { data, error } = await supabase
-                .from('readings')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(1);
-
-            if (error) {
-                console.error("Error loading dashboard data:", error);
-                return;
+        function updateUI() {
+            if (currentUser) {
+                console.log('User is signed in:', currentUser);
+            } else {
+                console.log('No user is logged in');
             }
-
-            const lastReading = data[0];
-            document.getElementById('dashboard').innerHTML = `<h2>Ostatni Odczyt</h2><p>${lastReading.kWh} kWh</p><p>Zużycie: ${lastReading.consumption}</p><p>Uruchomienia Sprężarki: ${lastReading.compressor_starts}</p><p>Średnia Dzienna: ${calculateDailyAverage(lastReading)}</p>`;
         }
 
-        function calculateDailyAverage(reading) {
-            // Calculation logic here
-            return reading.kWh / 30; // Placeholder
+        document.getElementById('data-entry-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const data = document.getElementById('data').value;
+            const { data: entry, error } = await supabase
+                .from('entries')
+                .insert([{ data }]);
+            if (error) {
+                console.error('Insert error:', error);
+            }
+        };
+
+        async function fetchHistory() {
+            const { data: entries, error } = await supabase
+                .from('entries')
+                .select('*');
+            if (error) {
+                console.error('Fetch error:', error);
+            }
+            // Logic to display entries in the history section
         }
 
-        function setupFormPage() {
-            // Form and calculations handling
+        async function drawChart() {
+            const context = document.getElementById('analytics-chart').getContext('2d');
+            // Chart drawing logic using Chart.js or Canvas API
         }
 
-        function setupHistoryPage() {
-            // Display reading history with delete buttons
-        }
-
-        function setupAnalyticsPage() {
-            // Display yearly stats and records
-        }
-
-        function setupAuthButtons() {
-            // Google OAuth authentication handling
-        }
+        // RLS checks can be integrated in the Supabase policies
     </script>
-    <style>
-        body {
-            background-color: #121212;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-        header {
-            background-color: #1E1E1E;
-            padding: 10px;
-            text-align: center;
-        }
-        h1 {
-            color: cyan;
-        }
-        #authButtons button {
-            margin: 5px;
-        }
-        main { padding: 20px; }
-    </style>
 </body>
 </html>
