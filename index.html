@@ -3,86 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pomp Ciepla</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.25.0/dist/supabase.js"></script>
+    <title>Secure App with Google OAuth</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/1.26.0/supabase.js"></script>
     <script>
-        // Initialize Supabase client
+        // Your Supabase URL and Key
         const supabaseUrl = 'https://your-supabase-url.supabase.co';
         const supabaseKey = 'your-supabase-key';
         const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Google OAuth sign-in
-        async function signInWithGoogle() {
-            const { user, error } = await supabase.auth.signIn({
-                provider: 'google',
-            });
-            if (error) {
-                showToast(error.message);
-            } else {
-                checkUserSession();
-            }
+        // Google OAuth Configuration
+        const { createClient } = supabase;
+        const client = createClient(supabaseUrl, supabaseKey);
+
+        function signInWithGoogle() {
+            // Sign in with Google OAuth
+            const { data, error } = await client.auth.signInWithOAuth({ provider: 'google' });
+            if (error) console.error('Error signing in:', error);
         }
 
-        // Sign-out function
-        async function signOut() {
-            await supabase.auth.signOut();
-            checkUserSession();
-        }
-
-        // Check user session
-        async function checkUserSession() {
-            const { data: { user }, error } = await supabase.auth.getUser();
-            if (user) {
-                document.getElementById('auth-status').innerText = `Logged in as: ${user.email}`;
-            } else {
-                document.getElementById('auth-status').innerText = 'Not logged in';
-            }
-        }
-
-        // Form submission
-        async function saveEntry(entryData) {
+        function checkSession() {
+            // Check if user is logged in
             const user = supabase.auth.user();
             if (!user) {
-                showToast('You must be logged in to save entries.');
+                alert('You are not logged in!');
+                window.location.href = 'login.html'; // Redirect to login page
+            } else {
+                console.log('User is logged in:', user);
+            }
+        }
+
+        async function protectedOperation() {
+            checkSession();
+            const user = supabase.auth.user();
+
+            // Only allow 'rafal.chylinski@gmail.com' to perform these operations
+            if (user.email !== 'rafal.chylinski@gmail.com') {
+                alert('You do not have permission to perform this operation.');
                 return;
             }
+
+            // Perform insert, update, delete operations
             const { data, error } = await supabase
-                .from('your_table_name')
-                .insert([{ user_id: user.id, entry_data: entryData }]);
-            if (error) {
-                showToast(error.message);
-            } else {
-                alert('Entry saved!');
-            }
+                .from('your_table')
+                .insert([ { field: 'value' } ]);
+            if (error) console.error('Error performing operation:', error);
         }
 
-        // Toast notification
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.innerText = message;
-            document.body.appendChild(toast);
-            setTimeout(() => { toast.remove(); }, 3000);
-        }
-
-        // Initialize
-        window.onload = checkUserSession;
+        window.onload = () => {
+            checkSession();
+            document.getElementById('sign-in-btn').addEventListener('click', signInWithGoogle);
+            document.getElementById('protected-operation-btn').addEventListener('click', protectedOperation);
+        };
     </script>
 </head>
 <body>
-    <h1>Pomp Ciepla</h1>
-    <button onclick="signInWithGoogle()">Sign in with Google</button>
-    <button onclick="signOut()">Sign Out</button>
-    <p id="auth-status">Not logged in</p>
-    <form id="entry-form">
-        <textarea id="entry-data" required></textarea>
-        <button type="submit">Save Entry</button>
-    </form>
-    <script>
-        document.getElementById('entry-form').onsubmit = function(e) {
-            e.preventDefault();
-            const entryData = document.getElementById('entry-data').value;
-            saveEntry(entryData);
-        };
-    </script>
+    <h1>Welcome to the Secure App</h1>
+    <button id="sign-in-btn">Sign in with Google</button>
+    <button id="protected-operation-btn">Perform Protected Operation</button>
 </body>
 </html>
