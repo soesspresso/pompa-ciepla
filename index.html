@@ -1,64 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html lang="pl">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure App with Google OAuth</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/1.26.0/supabase.js"></script>
-    <script>
-        // Your Supabase URL and Key
-        const supabaseUrl = 'https://your-supabase-url.supabase.co';
-        const supabaseKey = 'your-supabase-key';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-
-        // Google OAuth Configuration
-        const { createClient } = supabase;
-        const client = createClient(supabaseUrl, supabaseKey);
-
-        function signInWithGoogle() {
-            // Sign in with Google OAuth
-            const { data, error } = await client.auth.signInWithOAuth({ provider: 'google' });
-            if (error) console.error('Error signing in:', error);
-        }
-
-        function checkSession() {
-            // Check if user is logged in
-            const user = supabase.auth.user();
-            if (!user) {
-                alert('You are not logged in!');
-                window.location.href = 'login.html'; // Redirect to login page
-            } else {
-                console.log('User is logged in:', user);
-            }
-        }
-
-        async function protectedOperation() {
-            checkSession();
-            const user = supabase.auth.user();
-
-            // Only allow 'rafal.chylinski@gmail.com' to perform these operations
-            if (user.email !== 'rafal.chylinski@gmail.com') {
-                alert('You do not have permission to perform this operation.');
-                return;
-            }
-
-            // Perform insert, update, delete operations
-            const { data, error } = await supabase
-                .from('your_table')
-                .insert([ { field: 'value' } ]);
-            if (error) console.error('Error performing operation:', error);
-        }
-
-        window.onload = () => {
-            checkSession();
-            document.getElementById('sign-in-btn').addEventListener('click', signInWithGoogle);
-            document.getElementById('protected-operation-btn').addEventListener('click', protectedOperation);
-        };
-    </script>
+    <title>Pompa Ciepła</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://js.supabase.io/<SUPABASE_PROJECT_ID>.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <h1>Welcome to the Secure App</h1>
-    <button id="sign-in-btn">Sign in with Google</button>
-    <button id="protected-operation-btn">Perform Protected Operation</button>
+    <header>
+        <button id="google-login">Zaloguj się przez Google</button>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="#dashboard">Dashboard</a></li>
+            <li><a href="#dodaj">Dodaj</a></li>
+            <li><a href="#historia">Historia</a></li>
+            <li><a href="#analityka">Analityka</a></li>
+        </ul>
+    </nav>
+    <div id="content">
+        <!-- Dashboard content --><div id="dashboard">...</div>
+        <!-- Add new record form --><div id="dodaj">...</div>
+        <!-- History section --><div id="historia">...</div>
+        <!-- Analytics charts --><div id="analityka">...</div>
+    </div>
+    <script>
+        // Supabase authentication code
+        const { createClient } = supabase;
+        const supabaseUrl = 'https://<SUPABASE_URL>.supabase.co';
+        const supabaseKey = '<SUPABASE_ANON_KEY>';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        document.getElementById('google-login').onclick = async () => {
+            const { user, session, error } = await supabase.auth.signIn({ provider: 'google' });
+            if (error) console.log('Error logging in:', error);
+        };
+        
+        // JavaScript for charts and forms
+    </script>
 </body>
 </html>
