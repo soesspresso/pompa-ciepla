@@ -6,9 +6,16 @@
     <title>Pompa Ciepla</title>
 </head>
 <body>
+    <!-- Import biblioteki Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
-        // Assuming supabase is imported correctly at the top
-        const supabase = createClient('your-supabase-url', 'your-anon-key'); // Ensure this is the only declaration
+        // Inicjalizacja klienta Supabase
+        const { createClient } = supabase;
+        const supabaseClient = createClient(
+            'https://gmipfhbfvorzpmpwuxfl.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtaXBmaGJmdm9yenBtcHd1eGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3NzE5NzUsImV4cCI6MjA4NzM0Nzk3NX0.vZ91Cx-kpY57rdV6Lk94tZZkqo-QfSWiEhJeHLqvKWE'
+        );
 
         // Authentication Section
         async function signIn() {
