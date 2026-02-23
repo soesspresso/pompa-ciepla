@@ -279,11 +279,11 @@
       <div style="overflow-x:auto;">
         <table class="data-table">
           <thead><tr>
-            <th class="sortable" data-col="miesiac" data-dir="desc">Miesiąc</th>
-            <th class="sortable" data-col="stan" data-dir="desc" style="text-align:right">Stan kWh</th>
-            <th class="sortable" data-col="kwhMc" data-dir="desc" style="text-align:right">kWh m-c</th>
-            <th class="sortable" data-col="srDzien" data-dir="desc" style="text-align:right">Śr/dzień</th>
-            <th class="sortable" data-col="startsMc" data-dir="desc" style="text-align:right">Starty</th>
+            <th class="sortable" data-col="miesiac" data-dir="desc" onclick="sortHistory('miesiac')">Miesiąc</th>
+            <th class="sortable" data-col="stan" data-dir="desc" style="text-align:right" onclick="sortHistory('stan')">Stan kWh</th>
+            <th class="sortable" data-col="kwhMc" data-dir="desc" style="text-align:right" onclick="sortHistory('kwhMc')">kWh m-c</th>
+            <th class="sortable" data-col="srDzien" data-dir="desc" style="text-align:right" onclick="sortHistory('srDzien')">Śr/dzień</th>
+            <th class="sortable" data-col="startsMc" data-dir="desc" style="text-align:right" onclick="sortHistory('startsMc')">Starty</th>
             <th style="text-align:center;">Usuń</th>
           </tr></thead>
           <tbody id="historyTable"></tbody>
@@ -521,19 +521,16 @@ function renderHistory() {
   }).join('');
 
   document.querySelectorAll('.del-btn').forEach(btn => { btn.addEventListener('click', () => deleteEntry(btn.dataset.id)); });
+}
 
-  // Attach sort click handlers
-  document.querySelectorAll('.data-table th.sortable').forEach(th => {
-    th.addEventListener('click', () => {
-      if (sortCol === th.dataset.col) {
-        sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-      } else {
-        sortCol = th.dataset.col;
-        sortDir = 'desc';
-      }
-      renderHistory();
-    });
-  });
+function sortHistory(col) {
+  if (sortCol === col) {
+    sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortCol = col;
+    sortDir = 'desc';
+  }
+  renderHistory();
 }
 
 async function deleteEntry(id) {
