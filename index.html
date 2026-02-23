@@ -277,9 +277,11 @@ async function initAuth() {
 function updateAuthUI() {
   const container = document.getElementById('authContainer');
   if (currentUser) {
-    container.innerHTML = `<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;"><div class="auth-status">${currentUser.email}</div><button class="auth-btn logout" onclick="signOut()">Wyloguj</button></div>`;
+    container.innerHTML = `<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;"><div class="auth-status">${currentUser.email}</div><button class="auth-btn logout" id="logoutBtn">Wyloguj</button></div>`;
+    document.getElementById('logoutBtn').addEventListener('click', signOut);
   } else {
-    container.innerHTML = `<button class="auth-btn" onclick="signInWithGoogle()">🔐 Zaloguj</button>`;
+    container.innerHTML = `<button class="auth-btn" id="loginBtn">🔐 Zaloguj</button>`;
+    document.getElementById('loginBtn').addEventListener('click', signInWithGoogle);
   }
 }
 
