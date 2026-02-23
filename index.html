@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="theme-color" content="#0a1628">
@@ -19,6 +20,21 @@
     --text:#e2eaf5; --muted:#5a7a9a; --danger:#ff4060;
     --mono:'JetBrains Mono',monospace; --sans:'Space Grotesk',sans-serif;
   }
+  body.light {
+    --bg:#f0f4f8; --surface:#ffffff; --surface2:#e8eef5; --border:#c8d8e8;
+    --accent:#0077aa; --accent2:#e05a1a; --accent3:#007744;
+    --text:#1a2a3a; --muted:#6a8aaa; --danger:#cc2244;
+  }
+  body.light::before{background-image:linear-gradient(rgba(0,119,170,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,119,170,0.05) 1px,transparent 1px);}
+  body.light .header{background:linear-gradient(180deg,rgba(0,119,170,0.08) 0%,transparent 100%);}
+  body.light .year-bar.y2022{background:linear-gradient(90deg,rgba(100,100,200,0.4),rgba(100,100,200,0.1));color:#5555aa;}
+  body.light .year-bar.y2023{background:linear-gradient(90deg,rgba(0,119,170,0.4),rgba(0,119,170,0.2));color:#005588;}
+  body.light .year-bar.y2024{background:linear-gradient(90deg,rgba(0,150,80,0.4),rgba(0,150,80,0.15));color:#005522;}
+  body.light .year-bar.y2025{background:linear-gradient(90deg,rgba(200,80,20,0.4),rgba(200,80,20,0.15));color:#993300;}
+  body.light .year-bar.y2026{background:linear-gradient(90deg,rgba(140,60,180,0.4),rgba(140,60,180,0.15));color:#660088;}
+  body{transition:background 0.3s,color 0.3s;}
+  .theme-toggle{background:none;border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-family:var(--mono);font-size:10px;color:var(--muted);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:5px;}
+  .theme-toggle:hover{border-color:var(--accent);color:var(--accent);}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
   body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
@@ -116,6 +132,7 @@
     <div class="header-top">
       <div class="logo">PC Monitor v3.0</div>
       <div class="header-right">
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">☀ Jasny</button>
         <div class="sync-status">
           <div class="status-dot none" id="syncDot"></div>
           <span id="syncLabel">łączenie...</span>
@@ -522,7 +539,24 @@ function showToast(msg, isErr) {
   t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500);
 }
 
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  localStorage.setItem('pc_theme', isLight ? 'light' : 'dark');
+  document.getElementById('themeToggle').textContent = isLight ? '🌙 Ciemny' : '☀ Jasny';
+  document.querySelector('meta[name="theme-color"]').content = isLight ? '#f0f4f8' : '#0a1628';
+}
+
+function applyTheme() {
+  const saved = localStorage.getItem('pc_theme');
+  if (saved === 'light') {
+    document.body.classList.add('light');
+    document.getElementById('themeToggle').textContent = '🌙 Ciemny';
+    document.querySelector('meta[name="theme-color"]').content = '#f0f4f8';
+  }
+}
+
 async function init() {
+  applyTheme();
   await initAuth();
   await renderDashboard();
 }
