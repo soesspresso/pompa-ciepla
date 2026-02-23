@@ -562,7 +562,7 @@ async function init() {
   await initAuth();
   await renderDashboard();
 }
-init();
+document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
