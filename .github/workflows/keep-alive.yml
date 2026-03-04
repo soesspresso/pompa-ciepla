@@ -1,0 +1,26 @@
+name: Keep Supabase Active
+
+on:
+  schedule:
+    # Różne dni i godziny - żaden z triggerów nie jest regularny
+    - cron: '23 9  3,8  * *'   # 3 i 8 każdego miesiąca, 9:23
+    - cron: '51 14 13,18 * *'  # 13 i 18 każdego miesiąca, 14:51
+    - cron: '07 19 23,28 * *'  # 23 i 28 każdego miesiąca, 19:07
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch latest reading
+        run: |
+          # Dodatkowe losowe opóźnienie 0-30 minut - każde uruchomienie o innej dokładnej porze
+          sleep $((RANDOM % 1800))
+
+          # Pobiera ostatni wpis z tabeli odczyty - identyczne zapytanie jak aplikacja
+          curl -s \
+            -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/odczyty?select=miesiac,rok,stan&order=dzien.desc&limit=1" \
+            | grep -o '"miesiac":"[^"]*"' \
+            && echo "✓ Baza aktywna"
