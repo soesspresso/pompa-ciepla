@@ -15,7 +15,7 @@ jobs:
       - name: Fetch latest reading
         run: |
           # Dodatkowe losowe opóźnienie 0-30 minut - każde uruchomienie o innej dokładnej porze
-          sleep $((RANDOM % 1800))
+          sleep $((RANDOM % 300))
 
           # Pobiera ostatni wpis z tabeli odczyty - identyczne zapytanie jak aplikacja
           curl -s \
