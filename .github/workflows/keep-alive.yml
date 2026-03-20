@@ -2,10 +2,9 @@ name: Keep Supabase Active
 
 on:
   schedule:
-    # Różne dni i godziny - żaden z triggerów nie jest regularny
-    - cron: '23 9  3,8  * *'   # 3 i 8 każdego miesiąca, 9:23
-    - cron: '51 14 13,18 * *'  # 13 i 18 każdego miesiąca, 14:51
-    - cron: '07 19 23,28 * *'  # 23 i 28 każdego miesiąca, 19:07
+    # Co ~4 dni o różnych godzinach - bezpieczny margines przed limitem 7 dni Supabase
+    - cron: '23 9  1,5,9,13,17,21,25,29 * *'   # co 4 dni, 9:23
+    - cron: '51 14 3,7,11,15,19,23,27    * *'   # co 4 dni, 14:51
   workflow_dispatch:
 
 jobs:
@@ -14,10 +13,9 @@ jobs:
     steps:
       - name: Fetch latest reading
         run: |
-          # Dodatkowe losowe opóźnienie 0-30 minut - każde uruchomienie o innej dokładnej porze
+          # Losowe opóźnienie 0-5 minut
           sleep $((RANDOM % 300))
 
-          # Pobiera ostatni wpis z tabeli odczyty - identyczne zapytanie jak aplikacja
           curl -s \
             -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}" \
