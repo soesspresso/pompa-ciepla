@@ -4,7 +4,7 @@ on:
   schedule:
     # Co ~4 dni o różnych godzinach - bezpieczny margines przed limitem 7 dni Supabase
     - cron: '23 9  1,3,5,9,13,17,18,19,21,25,26,29 * *'   # co 4 dni, 9:23
-    - cron: '51 14 2,3,7,11,15,19,23,27    * *'   # co 4 dni, 14:51
+    - cron: '51 14 2,3,7,11,15,19,20,23,27    * *'   # co 4 dni, 14:51
   workflow_dispatch:
 
 jobs:
