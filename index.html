@@ -242,7 +242,7 @@ tbody tr:last-child td { border-bottom: none; }
 .hm-hint { font-size: 11px; color: var(--text2); margin-bottom: 12px; }
 
 /* ============================================
-   MODAL
+   MODAL (Wspólny)
    ============================================ */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 300;
@@ -617,24 +617,24 @@ async function logError(akcja, errObj, detale = {}) {
   console.error(`[${akcja}]`, errObj);
   const msg = errObj.message || JSON.stringify(errObj);
   
-  // 1. Pokaż w UI na wypadek gdyby baza padła
   const panel = document.getElementById('debugPanel');
   panel.style.display = 'block';
   const time = new Date().toLocaleTimeString();
   panel.innerHTML += `<div><span class="d-time">${time}</span><strong>[${akcja}]</strong> ${msg} <br><small>${JSON.stringify(detale)}</small></div>`;
   
-  // 2. Wyślij do bazy (tylko jeśli jest zalogowany użytkownik, bo inaczej odrzuci nas RLS)
   if (currentUser) {
     try {
-      await sb.from('app_logs').insert({
-        akcja: akcja,
-        komunikat: msg,
-        detale: detale,
-        user_id: currentUser.id
-      });
-    } catch(dbErr) {
-      console.error("Błąd zapisu logu do bazy:", dbErr);
-    }
+      await sb.from('app_logs').insert({ akcja: akcja, komunikat: msg, detale: detale, user_id: currentUser.id });
+    } catch(dbErr) { console.error("Błąd zapisu logu do bazy:", dbErr); }
+  }
+}
+
+// Zapis logów bezpieczeństwa bez sprawdzania autoryzacji RLS (przez funkcję RPC)
+async function logSecurityEvent(akcja, szczegoly) {
+  try {
+    await sb.rpc('log_security_event', { p_akcja: akcja, p_szczegoly: szczegoly });
+  } catch(e) {
+    console.warn("Nie udało się zapisać zdarzenia bezpieczeństwa:", e);
   }
 }
 
@@ -651,9 +651,7 @@ async function fetchStawki() {
     if (error) throw error;
     stawkiMap = {};
     if (data) data.forEach(r => stawkiMap[r.rok] = r.stawka_kwh);
-  } catch(err) {
-    await logError('fetchStawki', err);
-  }
+  } catch(err) { await logError('fetchStawki', err); }
 }
 
 async function fetchData() {
@@ -726,6 +724,16 @@ function setSyncStatus(state) {
 // ============================================
 async function initAuth() {
   try {
+    // 1. Wykrywanie błędu logowania po powrocie z Google
+    const hash = window.location.hash;
+    if (hash && hash.includes('error=')) {
+      const params = new URLSearchParams(hash.substring(1));
+      const errDesc = params.get('error_description') || params.get('error');
+      await logSecurityEvent('LOGIN_ERROR', errDesc);
+      window.history.replaceState(null, null, window.location.pathname); // Wyczyść pasek adresu
+    }
+
+    // 2. Pobranie sesji
     const { data: { user }, error } = await sb.auth.getUser();
     if (error && error.message !== 'Auth session missing!') throw error;
     currentUser = user;
@@ -752,6 +760,9 @@ function updateAuthUI() {
 
 async function signInWithGoogle() {
   try {
+    // Rejestrujemy intencję kliknięcia w logowanie
+    await logSecurityEvent('LOGIN_CLICK', 'Użytkownik kliknął przycisk logowania Google');
+    
     const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
     if (error) throw error;
   } catch(err) {
