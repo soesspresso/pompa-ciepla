@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -87,7 +86,7 @@ body.light .orb3 { background: #90c8f0; opacity: 0.5; }
 .header-title { font-size: 24px; font-weight: 600; letter-spacing: -0.5px; }
 .header-title em { color: var(--accent); font-style: normal; }
 .header-date { font-size: 11px; color: var(--text2); margin-top: 2px; }
-.header-right { display: flex; align-items: center; gap: 8px; }
+.header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .pill-btn {
   background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 40px;
   backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
@@ -222,7 +221,7 @@ tbody tr:last-child td { border-bottom: none; }
 .anal-view.active { display: block; }
 
 /* ============================================
-   HEATMAP — koncepcja 2
+   HEATMAP
    ============================================ */
 .heatmap-grid { display: grid; grid-template-columns: 36px repeat(12,1fr); gap: 3px; margin-top: 10px; }
 .hm-cell {
@@ -243,7 +242,7 @@ tbody tr:last-child td { border-bottom: none; }
 .hm-hint { font-size: 11px; color: var(--text2); margin-bottom: 12px; }
 
 /* ============================================
-   MODAL — koncepcja 1 drill-down
+   MODAL
    ============================================ */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 300;
@@ -289,7 +288,7 @@ body.light .modal-stat { background: rgba(0,0,0,0.05); }
 .modal-badge.same { background: rgba(255,255,255,0.08); color: var(--text2); }
 
 /* ============================================
-   PORÓWNYWARKA — koncepcja 3
+   PORÓWNYWARKA
    ============================================ */
 .compare-selectors { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
 .compare-select {
@@ -314,7 +313,7 @@ body.light .compare-card { background: rgba(0,0,0,0.05); }
 .compare-delta.worse { background: rgba(255,107,107,0.1); color: var(--danger); border: 1px solid rgba(255,107,107,0.2); }
 
 /* ============================================
-   PROGNOZA — koncepcja 4
+   PROGNOZA
    ============================================ */
 .forecast-wrap { }
 .forecast-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 16px; }
@@ -339,7 +338,6 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
 </div>
 
 <div class="app">
-  <!-- HEADER -->
   <div class="header">
     <div class="header-left">
       <div class="logo-tag">PC Monitor</div>
@@ -349,11 +347,10 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
     <div class="header-right">
       <div class="status-dot none" id="syncDot"></div>
       <button class="pill-btn" id="themeToggle" onclick="toggleTheme()">☀ Jasny</button>
-      <div id="authContainer"></div>
+      <div id="authContainer" style="display:flex;gap:8px;"></div>
     </div>
   </div>
 
-  <!-- DASHBOARD -->
   <div class="page active" id="page-dashboard">
     <div id="loadingDashboard" class="loading-screen">
       <div class="spinner"></div>
@@ -408,7 +405,7 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
               <div>
                 <div class="stat-label">Koszt (est.)</div>
                 <div class="stat-val orange" id="dashCost" style="font-size:22px;">—</div>
-                <div class="stat-unit">PLN @ 0.85/kWh</div>
+                <div class="stat-unit" id="dashCostUnit">PLN</div>
               </div>
             </div>
           </div>
@@ -421,7 +418,6 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
     </div>
   </div>
 
-  <!-- DODAJ WPIS -->
   <div class="page" id="page-dodaj">
     <div class="form-section glass">
       <div class="auth-warn" id="authWarning">🔒 Zaloguj się aby dodawać wpisy</div>
@@ -448,7 +444,6 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
     </div>
   </div>
 
-  <!-- HISTORIA -->
   <div class="page" id="page-historia">
     <div class="hist-card glass">
       <div class="hist-filters">
@@ -477,9 +472,7 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
     </div>
   </div>
 
-  <!-- ANALITYKA -->
   <div class="page" id="page-analityka">
-    <!-- Zakładki widoków -->
     <div class="anal-tabs">
       <button class="anal-tab active" onclick="switchAnalView('compare')">📊 Porównanie lat</button>
       <button class="anal-tab" onclick="switchAnalView('heatmap')">🟥 Heatmapa</button>
@@ -487,7 +480,6 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
       <button class="anal-tab" onclick="switchAnalView('forecast')">🔮 Prognoza</button>
     </div>
 
-    <!-- WIDOK 1: Porównanie lat (obecny) -->
     <div class="anal-view active" id="anal-compare">
       <div class="desktop-grid">
         <div>
@@ -507,7 +499,6 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
       </div>
     </div>
 
-    <!-- WIDOK 2: Heatmapa -->
     <div class="anal-view" id="anal-heatmap">
       <div class="anal-card glass">
         <div class="section-label">Heatmapa zużycia kWh</div>
@@ -521,7 +512,6 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
       </div>
     </div>
 
-    <!-- WIDOK 3: Porównywarka -->
     <div class="anal-view" id="anal-versus">
       <div class="anal-card glass">
         <div class="section-label">Porównaj dwa lata</div>
@@ -534,7 +524,6 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
       </div>
     </div>
 
-    <!-- WIDOK 4: Prognoza -->
     <div class="anal-view" id="anal-forecast">
       <div class="anal-card glass">
         <div class="section-label">Prognoza zużycia</div>
@@ -544,7 +533,6 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
   </div>
 </div>
 
-<!-- Bottom nav -->
 <nav class="bottom-nav">
   <button class="nav-pill active" onclick="showPage('dashboard')">Dashboard</button>
   <button class="nav-pill" onclick="showPage('dodaj')">+ Wpis</button>
@@ -552,7 +540,6 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
   <button class="nav-pill" onclick="showPage('analityka')">Analityka</button>
 </nav>
 
-<!-- Modal drill-down -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
   <div class="modal" style="position:relative;">
     <button class="modal-close" onclick="closeModal()">✕</button>
@@ -563,13 +550,25 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
   </div>
 </div>
 
+<div class="modal-overlay" id="modalSettingsOverlay" onclick="closeSettingsModal(event)">
+  <div class="modal" style="position:relative;">
+    <button class="modal-close" onclick="closeSettingsModal()">✕</button>
+    <div class="modal-title" style="font-size:20px;">Stawki prądu (PLN/kWh)</div>
+    <div id="stawkiList" style="margin-bottom:16px;"></div>
+    <div style="display:flex;gap:10px;margin-bottom:16px;">
+      <input type="number" id="newRok" placeholder="Rok" class="field-input small" style="width:40%">
+      <input type="number" id="newStawka" placeholder="Stawka" step="0.01" class="field-input small" style="width:60%">
+    </div>
+    <button class="action-btn primary" onclick="saveStawka()">Zapisz stawkę</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 const SUPABASE_URL = 'https://gmipfhbfvorzpmpwuxfl.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtaXBmaGJmdm9yenBtcHd1eGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3NzE5NzUsImV4cCI6MjA4NzM0Nzk3NX0.vZ91Cx-kpY57rdV6Lk94tZZkqo-QfSWiEhJeHLqvKWE';
 const TABLE = 'odczyty';
-const CENA_KWH = 0.85;
 const COP_EST = 4;
 const MIESIAC_PL = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
 
@@ -579,10 +578,19 @@ const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 let allData = [], activeYearFilter = 0, currentUser = null;
 let sortCol = 'miesiac', sortDir = 'desc';
 let activeAnalView = 'compare';
+let stawkiMap = {};
+
+function getStawka(rok) {
+  return stawkiMap[rok] || 0.85;
+}
 
 // ============================================
 // SUPABASE
 // ============================================
+async function fetchStawki() {
+  const { data, error } = await sb.from('stawki').select('*');
+  if (data) data.forEach(r => stawkiMap[r.rok] = r.stawka_kwh);
+}
 async function fetchData() {
   const { data, error } = await sb.from(TABLE).select('*').order('dzien', { ascending: true });
   if (error) throw new Error(error.message);
@@ -604,6 +612,7 @@ async function deleteRow(id) {
 async function loadData() {
   setSyncStatus('syncing');
   try {
+    await fetchStawki();
     const rows = await fetchData();
     allData = rows.map(r => ({ ...r, dzien: new Date(r.dzien) }));
     setSyncStatus('ok');
@@ -631,7 +640,7 @@ function setSyncStatus(state) {
 }
 
 // ============================================
-// AUTH
+// AUTH & SETTINGS
 // ============================================
 async function initAuth() {
   const { data: { user } } = await sb.auth.getUser();
@@ -643,7 +652,10 @@ function updateAuthUI() {
   const c = document.getElementById('authContainer');
   if (currentUser) {
     const name = currentUser.user_metadata?.full_name || currentUser.email;
-    c.innerHTML = `<button class="pill-btn danger" id="logoutBtn">${name.split(' ')[0]} · Wyloguj</button>`;
+    c.innerHTML = `
+      <button class="pill-btn" onclick="openSettingsModal()">⚙️ Stawki</button>
+      <button class="pill-btn danger" id="logoutBtn">${name.split(' ')[0]} · Wyloguj</button>
+    `;
     document.getElementById('logoutBtn').addEventListener('click', signOut);
   } else {
     c.innerHTML = `<button class="pill-btn" id="loginBtn">🔐 Zaloguj</button>`;
@@ -659,6 +671,41 @@ async function signInWithGoogle() {
 async function signOut() {
   const { error } = await sb.auth.signOut();
   if (!error) { currentUser = null; updateAuthUI(); showToast('Wylogowano'); }
+}
+
+function openSettingsModal() {
+  renderStawkiList();
+  document.getElementById('modalSettingsOverlay').classList.add('open');
+}
+function closeSettingsModal(e) {
+  if (!e || e.target === document.getElementById('modalSettingsOverlay') || e.currentTarget.classList.contains('modal-close')) {
+    document.getElementById('modalSettingsOverlay').classList.remove('open');
+  }
+}
+function renderStawkiList() {
+  const html = Object.keys(stawkiMap).sort((a,b)=>b-a).map(rok => `
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+        <span>Rok ${rok}</span>
+        <strong style="font-family:var(--mono);">${stawkiMap[rok]} PLN</strong>
+    </div>
+  `).join('');
+  document.getElementById('stawkiList').innerHTML = html;
+}
+async function saveStawka() {
+  const r = parseInt(document.getElementById('newRok').value);
+  const s = parseFloat(document.getElementById('newStawka').value.replace(',','.'));
+  if(!r || !s) return showToast('Wypełnij rok i stawkę', true);
+  setSyncStatus('syncing');
+  const { error } = await sb.from('stawki').upsert({ rok: r, stawka_kwh: s }, { onConflict: 'rok' });
+  if(error) { showToast('Błąd: ' + error.message, true); setSyncStatus('err'); return; }
+  stawkiMap[r] = s;
+  showToast('Zapisano stawkę');
+  setSyncStatus('ok');
+  renderStawkiList();
+  document.getElementById('newRok').value = '';
+  document.getElementById('newStawka').value = '';
+  if(document.getElementById('page-dashboard').classList.contains('active')) renderDashboard();
+  if(document.getElementById('page-analityka').classList.contains('active')) renderAnalityka();
 }
 
 // ============================================
@@ -712,7 +759,8 @@ async function renderDashboard() {
   document.getElementById('lastStarts').textContent = last.startsMc ?? '—';
   document.getElementById('lastDaily').textContent = last.srDzien ?? '—';
   document.getElementById('dashHeat').textContent = last.kwhMc ? (last.kwhMc * COP_EST).toLocaleString() : '—';
-  document.getElementById('dashCost').textContent = last.kwhMc ? Math.round(last.kwhMc * CENA_KWH) + ' zł' : '—';
+  document.getElementById('dashCost').textContent = last.kwhMc ? Math.round(last.kwhMc * getStawka(last.rok)) + ' zł' : '—';
+  document.getElementById('dashCostUnit').textContent = `PLN @ ${getStawka(last.rok)}/kWh`;
 
   if (now.getDate() === 1) document.getElementById('notifyBanner').style.display = 'flex';
 
@@ -755,7 +803,7 @@ function renderForm() {
       <div class="calc-row"><span class="lbl">Zużycie w miesiącu</span><span class="val" style="color:var(--green)">${kwhMc} kWh</span></div>
       <div class="calc-row"><span class="lbl">Śr. dziennie</span><span class="val">${srDzien} kWh/d</span></div>
       <div class="calc-row"><span class="lbl">Ciepło (COP×4)</span><span class="val" style="color:var(--green)">${kwhMc*COP_EST} kWh</span></div>
-      <div class="calc-row"><span class="lbl">Koszt (est.)</span><span class="val" style="color:var(--orange)">${Math.round(kwhMc*CENA_KWH)} PLN</span></div>`;
+      <div class="calc-row"><span class="lbl">Koszt (est.)</span><span class="val" style="color:var(--orange)">${Math.round(kwhMc*getStawka(reportedYear))} PLN</span></div>`;
   };
 }
 
@@ -859,11 +907,12 @@ function renderAnalityka() {
 
   document.getElementById('yearStats').innerHTML = Object.entries(yearMap).sort().map(([yr, entries]) => {
     const total = entries.reduce((s, e) => s + e.kwhMc, 0);
+    const cost = entries.reduce((s, e) => s + (e.kwhMc * getStawka(e.rok)), 0);
     const max = Math.max(...entries.map(e => e.kwhMc));
     const min = Math.min(...entries.map(e => e.kwhMc));
     return `<div class="year-stat-row">
       <div><div class="year-stat-label">${yr}</div><div class="year-stat-sub">${entries.length} m-cy · min ${min} / max ${max} kWh</div></div>
-      <div><div class="year-stat-val">${total.toLocaleString()} kWh</div><div class="year-stat-sub">~${Math.round(total*CENA_KWH)} PLN</div></div>
+      <div><div class="year-stat-val">${total.toLocaleString()} kWh</div><div class="year-stat-sub">~${Math.round(cost)} PLN</div></div>
     </div>`;
   }).join('');
 
@@ -880,7 +929,6 @@ function renderAnalityka() {
     values: MIESIAC_PL.map((_, mi) => { const f = rich.find(d => d.rok == yr && new Date(d.dzien).getMonth() == mi); return f ? f.kwhMc : null; })
   })));
 
-  // Wypełnij selecty porównywarki
   const yearList = Object.keys(yearMap).sort();
   ['compareYear1','compareYear2'].forEach((id, idx) => {
     const sel = document.getElementById(id);
@@ -902,7 +950,6 @@ function renderHeatmap() {
   function heatColor(val) {
     if (val === null) return null;
     const t = (val - minV) / (maxV - minV);
-    // zimny niebieski → ciepły pomarańcz → gorący czerwony
     if (t < 0.5) {
       const r = Math.round(30 + t*2*180);
       const g = Math.round(144 + t*2*60);
@@ -919,7 +966,6 @@ function renderHeatmap() {
 
   const months = ['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
   let html = `<div class="heatmap-grid">`;
-  // nagłówki miesięcy
   html += `<div class="hm-label"></div>`;
   months.forEach(m => { html += `<div class="hm-header">${m}</div>`; });
 
@@ -940,7 +986,6 @@ function renderHeatmap() {
   html += `</div>`;
   document.getElementById('heatmapGrid').innerHTML = html;
 
-  // Legenda
   const steps = 7;
   document.getElementById('hmLegend').innerHTML = Array.from({length: steps}, (_, i) => {
     const v = minV + (maxV - minV) * i / (steps - 1);
@@ -959,7 +1004,6 @@ function openModal(rok, monthIdx) {
   document.getElementById('modalPeriod').textContent = `${rok}`;
   document.getElementById('modalTitle').textContent = `${entry.miesiac} ${entry.rok}`;
 
-  // Pozycja tego miesiąca wśród wszystkich
   const allSorted = [...rich].sort((a,b) => b.kwhMc - a.kwhMc);
   const rank = allSorted.findIndex(d => d.rok == rok && new Date(d.dzien).getMonth() == monthIdx) + 1;
   const allCount = allSorted.length;
@@ -980,7 +1024,7 @@ function openModal(rok, monthIdx) {
     </div>
     <div class="modal-stat">
       <div class="modal-stat-label">Koszt (est.)</div>
-      <div class="modal-stat-val">${Math.round(entry.kwhMc * CENA_KWH)} <span style="font-size:13px;color:var(--text2)">PLN</span></div>
+      <div class="modal-stat-val">${Math.round(entry.kwhMc * getStawka(entry.rok))} <span style="font-size:13px;color:var(--text2)">PLN</span></div>
     </div>
     <div class="modal-stat">
       <div class="modal-stat-label">Ranking</div>
@@ -993,7 +1037,6 @@ function openModal(rok, monthIdx) {
       </div>
     </div>`;
 
-  // Porównanie tego miesiąca w różnych latach
   const sameMonthEntries = rich.filter(d => new Date(d.dzien).getMonth() === monthIdx).sort((a,b) => a.rok - b.rok);
   const maxSame = Math.max(...sameMonthEntries.map(d => d.kwhMc));
   const fillColors = ['rgba(100,120,200','rgba(79,195,247','rgba(77,208,160','rgba(255,179,71','rgba(200,100,255'];
@@ -1013,7 +1056,6 @@ function openModal(rok, monthIdx) {
     </div>`;
   });
 
-  // Badge rok-do-roku
   if (sameMonthEntries.length >= 2) {
     const prevYear = sameMonthEntries.find(d => d.rok == rok - 1);
     if (prevYear) {
@@ -1050,6 +1092,8 @@ function renderVersus() {
   const total2 = data2.filter(v => v !== null).reduce((s,v) => s+v, 0);
   const months1 = data1.filter(v => v !== null).length;
   const months2 = data2.filter(v => v !== null).length;
+  const cost1 = total1 * getStawka(yr1);
+  const cost2 = total2 * getStawka(yr2);
 
   const diff = total2 - total1;
   const diffPct = total1 > 0 ? Math.round(diff / total1 * 100) : 0;
@@ -1064,19 +1108,17 @@ function renderVersus() {
       <div class="compare-card">
         <div class="compare-card-year">${yr1}</div>
         <div class="compare-card-val" style="color:var(--accent)">${total1.toLocaleString()} kWh</div>
-        <div class="compare-card-sub">${months1} m-cy · ~${Math.round(total1*CENA_KWH)} PLN</div>
+        <div class="compare-card-sub">${months1} m-cy · ~${Math.round(cost1)} PLN</div>
       </div>
       <div class="compare-card">
         <div class="compare-card-year">${yr2}</div>
         <div class="compare-card-val" style="color:var(--green)">${total2.toLocaleString()} kWh</div>
-        <div class="compare-card-sub">${months2} m-cy · ~${Math.round(total2*CENA_KWH)} PLN</div>
+        <div class="compare-card-sub">${months2} m-cy · ~${Math.round(cost2)} PLN</div>
       </div>
     </div>`;
 
   document.getElementById('compareResult').innerHTML = html;
 
-  // Wykres nakładany
-  const months = ['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
   setTimeout(() => {
     drawGrouped('versusChart', [
       { year: yr1, color: 'rgba(79,195,247,0.75)', values: data1 },
@@ -1094,7 +1136,6 @@ function renderForecast() {
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth();
 
-  // Dla każdego miesiąca oblicz średnią historyczną z poprzednich lat
   const monthAvgs = MIESIAC_PL.map((_, mi) => {
     const hist = rich.filter(d => new Date(d.dzien).getMonth() === mi && d.rok < currentYear);
     if (hist.length === 0) return null;
@@ -1105,10 +1146,7 @@ function renderForecast() {
     return { avg, min, max, stddev, count: hist.length };
   });
 
-  // Znajdź już istniejące dane w bieżącym roku
   const thisYearData = rich.filter(d => d.rok === currentYear);
-
-  // Kolejne 6 miesięcy do prognozy
   const forecastMonths = [];
   for (let i = 0; i < 6; i++) {
     const mi = (currentMonth + i) % 12;
@@ -1120,6 +1158,7 @@ function renderForecast() {
   const thisYearTotal = thisYearData.reduce((s,d) => s+d.kwhMc, 0);
   const forecastTotal = forecastMonths.filter(f => !f.existing && f.avg).reduce((s,f) => s + f.avg.avg, 0);
   const projectedTotal = thisYearTotal + forecastTotal;
+  const projectedCost = projectedTotal * getStawka(currentYear);
 
   let html = `
     <div class="forecast-header">
@@ -1155,13 +1194,12 @@ function renderForecast() {
     <div style="margin-top:16px;padding:14px;background:rgba(79,195,247,0.06);border-radius:12px;border-left:3px solid var(--accent);">
       <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Projekcja ${currentYear}</div>
       <div style="font-family:var(--mono);font-size:20px;font-weight:500;color:var(--accent)">${projectedTotal.toLocaleString()} kWh</div>
-      <div style="font-size:11px;color:var(--text3);margin-top:2px;">${thisYearTotal} kWh rzeczywiste + ${forecastTotal} kWh prognoza · ~${Math.round(projectedTotal*CENA_KWH)} PLN</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:2px;">${thisYearTotal} kWh rzeczywiste + ${forecastTotal} kWh prognoza · ~${Math.round(projectedCost)} PLN</div>
     </div>
     <div class="forecast-disclaimer">Prognoza oparta na średniej historycznej. Rzeczywiste zużycie zależy od warunków pogodowych i użytkowania.</div>`;
 
   document.getElementById('forecastContent').innerHTML = html;
 
-  // Wykres prognozy
   setTimeout(() => {
     const labels = forecastMonths.map(f => MIESIAC_PL[f.mi].slice(0,3));
     const realVals = forecastMonths.map(f => f.existing ? f.existing.kwhMc : null);
@@ -1269,7 +1307,6 @@ function drawForecastChart(id, labels, realVals, predVals, minVals, maxVals) {
   labels.forEach((lbl, i) => {
     const cx = pad.left + i * gap + gap/2;
 
-    // Zakres min-max (jeśli prognoza)
     if (predVals[i] !== null && minVals[i] !== null && maxVals[i] !== null) {
       const yMin = pad.top + ch - (minVals[i]/max)*ch;
       const yMax = pad.top + ch - (maxVals[i]/max)*ch;
@@ -1277,7 +1314,6 @@ function drawForecastChart(id, labels, realVals, predVals, minVals, maxVals) {
       ctx.fillRect(cx - bw/2 - 4, yMax, bw + 8, yMin - yMax);
     }
 
-    // Słupek rzeczywisty
     if (realVals[i] !== null) {
       const bh = (realVals[i]/max)*ch, y = pad.top + ch - bh;
       const grad = ctx.createLinearGradient(0, y, 0, y+bh);
@@ -1287,7 +1323,6 @@ function drawForecastChart(id, labels, realVals, predVals, minVals, maxVals) {
       ctx.beginPath(); ctx.roundRect(cx - bw/2, y, bw, bh, [4,4,0,0]); ctx.fill();
     }
 
-    // Słupek prognozowany (przerywany efekt)
     if (predVals[i] !== null) {
       const bh = (predVals[i]/max)*ch, y = pad.top + ch - bh;
       const grad = ctx.createLinearGradient(0, y, 0, y+bh);
@@ -1306,7 +1341,6 @@ function drawForecastChart(id, labels, realVals, predVals, minVals, maxVals) {
     ctx.fillText(lbl, cx, H - 8);
   });
 
-  // Legenda
   ctx.fillStyle = 'rgba(77,208,160,0.8)'; ctx.fillRect(pad.left, H - 20, 10, 6);
   ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.font = '9px DM Mono,monospace'; ctx.textAlign = 'left';
   ctx.fillText('Rzeczywiste', pad.left + 14, H - 14);
