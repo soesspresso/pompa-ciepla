@@ -14,7 +14,7 @@ jobs:
         run: |
           # Dodatkowy jitter: opóźnia wykonanie losowo od 0 do 5 minut.
           # Dzięki temu zapytanie nigdy nie leci dokładnie w tej samej sekundzie.
-          sleep $((RANDOM % 300))
+          sleep $((RANDOM % 120))
           curl -s \
             -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}" \
