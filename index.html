@@ -86,7 +86,7 @@ body.light .orb3 { background: #90c8f0; opacity: 0.5; }
 .header-title { font-size: 24px; font-weight: 600; letter-spacing: -0.5px; }
 .header-title em { color: var(--accent); font-style: normal; }
 .header-date { font-size: 11px; color: var(--text2); margin-top: 2px; }
-.header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end;}
 .pill-btn {
   background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 40px;
   backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
@@ -221,7 +221,7 @@ tbody tr:last-child td { border-bottom: none; }
 .anal-view.active { display: block; }
 
 /* ============================================
-   HEATMAP
+   HEATMAP — koncepcja 2
    ============================================ */
 .heatmap-grid { display: grid; grid-template-columns: 36px repeat(12,1fr); gap: 3px; margin-top: 10px; }
 .hm-cell {
@@ -242,7 +242,7 @@ tbody tr:last-child td { border-bottom: none; }
 .hm-hint { font-size: 11px; color: var(--text2); margin-bottom: 12px; }
 
 /* ============================================
-   MODAL
+   MODAL — koncepcja 1 drill-down
    ============================================ */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 300;
@@ -288,7 +288,7 @@ body.light .modal-stat { background: rgba(0,0,0,0.05); }
 .modal-badge.same { background: rgba(255,255,255,0.08); color: var(--text2); }
 
 /* ============================================
-   PORÓWNYWARKA
+   PORÓWNYWARKA — koncepcja 3
    ============================================ */
 .compare-selectors { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
 .compare-select {
@@ -298,6 +298,7 @@ body.light .modal-stat { background: rgba(0,0,0,0.05); }
   color: var(--text); font-family: var(--sans); font-size: 13px;
   outline: none; cursor: pointer; appearance: none;
 }
+body.light .compare-select { background: rgba(0,0,0,0.05); }
 .compare-select:focus { border-color: var(--accent); }
 .compare-vs { display: flex; align-items: center; font-family: var(--mono); font-size: 12px; color: var(--text3); padding: 0 4px; }
 .compare-result { margin-top: 4px; }
@@ -313,7 +314,7 @@ body.light .compare-card { background: rgba(0,0,0,0.05); }
 .compare-delta.worse { background: rgba(255,107,107,0.1); color: var(--danger); border: 1px solid rgba(255,107,107,0.2); }
 
 /* ============================================
-   PROGNOZA
+   PROGNOZA — koncepcja 4
    ============================================ */
 .forecast-wrap { }
 .forecast-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 16px; }
@@ -553,13 +554,21 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
 <div class="modal-overlay" id="modalSettingsOverlay" onclick="closeSettingsModal(event)">
   <div class="modal" style="position:relative;">
     <button class="modal-close" onclick="closeSettingsModal()">✕</button>
-    <div class="modal-title" style="font-size:20px;">Stawki prądu (PLN/kWh)</div>
-    <div id="stawkiList" style="margin-bottom:16px;"></div>
-    <div style="display:flex;gap:10px;margin-bottom:16px;">
-      <input type="number" id="newRok" placeholder="Rok" class="field-input small" style="width:40%">
-      <input type="number" id="newStawka" placeholder="Stawka" step="0.01" class="field-input small" style="width:60%">
+    <div class="modal-title" style="font-size:20px;">Edytuj stawkę prądu</div>
+    
+    <div class="field">
+      <label class="field-label">Wybierz rok</label>
+      <select id="selectRok" class="compare-select" style="width:100%; margin-bottom:12px;" onchange="updateRateInput()">
+        </select>
     </div>
-    <button class="action-btn primary" onclick="saveStawka()">Zapisz stawkę</button>
+
+    <div class="field">
+      <label class="field-label">Stawka (PLN/kWh)</label>
+      <input type="number" id="newStawka" placeholder="0.85" step="0.0001" class="field-input">
+      <div class="field-hint">Domyślnie: 0.85 PLN</div>
+    </div>
+
+    <button class="action-btn primary" onclick="saveStawka()">Zapisz zmiany</button>
   </div>
 </div>
 
@@ -588,19 +597,23 @@ function getStawka(rok) {
 // SUPABASE
 // ============================================
 async function fetchStawki() {
-  const { data, error } = await sb.from('stawki').select('*');
+  const { data } = await sb.from('stawki').select('*');
+  stawkiMap = {};
   if (data) data.forEach(r => stawkiMap[r.rok] = r.stawka_kwh);
 }
+
 async function fetchData() {
   const { data, error } = await sb.from(TABLE).select('*').order('dzien', { ascending: true });
   if (error) throw new Error(error.message);
   return data;
 }
+
 async function insertRow(entry) {
   const { data, error } = await sb.from(TABLE).insert(entry).select();
   if (error) throw new Error(error.message);
   return data;
 }
+
 async function deleteRow(id) {
   const { error } = await sb.from(TABLE).delete().eq('id', id);
   if (error) throw new Error(error.message);
@@ -674,38 +687,48 @@ async function signOut() {
 }
 
 function openSettingsModal() {
-  renderStawkiList();
+  const select = document.getElementById('selectRok');
+  const years = [2022, 2023, 2024, 2025, 2026, 2027, 2028];
+  select.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
+  
+  const currentYear = new Date().getFullYear();
+  if (years.includes(currentYear)) select.value = currentYear;
+  
+  updateRateInput();
   document.getElementById('modalSettingsOverlay').classList.add('open');
 }
+
+function updateRateInput() {
+  const selectedYear = document.getElementById('selectRok').value;
+  const input = document.getElementById('newStawka');
+  input.value = getStawka(selectedYear);
+}
+
+async function saveStawka() {
+  const r = parseInt(document.getElementById('selectRok').value);
+  const s = parseFloat(document.getElementById('newStawka').value);
+  if(!r || isNaN(s)) return showToast('Błędna wartość', true);
+
+  setSyncStatus('syncing');
+  const { error } = await sb.from('stawki').upsert({ rok: r, stawka_kwh: s }, { onConflict: 'rok' });
+  
+  if(error) {
+    showToast('Błąd: ' + error.message, true);
+    setSyncStatus('err');
+  } else {
+    stawkiMap[r] = s;
+    showToast('Zaktualizowano stawkę');
+    setSyncStatus('ok');
+    closeSettingsModal();
+    if(document.getElementById('page-dashboard').classList.contains('active')) renderDashboard();
+    if(document.getElementById('page-analityka').classList.contains('active')) renderAnalityka();
+  }
+}
+
 function closeSettingsModal(e) {
   if (!e || e.target === document.getElementById('modalSettingsOverlay') || e.currentTarget.classList.contains('modal-close')) {
     document.getElementById('modalSettingsOverlay').classList.remove('open');
   }
-}
-function renderStawkiList() {
-  const html = Object.keys(stawkiMap).sort((a,b)=>b-a).map(rok => `
-    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
-        <span>Rok ${rok}</span>
-        <strong style="font-family:var(--mono);">${stawkiMap[rok]} PLN</strong>
-    </div>
-  `).join('');
-  document.getElementById('stawkiList').innerHTML = html;
-}
-async function saveStawka() {
-  const r = parseInt(document.getElementById('newRok').value);
-  const s = parseFloat(document.getElementById('newStawka').value.replace(',','.'));
-  if(!r || !s) return showToast('Wypełnij rok i stawkę', true);
-  setSyncStatus('syncing');
-  const { error } = await sb.from('stawki').upsert({ rok: r, stawka_kwh: s }, { onConflict: 'rok' });
-  if(error) { showToast('Błąd: ' + error.message, true); setSyncStatus('err'); return; }
-  stawkiMap[r] = s;
-  showToast('Zapisano stawkę');
-  setSyncStatus('ok');
-  renderStawkiList();
-  document.getElementById('newRok').value = '';
-  document.getElementById('newStawka').value = '';
-  if(document.getElementById('page-dashboard').classList.contains('active')) renderDashboard();
-  if(document.getElementById('page-analityka').classList.contains('active')) renderAnalityka();
 }
 
 // ============================================
@@ -752,6 +775,7 @@ async function renderDashboard() {
 
   const rich = enrichData(allData);
   const last = rich[rich.length - 1];
+  const stawka = getStawka(last.rok);
 
   document.getElementById('lastReadLabel').textContent = `${last.miesiac} ${last.rok}`;
   document.getElementById('lastKwh').textContent = last.stan.toLocaleString();
@@ -759,8 +783,8 @@ async function renderDashboard() {
   document.getElementById('lastStarts').textContent = last.startsMc ?? '—';
   document.getElementById('lastDaily').textContent = last.srDzien ?? '—';
   document.getElementById('dashHeat').textContent = last.kwhMc ? (last.kwhMc * COP_EST).toLocaleString() : '—';
-  document.getElementById('dashCost').textContent = last.kwhMc ? Math.round(last.kwhMc * getStawka(last.rok)) + ' zł' : '—';
-  document.getElementById('dashCostUnit').textContent = `PLN @ ${getStawka(last.rok)}/kWh`;
+  document.getElementById('dashCost').textContent = last.kwhMc ? Math.round(last.kwhMc * stawka) + ' zł' : '—';
+  document.getElementById('dashCostUnit').textContent = `PLN @ ${stawka}/kWh`;
 
   if (now.getDate() === 1) document.getElementById('notifyBanner').style.display = 'flex';
 
@@ -815,11 +839,22 @@ async function saveEntry() {
   const startsVal = document.getElementById('inputStarts').value;
   const note = document.getElementById('inputNote').value;
   if (!kwhVal || kwhVal <= last.stan) { showToast('⚠ Stan musi być > ' + last.stan, true); return; }
+  
   const readingDate = new Date(last.dzien);
   readingDate.setMonth(readingDate.getMonth() + 1);
   const reportedMonthIdx = readingDate.getMonth() - 1 < 0 ? 11 : readingDate.getMonth() - 1;
   const reportedYear = readingDate.getMonth() === 0 ? readingDate.getFullYear() - 1 : readingDate.getFullYear();
-  const entry = { rok: reportedYear, miesiac: MIESIAC_PL[reportedMonthIdx], dzien: readingDate.toISOString().slice(0,10), stan: kwhVal, starts: startsVal ? parseInt(startsVal) : null, note: note || null };
+  
+  const entry = { 
+    rok: reportedYear, 
+    miesiac: MIESIAC_PL[reportedMonthIdx], 
+    dzien: readingDate.toISOString().slice(0,10), 
+    stan: kwhVal, 
+    starts: startsVal ? parseInt(startsVal) : null, 
+    note: note || null,
+    user_id: currentUser.id
+  };
+  
   setSyncStatus('syncing');
   try {
     await insertRow(entry);
@@ -1092,6 +1127,7 @@ function renderVersus() {
   const total2 = data2.filter(v => v !== null).reduce((s,v) => s+v, 0);
   const months1 = data1.filter(v => v !== null).length;
   const months2 = data2.filter(v => v !== null).length;
+
   const cost1 = total1 * getStawka(yr1);
   const cost2 = total2 * getStawka(yr2);
 
