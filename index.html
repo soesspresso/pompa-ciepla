@@ -71,8 +71,8 @@ body.light .orb3 { background: #90c8f0; opacity: 0.5; }
   33%{transform:translate(30px,-20px) scale(1.05);}
   66%{transform:translate(-20px,30px) scale(0.95);}
 }
-.app { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 16px 100px; }
-@media (min-width: 768px) { .app { max-width: 960px; padding: 0 32px 60px; } }
+.app { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 16px 150px; }
+@media (min-width: 768px) { .app { max-width: 960px; padding: 0 32px 150px; } }
 .glass {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
@@ -242,7 +242,7 @@ tbody tr:last-child td { border-bottom: none; }
 .hm-hint { font-size: 11px; color: var(--text2); margin-bottom: 12px; }
 
 /* ============================================
-   MODAL (Wspólny)
+   MODAL
    ============================================ */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 300;
@@ -329,6 +329,26 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
 .forecast-month-val { font-family: var(--mono); font-size: 16px; font-weight: 500; color: var(--accent); }
 .forecast-month-range { font-size: 10px; color: var(--text3); margin-top: 2px; }
 .forecast-disclaimer { font-size: 10px; color: var(--text3); margin-top: 12px; font-style: italic; }
+
+/* DEBUG PANEL */
+#debugPanel {
+    position: fixed;
+    bottom: 70px;
+    left: 0;
+    right: 0;
+    background: rgba(20, 0, 0, 0.95);
+    color: #ff6b6b;
+    padding: 15px;
+    font-family: var(--mono);
+    font-size: 11px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 999;
+    border-top: 2px solid var(--danger);
+    display: none;
+}
+#debugPanel div { margin-bottom: 8px; border-bottom: 1px solid rgba(255,107,107,0.2); padding-bottom: 8px; }
+#debugPanel .d-time { color: var(--text3); margin-right: 8px; }
 </style>
 </head>
 <body>
@@ -558,8 +578,7 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
     
     <div class="field">
       <label class="field-label">Wybierz rok</label>
-      <select id="selectRok" class="compare-select" style="width:100%; margin-bottom:12px;" onchange="updateRateInput()">
-      </select>
+      <select id="selectRok" class="compare-select" style="width:100%; margin-bottom:12px;" onchange="updateRateInput()"></select>
     </div>
 
     <div class="field">
@@ -573,6 +592,8 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
 </div>
 
 <div class="toast" id="toast"></div>
+
+<div id="debugPanel"></div>
 
 <script>
 const SUPABASE_URL = 'https://gmipfhbfvorzpmpwuxfl.supabase.co';
@@ -589,38 +610,86 @@ let sortCol = 'miesiac', sortDir = 'desc';
 let activeAnalView = 'compare';
 let stawkiMap = {};
 
+// ============================================
+// SYSTEM LOGOWANIA BŁĘDÓW (DO DB I UI)
+// ============================================
+async function logError(akcja, errObj, detale = {}) {
+  console.error(`[${akcja}]`, errObj);
+  const msg = errObj.message || JSON.stringify(errObj);
+  
+  // 1. Pokaż w UI na wypadek gdyby baza padła
+  const panel = document.getElementById('debugPanel');
+  panel.style.display = 'block';
+  const time = new Date().toLocaleTimeString();
+  panel.innerHTML += `<div><span class="d-time">${time}</span><strong>[${akcja}]</strong> ${msg} <br><small>${JSON.stringify(detale)}</small></div>`;
+  
+  // 2. Wyślij do bazy (tylko jeśli jest zalogowany użytkownik, bo inaczej odrzuci nas RLS)
+  if (currentUser) {
+    try {
+      await sb.from('app_logs').insert({
+        akcja: akcja,
+        komunikat: msg,
+        detale: detale,
+        user_id: currentUser.id
+      });
+    } catch(dbErr) {
+      console.error("Błąd zapisu logu do bazy:", dbErr);
+    }
+  }
+}
+
 function getStawka(rok) {
   return stawkiMap[rok] || 0.85;
 }
 
 // ============================================
-// SUPABASE
+// SUPABASE (Z OBSŁUGĄ BŁĘDÓW)
 // ============================================
 async function fetchStawki() {
-  const { data } = await sb.from('stawki').select('*');
-  stawkiMap = {};
-  if (data) data.forEach(r => stawkiMap[r.rok] = r.stawka_kwh);
+  try {
+    const { data, error } = await sb.from('stawki').select('*');
+    if (error) throw error;
+    stawkiMap = {};
+    if (data) data.forEach(r => stawkiMap[r.rok] = r.stawka_kwh);
+  } catch(err) {
+    await logError('fetchStawki', err);
+  }
 }
 
 async function fetchData() {
-  const { data, error } = await sb.from(TABLE).select('*').order('dzien', { ascending: true });
-  if (error) throw new Error(error.message);
-  return data;
+  try {
+    const { data, error } = await sb.from(TABLE).select('*').order('dzien', { ascending: true });
+    if (error) throw error;
+    return data;
+  } catch(err) {
+    await logError('fetchData', err);
+    throw err;
+  }
 }
 
 async function insertRow(entry) {
-  const { data, error } = await sb.from(TABLE).insert(entry).select();
-  if (error) throw new Error(error.message);
-  return data;
+  try {
+    const { data, error } = await sb.from(TABLE).insert(entry).select();
+    if (error) throw error;
+    return data;
+  } catch(err) {
+    await logError('insertRow', err, entry);
+    throw err;
+  }
 }
 
 async function deleteRow(id) {
-  const { error } = await sb.from(TABLE).delete().eq('id', id);
-  if (error) throw new Error(error.message);
+  try {
+    const { error } = await sb.from(TABLE).delete().eq('id', id);
+    if (error) throw error;
+  } catch(err) {
+    await logError('deleteRow', err, { id });
+    throw err;
+  }
 }
 
 // ============================================
-// DATA
+// DATA LOAD
 // ============================================
 async function loadData() {
   setSyncStatus('syncing');
@@ -656,15 +725,20 @@ function setSyncStatus(state) {
 // AUTH & SETTINGS
 // ============================================
 async function initAuth() {
-  const { data: { user } } = await sb.auth.getUser();
-  currentUser = user;
-  updateAuthUI();
+  try {
+    const { data: { user }, error } = await sb.auth.getUser();
+    if (error && error.message !== 'Auth session missing!') throw error;
+    currentUser = user;
+    updateAuthUI();
+  } catch (err) {
+    await logError('initAuth', err);
+  }
 }
 
 function updateAuthUI() {
   const c = document.getElementById('authContainer');
   if (currentUser) {
-    const name = currentUser.user_metadata?.full_name || currentUser.email;
+    const name = currentUser.user_metadata?.full_name || currentUser.email || 'User';
     c.innerHTML = `
       <button class="pill-btn" onclick="openSettingsModal()">⚙️ Stawki</button>
       <button class="pill-btn danger" id="logoutBtn">${name.split(' ')[0]} · Wyloguj</button>
@@ -677,13 +751,25 @@ function updateAuthUI() {
 }
 
 async function signInWithGoogle() {
-  const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
-  if (error) showToast('⚠ ' + error.message, true);
+  try {
+    const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+    if (error) throw error;
+  } catch(err) {
+    await logError('signInWithGoogle', err);
+    showToast('⚠ ' + err.message, true);
+  }
 }
 
 async function signOut() {
-  const { error } = await sb.auth.signOut();
-  if (!error) { currentUser = null; updateAuthUI(); showToast('Wylogowano'); }
+  try {
+    const { error } = await sb.auth.signOut();
+    if (error) throw error;
+    currentUser = null; 
+    updateAuthUI(); 
+    showToast('Wylogowano');
+  } catch(err) {
+    await logError('signOut', err);
+  }
 }
 
 function openSettingsModal() {
@@ -705,26 +791,27 @@ function updateRateInput() {
 }
 
 async function saveStawka() {
+  if (!currentUser) return showToast('Zaloguj się', true);
   const r = parseInt(document.getElementById('selectRok').value);
   const s = parseFloat(document.getElementById('newStawka').value);
   if(!r || isNaN(s)) return showToast('Błędna wartość', true);
 
   setSyncStatus('syncing');
-  const { error } = await sb.from('stawki').upsert(
-    { rok: r, stawka_kwh: s, user_id: currentUser.id }, 
-    { onConflict: 'rok, user_id' }
-  );
-  
-  if(error) {
-    showToast('Błąd: ' + error.message, true);
-    setSyncStatus('err');
-  } else {
+  try {
+    const payload = { rok: r, stawka_kwh: s, user_id: currentUser.id };
+    const { error } = await sb.from('stawki').upsert(payload, { onConflict: 'rok, user_id' });
+    if(error) throw error;
+    
     stawkiMap[r] = s;
     showToast('Zaktualizowano stawkę');
     setSyncStatus('ok');
     closeSettingsModal();
     if(document.getElementById('page-dashboard').classList.contains('active')) renderDashboard();
     if(document.getElementById('page-analityka').classList.contains('active')) renderAnalityka();
+  } catch(err) {
+    await logError('saveStawka', err, {rok: r, stawka: s});
+    showToast('Błąd: ' + err.message, true);
+    setSyncStatus('err');
   }
 }
 
@@ -866,7 +953,7 @@ async function saveEntry() {
     document.getElementById('calcPreview').style.display = 'none';
     setTimeout(() => showPage('dashboard'), 700);
   } catch(e) {
-    showToast('⚠ Błąd: ' + e.message, true);
+    showToast('⚠ Błąd zapisu', true);
     setSyncStatus('err');
   }
 }
@@ -956,9 +1043,11 @@ function renderAnalityka() {
 
   const sorted = [...rich].sort((a,b) => b.kwhMc - a.kwhMc);
   const r1 = sorted[0], r2 = sorted[sorted.length-1];
-  document.getElementById('records').innerHTML = `
-    <div class="record-row"><div class="record-icon">🔴</div><div class="record-info"><div class="record-title">Rekord MAX · ${r1.miesiac} ${r1.rok}</div><div class="record-val" style="color:var(--danger)">${r1.kwhMc} kWh</div></div></div>
-    <div class="record-row"><div class="record-icon">🟢</div><div class="record-info"><div class="record-title">Rekord MIN · ${r2.miesiac} ${r2.rok}</div><div class="record-val" style="color:var(--green)">${r2.kwhMc} kWh</div></div></div>`;
+  if(r1 && r2) {
+    document.getElementById('records').innerHTML = `
+      <div class="record-row"><div class="record-icon">🔴</div><div class="record-info"><div class="record-title">Rekord MAX · ${r1.miesiac} ${r1.rok}</div><div class="record-val" style="color:var(--danger)">${r1.kwhMc} kWh</div></div></div>
+      <div class="record-row"><div class="record-icon">🟢</div><div class="record-info"><div class="record-title">Rekord MIN · ${r2.miesiac} ${r2.rok}</div><div class="record-val" style="color:var(--green)">${r2.kwhMc} kWh</div></div></div>`;
+  }
 
   const years = [...new Set(rich.map(d => d.rok))];
   const colors = ['rgba(100,120,220,0.75)','rgba(79,195,247,0.75)','rgba(77,208,160,0.75)','rgba(255,179,71,0.75)','rgba(200,100,255,0.7)'];
@@ -971,7 +1060,7 @@ function renderAnalityka() {
   ['compareYear1','compareYear2'].forEach((id, idx) => {
     const sel = document.getElementById(id);
     sel.innerHTML = yearList.map(y => `<option value="${y}">${y}</option>`).join('');
-    sel.value = yearList[idx < yearList.length ? idx : 0];
+    if(yearList.length > 0) sel.value = yearList[idx < yearList.length ? idx : 0];
   });
   if (yearList.length > 1) document.getElementById('compareYear2').value = yearList[yearList.length - 1];
 }
@@ -981,12 +1070,14 @@ function renderAnalityka() {
 // ============================================
 function renderHeatmap() {
   const rich = enrichData(allData).filter(d => d.kwhMc !== null);
+  if(rich.length === 0) return;
   const years = [...new Set(rich.map(d => d.rok))].sort();
   const allVals = rich.map(d => d.kwhMc);
   const minV = Math.min(...allVals), maxV = Math.max(...allVals);
 
   function heatColor(val) {
     if (val === null) return null;
+    if (minV === maxV) return `rgb(30,144,220)`;
     const t = (val - minV) / (maxV - minV);
     if (t < 0.5) {
       const r = Math.round(30 + t*2*180);
@@ -1013,7 +1104,8 @@ function renderHeatmap() {
       const entry = rich.find(d => d.rok == yr && new Date(d.dzien).getMonth() == mi);
       if (entry) {
         const col = heatColor(entry.kwhMc);
-        const opacity = 0.3 + ((entry.kwhMc - minV) / (maxV - minV)) * 0.7;
+        let opacity = 0.3;
+        if(maxV !== minV) opacity = 0.3 + ((entry.kwhMc - minV) / (maxV - minV)) * 0.7;
         html += `<div class="hm-cell" style="background:${col};opacity:${opacity.toFixed(2)};"
           onclick="openModal(${yr},${mi})" title="${entry.miesiac} ${yr}: ${entry.kwhMc} kWh"></div>`;
       } else {
@@ -1026,7 +1118,7 @@ function renderHeatmap() {
 
   const steps = 7;
   document.getElementById('hmLegend').innerHTML = Array.from({length: steps}, (_, i) => {
-    const v = minV + (maxV - minV) * i / (steps - 1);
+    const v = minV + (maxV - minV) * i / (steps - 1 || 1);
     return `<div class="hm-legend-cell" style="background:${heatColor(v)};opacity:${(0.3 + i/steps*0.7).toFixed(2)};"></div>`;
   }).join('');
 }
@@ -1045,7 +1137,7 @@ function openModal(rok, monthIdx) {
   const allSorted = [...rich].sort((a,b) => b.kwhMc - a.kwhMc);
   const rank = allSorted.findIndex(d => d.rok == rok && new Date(d.dzien).getMonth() == monthIdx) + 1;
   const allCount = allSorted.length;
-  const avgAll = Math.round(rich.reduce((s,d) => s + d.kwhMc, 0) / allCount);
+  const avgAll = Math.round(rich.reduce((s,d) => s + d.kwhMc, 0) / (allCount || 1));
 
   document.getElementById('modalStats').innerHTML = `
     <div class="modal-stat">
@@ -1081,7 +1173,8 @@ function openModal(rok, monthIdx) {
 
   let compareHtml = `<div class="modal-compare-title">${MIESIAC_PL[monthIdx]} w kolejnych latach</div>`;
   sameMonthEntries.forEach((d, i) => {
-    const pct = Math.round(d.kwhMc / maxSame * 100);
+    let pct = 0;
+    if(maxSame > 0) pct = Math.round(d.kwhMc / maxSame * 100);
     const isThis = d.rok == rok;
     const col = fillColors[i % fillColors.length];
     compareHtml += `<div class="modal-compare-row">
@@ -1098,7 +1191,8 @@ function openModal(rok, monthIdx) {
     const prevYear = sameMonthEntries.find(d => d.rok == rok - 1);
     if (prevYear) {
       const diff = entry.kwhMc - prevYear.kwhMc;
-      const pct = Math.round(diff / prevYear.kwhMc * 100);
+      let pct = 0;
+      if(prevYear.kwhMc > 0) pct = Math.round(diff / prevYear.kwhMc * 100);
       const cls = diff > 0 ? 'up' : 'down';
       const arrow = diff > 0 ? '↑' : '↓';
       compareHtml += `<div class="modal-badge ${cls}">${arrow} ${Math.abs(pct)}% vs ${rok-1} (${diff > 0 ? '+' : ''}${diff} kWh)</div>`;
@@ -1119,8 +1213,11 @@ function closeModal(e) {
 // KONCEPCJA 3 — PORÓWNYWARKA LAT
 // ============================================
 function renderVersus() {
-  const yr1 = parseInt(document.getElementById('compareYear1').value);
-  const yr2 = parseInt(document.getElementById('compareYear2').value);
+  const y1el = document.getElementById('compareYear1');
+  const y2el = document.getElementById('compareYear2');
+  if(!y1el.value || !y2el.value) return;
+  const yr1 = parseInt(y1el.value);
+  const yr2 = parseInt(y2el.value);
   const rich = enrichData(allData).filter(d => d.kwhMc !== null);
 
   const data1 = MIESIAC_PL.map((_, mi) => { const f = rich.find(d => d.rok == yr1 && new Date(d.dzien).getMonth() == mi); return f ? f.kwhMc : null; });
@@ -1259,8 +1356,9 @@ function drawBars(id, labels, values, color) {
   canvas.width = W; canvas.height = H;
   const pad = { top: 10, right: 10, bottom: 36, left: 38 };
   const cw = W - pad.left - pad.right, ch = H - pad.top - pad.bottom;
-  const max = Math.max(...values) * 1.12;
-  const gap = cw / values.length, bw = gap * 0.55;
+  let max = Math.max(...values) * 1.12;
+  if(max <= 0) max = 100;
+  const gap = cw / labels.length, bw = gap * 0.55;
   ctx.clearRect(0, 0, W, H);
   for (let i = 0; i <= 4; i++) {
     const y = pad.top + ch * (1 - i/4);
@@ -1270,6 +1368,7 @@ function drawBars(id, labels, values, color) {
     ctx.fillText(Math.round(max * i/4), pad.left - 5, y + 3);
   }
   values.forEach((v, i) => {
+    if(v === null) return;
     const x = pad.left + i * gap + gap/2 - bw/2, bh = (v/max) * ch, y = pad.top + ch - bh;
     const grad = ctx.createLinearGradient(0, y, 0, y + bh);
     grad.addColorStop(0, color); grad.addColorStop(1, color.replace('0.8','0.2'));
@@ -1288,6 +1387,7 @@ function drawGrouped(id, datasets) {
   const pad = { top: 16, right: 10, bottom: 48, left: 38 };
   const cw = W - pad.left - pad.right, ch = H - pad.top - pad.bottom;
   const months = ['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
+  if(datasets.length === 0) return;
   const nMonths = datasets[0].values.length;
   const allVals = datasets.flatMap(d => d.values.filter(v => v !== null));
   if (!allVals.length) return;
