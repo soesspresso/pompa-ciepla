@@ -4,6 +4,8 @@ on:
     # Pseudo-losowy harmonogram symulujący ruch człowieka
     # Skrypt odpali się w różne dni miesiąca o różnych godzinach (odstępy 3-5 dni)
     - cron: '14 7 2,9,18,26 * *'   # Rano (07:14) w wybrane dni
+    - cron: '47 7 2,9,18,26 * *'   # Rano (07:14) w wybrane dni
+    - cron: '12 16 5,14,22,29 * *' # Po południu (16:42) w inne dni
     - cron: '42 16 5,14,22,29 * *' # Po południu (16:42) w inne dni
   workflow_dispatch:
 jobs:
