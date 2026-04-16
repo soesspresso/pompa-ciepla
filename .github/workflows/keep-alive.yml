@@ -1,21 +1,20 @@
 name: Keep Supabase Active
-
 on:
   schedule:
-    # Co ~4 dni o różnych godzinach - bezpieczny margines przed limitem 7 dni Supabase
-    - cron: '23 9  1,3,5,9,13,17,18,19,21,25,26,29 * *'   # co 4 dni, 9:23
-    - cron: '51 14 2,3,7,11,15,19,20,23,27    * *'   # co 4 dni, 14:51
+    # Pseudo-losowy harmonogram symulujący ruch człowieka
+    # Skrypt odpali się w różne dni miesiąca o różnych godzinach (odstępy 3-5 dni)
+    - cron: '14 7 2,9,18,26 * *'   # Rano (07:14) w wybrane dni
+    - cron: '42 16 5,14,22,29 * *' # Po południu (16:42) w inne dni
   workflow_dispatch:
-
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
       - name: Fetch latest reading
         run: |
-          # Losowe opóźnienie 0-5 minut
+          # Dodatkowy jitter: opóźnia wykonanie losowo od 0 do 5 minut.
+          # Dzięki temu zapytanie nigdy nie leci dokładnie w tej samej sekundzie.
           sleep $((RANDOM % 300))
-
           curl -s \
             -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}" \
