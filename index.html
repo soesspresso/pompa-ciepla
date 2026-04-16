@@ -110,7 +110,7 @@ body.light .orb3 { background: #90c8f0; opacity: 0.5; }
 }
 .nav-pill { padding: 10px 20px; border-radius: 34px; border: none; background: none; font-family: var(--sans); font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); white-space: nowrap; }
 .nav-pill.active { background: rgba(79,195,247,0.2); color: var(--accent); box-shadow: inset 0 0 0 1px rgba(79,195,247,0.35); }
-@media (max-width: 400px) { .nav-pill { padding: 10px 14px; font-size: 12px; } }
+@media (max-width: 450px) { .nav-pill { padding: 10px 12px; font-size: 11px; } }
 .page { display: none; }
 .page.active { display: block; }
 .notify { padding: 14px 18px; margin-bottom: 14px; display: flex; align-items: center; gap: 14px; cursor: pointer; border-left: 3px solid var(--orange); animation: slideDown 0.3s ease; }
@@ -242,7 +242,7 @@ tbody tr:last-child td { border-bottom: none; }
 .hm-hint { font-size: 11px; color: var(--text2); margin-bottom: 12px; }
 
 /* ============================================
-   MODAL (Wspólny)
+   MODAL
    ============================================ */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 300;
@@ -495,9 +495,9 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
 
   <div class="page" id="page-analityka">
     <div class="anal-tabs">
-      <button class="anal-tab active" onclick="switchAnalView('compare')">📊 Porównanie lat</button>
+      <button class="anal-tab active" onclick="switchAnalView('compare')">📊 Porównanie</button>
       <button class="anal-tab" onclick="switchAnalView('heatmap')">🟥 Heatmapa</button>
-      <button class="anal-tab" onclick="switchAnalView('versus')">⚡ Porównywarka</button>
+      <button class="anal-tab" onclick="switchAnalView('versus')">⚡ Versus</button>
       <button class="anal-tab" onclick="switchAnalView('forecast')">🔮 Prognoza</button>
     </div>
 
@@ -552,13 +552,21 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
       </div>
     </div>
   </div>
+
+  <div class="page" id="page-security">
+    <div class="glass" style="padding:20px;">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-bottom:15px;">Monitor Bezpieczeństwa (IP & Logowania)</div>
+      <div id="securityWidgetContainer"></div>
+    </div>
+  </div>
 </div>
 
 <nav class="bottom-nav">
   <button class="nav-pill active" onclick="showPage('dashboard')">Dashboard</button>
   <button class="nav-pill" onclick="showPage('dodaj')">+ Wpis</button>
   <button class="nav-pill" onclick="showPage('historia')">Historia</button>
-  <button class="nav-pill" onclick="showPage('analityka')">Analityka</button>
+  <button class="nav-pill" onclick="showPage('analityka')">Analiza</button>
+  <button class="nav-pill" id="nav-security" style="display:none;" onclick="showPage('security')">Logi</button>
 </nav>
 
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
@@ -611,7 +619,7 @@ let activeAnalView = 'compare';
 let stawkiMap = {};
 
 // ============================================
-// SYSTEM LOGOWANIA BŁĘDÓW (DO DB I UI)
+// SYSTEM LOGOWANIA BŁĘDÓW
 // ============================================
 async function logError(akcja, errObj, detale = {}) {
   console.error(`[${akcja}]`, errObj);
@@ -623,19 +631,14 @@ async function logError(akcja, errObj, detale = {}) {
   panel.innerHTML += `<div><span class="d-time">${time}</span><strong>[${akcja}]</strong> ${msg} <br><small>${JSON.stringify(detale)}</small></div>`;
   
   if (currentUser) {
-    try {
-      await sb.from('app_logs').insert({ akcja: akcja, komunikat: msg, detale: detale, user_id: currentUser.id });
-    } catch(dbErr) { console.error("Błąd zapisu logu do bazy:", dbErr); }
+    try { await sb.from('app_logs').insert({ akcja: akcja, komunikat: msg, detale: detale, user_id: currentUser.id }); } 
+    catch(dbErr) { console.error("Błąd zapisu logu do bazy:", dbErr); }
   }
 }
 
-// Zapis logów bezpieczeństwa bez sprawdzania autoryzacji RLS (przez funkcję RPC)
 async function logSecurityEvent(akcja, szczegoly) {
-  try {
-    await sb.rpc('log_security_event', { p_akcja: akcja, p_szczegoly: szczegoly });
-  } catch(e) {
-    console.warn("Nie udało się zapisać zdarzenia bezpieczeństwa:", e);
-  }
+  try { await sb.rpc('log_security_event', { p_akcja: akcja, p_szczegoly: szczegoly }); } 
+  catch(e) { console.warn("Nie udało się zapisać zdarzenia bezpieczeństwa:", e); }
 }
 
 function getStawka(rok) {
@@ -643,7 +646,7 @@ function getStawka(rok) {
 }
 
 // ============================================
-// SUPABASE (Z OBSŁUGĄ BŁĘDÓW)
+// SUPABASE API
 // ============================================
 async function fetchStawki() {
   try {
@@ -659,10 +662,7 @@ async function fetchData() {
     const { data, error } = await sb.from(TABLE).select('*').order('dzien', { ascending: true });
     if (error) throw error;
     return data;
-  } catch(err) {
-    await logError('fetchData', err);
-    throw err;
-  }
+  } catch(err) { await logError('fetchData', err); throw err; }
 }
 
 async function insertRow(entry) {
@@ -670,20 +670,14 @@ async function insertRow(entry) {
     const { data, error } = await sb.from(TABLE).insert(entry).select();
     if (error) throw error;
     return data;
-  } catch(err) {
-    await logError('insertRow', err, entry);
-    throw err;
-  }
+  } catch(err) { await logError('insertRow', err, entry); throw err; }
 }
 
 async function deleteRow(id) {
   try {
     const { error } = await sb.from(TABLE).delete().eq('id', id);
     if (error) throw error;
-  } catch(err) {
-    await logError('deleteRow', err, { id });
-    throw err;
-  }
+  } catch(err) { await logError('deleteRow', err, { id }); throw err; }
 }
 
 // ============================================
@@ -724,23 +718,24 @@ function setSyncStatus(state) {
 // ============================================
 async function initAuth() {
   try {
-    // 1. Wykrywanie błędu logowania po powrocie z Google
     const hash = window.location.hash;
     if (hash && hash.includes('error=')) {
       const params = new URLSearchParams(hash.substring(1));
-      const errDesc = params.get('error_description') || params.get('error');
-      await logSecurityEvent('LOGIN_ERROR', errDesc);
-      window.history.replaceState(null, null, window.location.pathname); // Wyczyść pasek adresu
+      await logSecurityEvent('LOGIN_ERROR', params.get('error_description') || params.get('error'));
+      window.history.replaceState(null, null, window.location.pathname);
     }
 
-    // 2. Pobranie sesji
     const { data: { user }, error } = await sb.auth.getUser();
     if (error && error.message !== 'Auth session missing!') throw error;
     currentUser = user;
+    
+    if (currentUser) {
+      document.getElementById('nav-security').style.display = 'block';
+    } else {
+      document.getElementById('nav-security').style.display = 'none';
+    }
     updateAuthUI();
-  } catch (err) {
-    await logError('initAuth', err);
-  }
+  } catch (err) { await logError('initAuth', err); }
 }
 
 function updateAuthUI() {
@@ -760,9 +755,7 @@ function updateAuthUI() {
 
 async function signInWithGoogle() {
   try {
-    // Rejestrujemy intencję kliknięcia w logowanie
     await logSecurityEvent('LOGIN_CLICK', 'Użytkownik kliknął przycisk logowania Google');
-    
     const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
     if (error) throw error;
   } catch(err) {
@@ -775,22 +768,16 @@ async function signOut() {
   try {
     const { error } = await sb.auth.signOut();
     if (error) throw error;
-    currentUser = null; 
-    updateAuthUI(); 
-    showToast('Wylogowano');
-  } catch(err) {
-    await logError('signOut', err);
-  }
+    location.reload();
+  } catch(err) { await logError('signOut', err); }
 }
 
 function openSettingsModal() {
   const select = document.getElementById('selectRok');
   const years = [2022, 2023, 2024, 2025, 2026, 2027, 2028];
   select.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
-  
   const currentYear = new Date().getFullYear();
   if (years.includes(currentYear)) select.value = currentYear;
-  
   updateRateInput();
   document.getElementById('modalSettingsOverlay').classList.add('open');
 }
@@ -809,10 +796,8 @@ async function saveStawka() {
 
   setSyncStatus('syncing');
   try {
-    const payload = { rok: r, stawka_kwh: s, user_id: currentUser.id };
-    const { error } = await sb.from('stawki').upsert(payload, { onConflict: 'rok, user_id' });
+    const { error } = await sb.from('stawki').upsert({ rok: r, stawka_kwh: s, user_id: currentUser.id }, { onConflict: 'rok, user_id' });
     if(error) throw error;
-    
     stawkiMap[r] = s;
     showToast('Zaktualizowano stawkę');
     setSyncStatus('ok');
@@ -839,12 +824,16 @@ function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-pill').forEach(b => b.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
-  const pages = ['dashboard','dodaj','historia','analityka'];
-  document.querySelectorAll('.nav-pill')[pages.indexOf(name)].classList.add('active');
+  
+  const navId = 'nav-' + name;
+  const targetNav = document.getElementById(navId) || document.querySelector(`.nav-pill[onclick="showPage('${name}')"]`);
+  if(targetNav) targetNav.classList.add('active');
+
   if (name === 'dashboard') renderDashboard();
   if (name === 'historia')  renderHistory();
   if (name === 'analityka') renderAnalityka();
   if (name === 'dodaj')     renderForm();
+  if (name === 'security')  renderSecurityLogs();
 }
 
 function switchAnalView(view) {
@@ -947,13 +936,8 @@ async function saveEntry() {
   const reportedYear = readingDate.getMonth() === 0 ? readingDate.getFullYear() - 1 : readingDate.getFullYear();
   
   const entry = { 
-    rok: reportedYear, 
-    miesiac: MIESIAC_PL[reportedMonthIdx], 
-    dzien: readingDate.toISOString().slice(0,10), 
-    stan: kwhVal, 
-    starts: startsVal ? parseInt(startsVal) : null, 
-    note: note || null,
-    user_id: currentUser.id
+    rok: reportedYear, miesiac: MIESIAC_PL[reportedMonthIdx], dzien: readingDate.toISOString().slice(0,10), 
+    stan: kwhVal, starts: startsVal ? parseInt(startsVal) : null, note: note || null, user_id: currentUser.id
   };
   
   setSyncStatus('syncing');
@@ -1034,7 +1018,7 @@ async function deleteEntry(id) {
 }
 
 // ============================================
-// ANALITYKA — widok 1 (porównanie)
+// ANALITYKA
 // ============================================
 function renderAnalityka() {
   const rich = enrichData(allData).filter(d => d.kwhMc !== null);
@@ -1076,9 +1060,6 @@ function renderAnalityka() {
   if (yearList.length > 1) document.getElementById('compareYear2').value = yearList[yearList.length - 1];
 }
 
-// ============================================
-// KONCEPCJA 2 — HEATMAPA
-// ============================================
 function renderHeatmap() {
   const rich = enrichData(allData).filter(d => d.kwhMc !== null);
   if(rich.length === 0) return;
@@ -1105,8 +1086,7 @@ function renderHeatmap() {
   }
 
   const months = ['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
-  let html = `<div class="heatmap-grid">`;
-  html += `<div class="hm-label"></div>`;
+  let html = `<div class="heatmap-grid"><div class="hm-label"></div>`;
   months.forEach(m => { html += `<div class="hm-header">${m}</div>`; });
 
   years.forEach(yr => {
@@ -1119,9 +1099,7 @@ function renderHeatmap() {
         if(maxV !== minV) opacity = 0.3 + ((entry.kwhMc - minV) / (maxV - minV)) * 0.7;
         html += `<div class="hm-cell" style="background:${col};opacity:${opacity.toFixed(2)};"
           onclick="openModal(${yr},${mi})" title="${entry.miesiac} ${yr}: ${entry.kwhMc} kWh"></div>`;
-      } else {
-        html += `<div class="hm-cell empty"></div>`;
-      }
+      } else { html += `<div class="hm-cell empty"></div>`; }
     });
   });
   html += `</div>`;
@@ -1134,9 +1112,6 @@ function renderHeatmap() {
   }).join('');
 }
 
-// ============================================
-// KONCEPCJA 1 — MODAL DRILL-DOWN
-// ============================================
 function openModal(rok, monthIdx) {
   const rich = enrichData(allData).filter(d => d.kwhMc !== null);
   const entry = rich.find(d => d.rok == rok && new Date(d.dzien).getMonth() == monthIdx);
@@ -1151,32 +1126,12 @@ function openModal(rok, monthIdx) {
   const avgAll = Math.round(rich.reduce((s,d) => s + d.kwhMc, 0) / (allCount || 1));
 
   document.getElementById('modalStats').innerHTML = `
-    <div class="modal-stat">
-      <div class="modal-stat-label">Zużycie</div>
-      <div class="modal-stat-val" style="color:var(--accent)">${entry.kwhMc} <span style="font-size:13px;color:var(--text2)">kWh</span></div>
-    </div>
-    <div class="modal-stat">
-      <div class="modal-stat-label">Śr. dziennie</div>
-      <div class="modal-stat-val" style="color:var(--green)">${entry.srDzien ?? '—'} <span style="font-size:13px;color:var(--text2)">kWh/d</span></div>
-    </div>
-    <div class="modal-stat">
-      <div class="modal-stat-label">Starty sprężarki</div>
-      <div class="modal-stat-val" style="color:var(--orange)">${entry.startsMc ?? '—'}</div>
-    </div>
-    <div class="modal-stat">
-      <div class="modal-stat-label">Koszt (est.)</div>
-      <div class="modal-stat-val">${Math.round(entry.kwhMc * getStawka(entry.rok))} <span style="font-size:13px;color:var(--text2)">PLN</span></div>
-    </div>
-    <div class="modal-stat">
-      <div class="modal-stat-label">Ranking</div>
-      <div class="modal-stat-val" style="font-size:18px;">${rank}/${allCount}</div>
-    </div>
-    <div class="modal-stat">
-      <div class="modal-stat-label">vs średnia</div>
-      <div class="modal-stat-val" style="font-size:18px;color:${entry.kwhMc > avgAll ? 'var(--danger)' : 'var(--green)'}">
-        ${entry.kwhMc > avgAll ? '+' : ''}${entry.kwhMc - avgAll} kWh
-      </div>
-    </div>`;
+    <div class="modal-stat"><div class="modal-stat-label">Zużycie</div><div class="modal-stat-val" style="color:var(--accent)">${entry.kwhMc} <span style="font-size:13px;color:var(--text2)">kWh</span></div></div>
+    <div class="modal-stat"><div class="modal-stat-label">Śr. dziennie</div><div class="modal-stat-val" style="color:var(--green)">${entry.srDzien ?? '—'} <span style="font-size:13px;color:var(--text2)">kWh/d</span></div></div>
+    <div class="modal-stat"><div class="modal-stat-label">Starty sprężarki</div><div class="modal-stat-val" style="color:var(--orange)">${entry.startsMc ?? '—'}</div></div>
+    <div class="modal-stat"><div class="modal-stat-label">Koszt (est.)</div><div class="modal-stat-val">${Math.round(entry.kwhMc * getStawka(entry.rok))} <span style="font-size:13px;color:var(--text2)">PLN</span></div></div>
+    <div class="modal-stat"><div class="modal-stat-label">Ranking</div><div class="modal-stat-val" style="font-size:18px;">${rank}/${allCount}</div></div>
+    <div class="modal-stat"><div class="modal-stat-label">vs średnia</div><div class="modal-stat-val" style="font-size:18px;color:${entry.kwhMc > avgAll ? 'var(--danger)' : 'var(--green)'}">${entry.kwhMc > avgAll ? '+' : ''}${entry.kwhMc - avgAll} kWh</div></div>`;
 
   const sameMonthEntries = rich.filter(d => new Date(d.dzien).getMonth() === monthIdx).sort((a,b) => a.rok - b.rok);
   const maxSame = Math.max(...sameMonthEntries.map(d => d.kwhMc));
@@ -1220,9 +1175,6 @@ function closeModal(e) {
   }
 }
 
-// ============================================
-// KONCEPCJA 3 — PORÓWNYWARKA LAT
-// ============================================
 function renderVersus() {
   const y1el = document.getElementById('compareYear1');
   const y2el = document.getElementById('compareYear2');
@@ -1252,31 +1204,16 @@ function renderVersus() {
     </div>
     <div class="compare-chart-wrap"><canvas id="versusChart"></canvas></div>
     <div class="compare-summary">
-      <div class="compare-card">
-        <div class="compare-card-year">${yr1}</div>
-        <div class="compare-card-val" style="color:var(--accent)">${total1.toLocaleString()} kWh</div>
-        <div class="compare-card-sub">${months1} m-cy · ~${Math.round(cost1)} PLN</div>
-      </div>
-      <div class="compare-card">
-        <div class="compare-card-year">${yr2}</div>
-        <div class="compare-card-val" style="color:var(--green)">${total2.toLocaleString()} kWh</div>
-        <div class="compare-card-sub">${months2} m-cy · ~${Math.round(cost2)} PLN</div>
-      </div>
+      <div class="compare-card"><div class="compare-card-year">${yr1}</div><div class="compare-card-val" style="color:var(--accent)">${total1.toLocaleString()} kWh</div><div class="compare-card-sub">${months1} m-cy · ~${Math.round(cost1)} PLN</div></div>
+      <div class="compare-card"><div class="compare-card-year">${yr2}</div><div class="compare-card-val" style="color:var(--green)">${total2.toLocaleString()} kWh</div><div class="compare-card-sub">${months2} m-cy · ~${Math.round(cost2)} PLN</div></div>
     </div>`;
 
   document.getElementById('compareResult').innerHTML = html;
-
   setTimeout(() => {
-    drawGrouped('versusChart', [
-      { year: yr1, color: 'rgba(79,195,247,0.75)', values: data1 },
-      { year: yr2, color: 'rgba(255,179,71,0.75)', values: data2 }
-    ]);
+    drawGrouped('versusChart', [{ year: yr1, color: 'rgba(79,195,247,0.75)', values: data1 }, { year: yr2, color: 'rgba(255,179,71,0.75)', values: data2 }]);
   }, 50);
 }
 
-// ============================================
-// KONCEPCJA 4 — PROGNOZA
-// ============================================
 function renderForecast() {
   const rich = enrichData(allData).filter(d => d.kwhMc !== null);
   const now = new Date();
@@ -1289,8 +1226,7 @@ function renderForecast() {
     const avg = Math.round(hist.reduce((s,d) => s + d.kwhMc, 0) / hist.length);
     const vals = hist.map(d => d.kwhMc);
     const min = Math.min(...vals), max = Math.max(...vals);
-    const stddev = Math.round(Math.sqrt(vals.reduce((s,v) => s + Math.pow(v-avg,2), 0) / vals.length));
-    return { avg, min, max, stddev, count: hist.length };
+    return { avg, min, max, count: hist.length };
   });
 
   const thisYearData = rich.filter(d => d.rok === currentYear);
@@ -1317,23 +1253,11 @@ function renderForecast() {
 
   forecastMonths.forEach(f => {
     if (f.existing) {
-      html += `<div class="forecast-month">
-        <div class="forecast-month-name">${MIESIAC_PL[f.mi].slice(0,3)} ${f.yr} ✓</div>
-        <div class="forecast-month-val" style="color:var(--green)">${f.existing.kwhMc}</div>
-        <div class="forecast-month-range">rzeczywiste kWh</div>
-      </div>`;
+      html += `<div class="forecast-month"><div class="forecast-month-name">${MIESIAC_PL[f.mi].slice(0,3)} ${f.yr} ✓</div><div class="forecast-month-val" style="color:var(--green)">${f.existing.kwhMc}</div><div class="forecast-month-range">rzeczywiste kWh</div></div>`;
     } else if (f.avg) {
-      html += `<div class="forecast-month predicted">
-        <div class="forecast-month-name">${MIESIAC_PL[f.mi].slice(0,3)} ${f.yr}</div>
-        <div class="forecast-month-val">${f.avg.avg}</div>
-        <div class="forecast-month-range">${f.avg.min}–${f.avg.max} kWh</div>
-      </div>`;
+      html += `<div class="forecast-month predicted"><div class="forecast-month-name">${MIESIAC_PL[f.mi].slice(0,3)} ${f.yr}</div><div class="forecast-month-val">${f.avg.avg}</div><div class="forecast-month-range">${f.avg.min}–${f.avg.max} kWh</div></div>`;
     } else {
-      html += `<div class="forecast-month">
-        <div class="forecast-month-name">${MIESIAC_PL[f.mi].slice(0,3)} ${f.yr}</div>
-        <div class="forecast-month-val" style="color:var(--text3)">—</div>
-        <div class="forecast-month-range">brak danych</div>
-      </div>`;
+      html += `<div class="forecast-month"><div class="forecast-month-name">${MIESIAC_PL[f.mi].slice(0,3)} ${f.yr}</div><div class="forecast-month-val" style="color:var(--text3)">—</div><div class="forecast-month-range">brak danych</div></div>`;
     }
   });
 
@@ -1355,6 +1279,42 @@ function renderForecast() {
       forecastMonths.map(f => f.avg ? f.avg.min : null),
       forecastMonths.map(f => f.avg ? f.avg.max : null));
   }, 50);
+}
+
+// ============================================
+// SECURITY LOGS
+// ============================================
+async function renderSecurityLogs() {
+  const container = document.getElementById('securityWidgetContainer');
+  container.innerHTML = '<div class="spinner" style="margin: 20px auto;"></div>';
+  
+  const { data, error } = await sb.from('security_logs').select('*').order('created_at', { ascending: false }).limit(20);
+  
+  if (error) {
+    container.innerHTML = 'Błąd pobierania danych: ' + error.message;
+    return;
+  }
+
+  if(!data || data.length === 0) {
+    container.innerHTML = '<div style="text-align:center;color:var(--text3);padding:20px;">Brak logów bezpieczeństwa.</div>';
+    return;
+  }
+
+  const widgetHtml = `
+    <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:10px;font-family:var(--mono);font-size:11px;">
+      ${data.map(log => `
+        <div style="border-bottom:1px solid rgba(255,255,255,0.05);padding:8px 0;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-weight:bold;color:${log.akcja.includes('ERROR') ? 'var(--danger)' : 'var(--accent)'}">${log.akcja}</span>
+            <span style="color:var(--text3)">${new Date(log.created_at).toLocaleString()}</span>
+          </div>
+          <div style="color:var(--text2)">IP: ${log.ip_address || 'nieznane'}</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px;">${log.szczegoly || ''}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  container.innerHTML = widgetHtml;
 }
 
 // ============================================
@@ -1456,37 +1416,26 @@ function drawForecastChart(id, labels, realVals, predVals, minVals, maxVals) {
 
   labels.forEach((lbl, i) => {
     const cx = pad.left + i * gap + gap/2;
-
     if (predVals[i] !== null && minVals[i] !== null && maxVals[i] !== null) {
       const yMin = pad.top + ch - (minVals[i]/max)*ch;
       const yMax = pad.top + ch - (maxVals[i]/max)*ch;
       ctx.fillStyle = 'rgba(79,195,247,0.08)';
       ctx.fillRect(cx - bw/2 - 4, yMax, bw + 8, yMin - yMax);
     }
-
     if (realVals[i] !== null) {
       const bh = (realVals[i]/max)*ch, y = pad.top + ch - bh;
       const grad = ctx.createLinearGradient(0, y, 0, y+bh);
-      grad.addColorStop(0, 'rgba(77,208,160,0.85)');
-      grad.addColorStop(1, 'rgba(77,208,160,0.2)');
+      grad.addColorStop(0, 'rgba(77,208,160,0.85)'); grad.addColorStop(1, 'rgba(77,208,160,0.2)');
       ctx.fillStyle = grad;
       ctx.beginPath(); ctx.roundRect(cx - bw/2, y, bw, bh, [4,4,0,0]); ctx.fill();
     }
-
     if (predVals[i] !== null) {
       const bh = (predVals[i]/max)*ch, y = pad.top + ch - bh;
       const grad = ctx.createLinearGradient(0, y, 0, y+bh);
-      grad.addColorStop(0, 'rgba(79,195,247,0.6)');
-      grad.addColorStop(1, 'rgba(79,195,247,0.1)');
-      ctx.fillStyle = grad;
-      ctx.setLineDash([4,3]);
-      ctx.strokeStyle = 'rgba(79,195,247,0.8)';
-      ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.roundRect(cx - bw/2, y, bw, bh, [4,4,0,0]);
-      ctx.fill(); ctx.stroke();
-      ctx.setLineDash([]);
+      grad.addColorStop(0, 'rgba(79,195,247,0.6)'); grad.addColorStop(1, 'rgba(79,195,247,0.1)');
+      ctx.fillStyle = grad; ctx.setLineDash([4,3]); ctx.strokeStyle = 'rgba(79,195,247,0.8)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.roundRect(cx - bw/2, y, bw, bh, [4,4,0,0]); ctx.fill(); ctx.stroke(); ctx.setLineDash([]);
     }
-
     ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.font = '9px DM Mono,monospace'; ctx.textAlign = 'center';
     ctx.fillText(lbl, cx, H - 8);
   });
@@ -1499,7 +1448,7 @@ function drawForecastChart(id, labels, realVals, predVals, minVals, maxVals) {
 }
 
 // ============================================
-// THEME
+// THEME & TOAST & INIT
 // ============================================
 function toggleTheme() {
   const isLight = document.body.classList.toggle('light');
@@ -1507,6 +1456,7 @@ function toggleTheme() {
   document.getElementById('themeToggle').textContent = isLight ? '🌙 Ciemny' : '☀ Jasny';
   document.querySelector('meta[name="theme-color"]').content = isLight ? '#c8dff0' : '#0d1b2a';
 }
+
 function applyTheme() {
   if (localStorage.getItem('pc_theme_exp') === 'light') {
     document.body.classList.add('light');
@@ -1515,18 +1465,12 @@ function applyTheme() {
   }
 }
 
-// ============================================
-// TOAST
-// ============================================
 function showToast(msg, isErr) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.className = 'toast' + (isErr ? ' err' : '');
   t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// ============================================
-// INIT
-// ============================================
 async function init() {
   applyTheme();
   await initAuth();
