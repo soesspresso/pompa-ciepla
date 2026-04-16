@@ -86,7 +86,7 @@ body.light .orb3 { background: #90c8f0; opacity: 0.5; }
 .header-title { font-size: 24px; font-weight: 600; letter-spacing: -0.5px; }
 .header-title em { color: var(--accent); font-style: normal; }
 .header-date { font-size: 11px; color: var(--text2); margin-top: 2px; }
-.header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end;}
+.header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .pill-btn {
   background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 40px;
   backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
@@ -221,7 +221,7 @@ tbody tr:last-child td { border-bottom: none; }
 .anal-view.active { display: block; }
 
 /* ============================================
-   HEATMAP — koncepcja 2
+   HEATMAP
    ============================================ */
 .heatmap-grid { display: grid; grid-template-columns: 36px repeat(12,1fr); gap: 3px; margin-top: 10px; }
 .hm-cell {
@@ -242,7 +242,7 @@ tbody tr:last-child td { border-bottom: none; }
 .hm-hint { font-size: 11px; color: var(--text2); margin-bottom: 12px; }
 
 /* ============================================
-   MODAL — koncepcja 1 drill-down
+   MODAL (Wspólny)
    ============================================ */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 300;
@@ -288,7 +288,7 @@ body.light .modal-stat { background: rgba(0,0,0,0.05); }
 .modal-badge.same { background: rgba(255,255,255,0.08); color: var(--text2); }
 
 /* ============================================
-   PORÓWNYWARKA — koncepcja 3
+   PORÓWNYWARKA
    ============================================ */
 .compare-selectors { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
 .compare-select {
@@ -314,7 +314,7 @@ body.light .compare-card { background: rgba(0,0,0,0.05); }
 .compare-delta.worse { background: rgba(255,107,107,0.1); color: var(--danger); border: 1px solid rgba(255,107,107,0.2); }
 
 /* ============================================
-   PROGNOZA — koncepcja 4
+   PROGNOZA
    ============================================ */
 .forecast-wrap { }
 .forecast-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 16px; }
@@ -559,7 +559,7 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
     <div class="field">
       <label class="field-label">Wybierz rok</label>
       <select id="selectRok" class="compare-select" style="width:100%; margin-bottom:12px;" onchange="updateRateInput()">
-        </select>
+      </select>
     </div>
 
     <div class="field">
@@ -710,7 +710,10 @@ async function saveStawka() {
   if(!r || isNaN(s)) return showToast('Błędna wartość', true);
 
   setSyncStatus('syncing');
-  const { error } = await sb.from('stawki').upsert({ rok: r, stawka_kwh: s }, { onConflict: 'rok' });
+  const { error } = await sb.from('stawki').upsert(
+    { rok: r, stawka_kwh: s, user_id: currentUser.id }, 
+    { onConflict: 'rok, user_id' }
+  );
   
   if(error) {
     showToast('Błąd: ' + error.message, true);
