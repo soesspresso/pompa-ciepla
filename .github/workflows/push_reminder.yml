@@ -1,8 +1,10 @@
 name: Monthly Push Reminder
 on:
   schedule:
-    - cron: '0 10 1 * *'  # 1. dzień każdego miesiąca o 10:00
-  workflow_dispatch:      # Pozwala odpalić ręcznie do testu
+    # 1. dzień każdego miesiąca o 10:00 rano
+    - cron: '0 10 1 * *'
+  # Pozwala na ręczne uruchomienie skryptu (przydatne do testów)
+  workflow_dispatch:
 
 jobs:
   send-push:
@@ -17,6 +19,7 @@ jobs:
       - name: Run send script
         run: node send-push.js
         env:
+          # Dane z sekcji Secrets w GitHub
           VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
           VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
