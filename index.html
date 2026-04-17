@@ -70,12 +70,8 @@ body {
 /* ============================================
    TŁO (ANIMOWANE KULE)
    ============================================ */
-.bg-orbs { 
-  position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; 
-}
-.orb { 
-  position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.25; animation: orbFloat 12s ease-in-out infinite; 
-}
+.bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.25; animation: orbFloat 12s ease-in-out infinite; }
 .orb1 { width: 500px; height: 500px; background: #1a5faa; top: -100px; left: -100px; }
 .orb2 { width: 400px; height: 400px; background: #0a3d7a; top: 40%; right: -80px; animation-delay: -4s; }
 .orb3 { width: 350px; height: 350px; background: #0d4f6e; bottom: -80px; left: 30%; animation-delay: -8s; }
@@ -93,39 +89,22 @@ body.light .orb3 { background: #90c8f0; opacity: 0.5; }
 /* ============================================
    GŁÓWNY UKŁAD (APP) ORAZ GLASSMORPHIZM
    ============================================ */
-.app { 
-  position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 16px 150px; 
-}
-@media (min-width: 768px) { 
-  .app { max-width: 960px; padding: 0 32px 150px; } 
-}
+.app { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 16px 150px; }
+@media (min-width: 768px) { .app { max-width: 960px; padding: 0 32px 150px; } }
 
-.glass { 
-  background: var(--glass-bg); 
-  border: 1px solid var(--glass-border); 
-  border-radius: var(--radius); 
-  backdrop-filter: var(--glass-blur); 
-  -webkit-backdrop-filter: var(--glass-blur); 
-  box-shadow: var(--glass-shadow); 
-}
+.glass { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow); }
 
 /* ============================================
    HEADER
    ============================================ */
-.header { 
-  padding: 20px 0 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; 
-}
+.header { padding: 20px 0 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .logo-tag { font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 2px; }
 .header-title { font-size: 24px; font-weight: 600; letter-spacing: -0.5px; }
 .header-title em { color: var(--accent); font-style: normal; }
 .header-date { font-size: 11px; color: var(--text2); margin-top: 2px; }
 .header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 
-.pill-btn { 
-  background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 40px; 
-  backdrop-filter: var(--glass-blur); padding: 7px 14px; font-family: var(--sans); 
-  font-size: 12px; font-weight: 500; color: var(--text); cursor: pointer; transition: all 0.2s; white-space: nowrap; 
-}
+.pill-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 40px; backdrop-filter: var(--glass-blur); padding: 7px 14px; font-family: var(--sans); font-size: 12px; font-weight: 500; color: var(--text); cursor: pointer; transition: all 0.2s; white-space: nowrap; }
 .pill-btn:hover { background: rgba(255,255,255,0.14); border-color: var(--accent); color: var(--accent); }
 .pill-btn.danger { border-color: rgba(255,107,107,0.4); color: var(--danger); }
 .pill-btn.danger:hover { background: rgba(255,107,107,0.1); }
@@ -140,19 +119,9 @@ body.light .orb3 { background: #90c8f0; opacity: 0.5; }
 /* ============================================
    DOLNA NAWIGACJA
    ============================================ */
-.bottom-nav { 
-  position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 100; 
-  display: flex; gap: 4px; background: var(--glass-bg); border: 1px solid var(--glass-border); 
-  border-radius: 40px; backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); 
-  box-shadow: 0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1); padding: 6px; 
-}
-.nav-pill { 
-  padding: 10px 20px; border-radius: 34px; border: none; background: none; font-family: var(--sans); 
-  font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; 
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); white-space: nowrap; 
-}
+.bottom-nav { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 100; display: flex; gap: 4px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 40px; backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); box-shadow: 0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1); padding: 6px; }
+.nav-pill { padding: 10px 20px; border-radius: 34px; border: none; background: none; font-family: var(--sans); font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); white-space: nowrap; }
 .nav-pill.active { background: rgba(79,195,247,0.2); color: var(--accent); box-shadow: inset 0 0 0 1px rgba(79,195,247,0.35); }
-
 @media (max-width: 450px) { .nav-pill { padding: 10px 12px; font-size: 11px; } }
 
 /* ============================================
@@ -160,7 +129,6 @@ body.light .orb3 { background: #90c8f0; opacity: 0.5; }
    ============================================ */
 .page { display: none; } 
 .page.active { display: block; }
-
 .notify { padding: 14px 18px; margin-bottom: 14px; display: flex; align-items: center; gap: 14px; cursor: pointer; border-left: 3px solid var(--orange); }
 .notify-icon { font-size: 22px; }
 .notify strong { display: block; font-size: 13px; font-weight: 600; color: var(--orange); }
@@ -175,15 +143,11 @@ body.light .orb3 { background: #90c8f0; opacity: 0.5; }
 .stat-card { padding: 18px 16px 14px; position: relative; overflow: hidden; transition: transform 0.2s; }
 .stat-card:hover { transform: translateY(-2px); }
 .stat-card::after { content: ''; position: absolute; inset: 0; border-radius: var(--radius); background: linear-gradient(135deg,rgba(255,255,255,0.05) 0%,transparent 60%); pointer-events: none; }
-
 .stat-label { font-size: 10px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
 .stat-val { font-family: var(--mono); font-size: 28px; font-weight: 500; line-height: 1; margin-bottom: 4px; }
-.stat-val.blue { color: var(--accent); } 
-.stat-val.green { color: var(--green); } 
-.stat-val.orange { color: var(--orange); }
+.stat-val.blue { color: var(--accent); } .stat-val.green { color: var(--green); } .stat-val.orange { color: var(--orange); }
 .stat-unit { font-size: 11px; color: var(--text3); }
 .stat-accent-line { position: absolute; bottom: 0; left: 16px; right: 16px; height: 2px; border-radius: 2px; opacity: 0.5; }
-
 .section-label { font-size: 10px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 2px; margin: 20px 0 10px; }
 
 .chart-card { padding: 20px; margin-bottom: 12px; }
@@ -192,14 +156,11 @@ body.light .orb3 { background: #90c8f0; opacity: 0.5; }
 .chart-wrap { height: 160px; position: relative; }
 canvas { width: 100% !important; }
 
-/* ============================================
-   PORÓWNANIE ROCZNE (PASKI)
-   ============================================ */
+/* Porównanie roczne */
 .year-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .year-lbl { font-family: var(--mono); font-size: 11px; color: var(--text2); width: 36px; flex-shrink: 0; }
 .year-track { flex: 1; height: 24px; background: rgba(255,255,255,0.05); border-radius: 6px; overflow: hidden; }
 .year-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 10px; font-family: var(--mono); font-size: 11px; font-weight: 500; transition: width 1.2s; white-space: nowrap; }
-
 .yf0 { background: linear-gradient(90deg,rgba(100,120,200,0.6),rgba(100,120,200,0.2)); color: #aab0ff; } 
 .yf1 { background: linear-gradient(90deg,rgba(79,195,247,0.6),rgba(79,195,247,0.2)); color: var(--accent); } 
 .yf2 { background: linear-gradient(90deg,rgba(77,208,160,0.6),rgba(77,208,160,0.2)); color: var(--green); } 
@@ -207,44 +168,39 @@ canvas { width: 100% !important; }
 .yf4 { background: linear-gradient(90deg,rgba(200,100,255,0.5),rgba(200,100,255,0.2)); color: #d488ff; }
 
 /* ============================================
-   FORMULARZ DODAWANIA ODCZYTU
+   FORMULARZE
    ============================================ */
 .form-section { padding: 24px; margin-bottom: 12px; }
 .field { margin-bottom: 18px; }
 .field-label { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; display: block; }
 .field-input { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); border-radius: var(--radius-sm); padding: 14px 16px; color: var(--text); font-family: var(--mono); font-size: 22px; outline: none; }
 .field-input:focus { border-color: var(--accent); background: rgba(79,195,247,0.06); }
-.field-input.small { font-size: 15px; }
-
 .action-btn { width: 100%; padding: 16px; border: none; border-radius: var(--radius-sm); font-family: var(--sans); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
 .action-btn.primary { background: linear-gradient(135deg,var(--accent),var(--accent2)); color: #001a2e; }
 .action-btn.secondary { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text2); margin-top: 8px; }
 
 /* ============================================
-   HISTORIA W TABELI
+   HISTORIA
    ============================================ */
 .hist-card { overflow: hidden; margin-bottom: 12px; }
 .hist-filters { padding: 16px 20px 0; display: flex; gap: 6px; overflow-x: auto; flex-wrap: wrap; }
 .filter-chip { padding: 5px 12px; background: transparent; border: 1px solid var(--glass-border); border-radius: 20px; font-size: 11px; font-weight: 500; color: var(--text2); cursor: pointer; }
 .filter-chip.active { background: rgba(79,195,247,0.15); border-color: rgba(79,195,247,0.5); color: var(--accent); }
-
 .table-wrap { overflow-x: auto; padding-top: 12px; }
 table { width: 100%; border-collapse: collapse; }
 thead th { padding: 10px 16px; text-align: right; font-size: 10px; color: var(--text3); text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.06); cursor: pointer; }
 thead th:first-child { text-align: left; padding-left: 20px; }
 tbody td { padding: 11px 16px; text-align: right; font-size: 12px; font-family: var(--mono); border-bottom: 1px solid rgba(255,255,255,0.04); }
 tbody td:first-child { text-align: left; padding-left: 20px; font-family: var(--sans); font-weight: 500; }
-
 .del-btn { background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.25); border-radius: 6px; color: var(--danger); font-size: 12px; padding: 3px 8px; cursor: pointer; }
 
 /* ============================================
-   ANALITYKA: ZAKŁADKI I WIDOKI
+   ANALITYKA
    ============================================ */
 .anal-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
 .anal-tab { padding: 7px 16px; background: transparent; border: 1px solid var(--glass-border); border-radius: 20px; font-size: 12px; font-weight: 500; color: var(--text2); cursor: pointer; }
 .anal-tab.active { background: rgba(79,195,247,0.15); border-color: rgba(79,195,247,0.5); color: var(--accent); }
-.anal-view { display: none; } 
-.anal-view.active { display: block; }
+.anal-view { display: none; } .anal-view.active { display: block; }
 .anal-card { padding: 20px; margin-bottom: 12px; }
 
 /* Heatmapa */
@@ -253,16 +209,12 @@ tbody td:first-child { text-align: left; padding-left: 20px; font-family: var(--
 .hm-cell.empty { background: rgba(255,255,255,0.04); cursor: default; }
 .hm-label, .hm-header { font-family: var(--mono); font-size: 9px; color: var(--text3); display: flex; align-items: center; justify-content: center; }
 
-/* Porównywarka i Prognoza */
+/* Porównywarka */
 .compare-select { flex: 1; min-width: 120px; background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); border-radius: var(--radius-sm); padding: 10px 14px; color: var(--text); font-family: var(--sans); font-size: 13px; outline: none; cursor: pointer; }
 body.light .compare-select { background: rgba(0,0,0,0.05); }
 
-.forecast-months { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
-.forecast-month { background: rgba(255,255,255,0.05); border-radius: var(--radius-sm); padding: 12px; border-left: 3px solid transparent; }
-body.light .forecast-month { background: rgba(0,0,0,0.05); }
-
 /* ============================================
-   LOGI BEZPIECZEŃSTWA (AUDYT)
+   LOGI
    ============================================ */
 .log-item { background:rgba(0,0,0,0.15); border-radius:10px; padding:12px; margin-bottom:8px; font-family:var(--mono); font-size:11px; border: 1px solid rgba(255,255,255,0.03); }
 .log-tag { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
@@ -274,30 +226,24 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
 .log-details { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 6px; color: var(--text3); word-break: break-all; white-space: pre-wrap; margin-top: 6px; }
 
 /* ============================================
-   MODALE (WYSKAKUJĄCE OKNA)
+   MODALE I KOMUNIKATY
    ============================================ */
 .modal-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
 .modal-overlay.open { opacity: 1; pointer-events: all; }
 .modal { background: rgba(15,32,64,0.95); border: 1px solid var(--glass-border); border-radius: var(--radius); box-shadow: 0 24px 64px rgba(0,0,0,0.6); width: 100%; max-width: 420px; padding: 28px; transform: translateY(20px); transition: transform 0.3s; }
 .modal-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.08); border-radius: 50%; width: 32px; height: 32px; cursor: pointer; color: var(--text2); display: flex; align-items: center; justify-content: center; border: none; }
 
-/* Inne elementy UI */
 .loading-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50vh; gap: 16px; }
 .spinner { width: 36px; height: 36px; border: 2px solid rgba(79,195,247,0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(10px); background: var(--green); color: #001a14; padding: 12px 24px; border-radius: 40px; font-size: 13px; font-weight: 600; opacity: 0; transition: all 0.3s; z-index: 200; pointer-events: none; }
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); } 
-.toast.err { background: var(--danger); color: #fff; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); } .toast.err { background: var(--danger); color: #fff; }
 </style>
 </head>
 <body>
 
-<div class="bg-orbs">
-  <div class="orb orb1"></div>
-  <div class="orb orb2"></div>
-  <div class="orb orb3"></div>
-</div>
+<div class="bg-orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
 
 <div class="app">
   <div class="header">
@@ -315,70 +261,27 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
 
   <div class="page active" id="page-dashboard">
     <div id="loadingDashboard" class="loading-screen">
-      <div class="spinner"></div>
-      <div class="loading-label" style="font-size:12px; color:var(--text2); letter-spacing:2px; text-transform:uppercase;">Ładowanie...</div>
+      <div class="spinner"></div><div class="loading-label" style="font-size:12px; color:var(--text2); letter-spacing:2px; text-transform:uppercase;">Ładowanie...</div>
     </div>
     
     <div id="dashboardContent" style="display:none;">
       <div id="notifyBanner" class="glass notify" style="display:none;" onclick="showPage('dodaj')">
-        <div class="notify-icon">🔔</div>
-        <div><strong>Czas na odczyt!</strong><span>Nowy miesiąc — wpisz stan licznika</span></div>
+        <div class="notify-icon">🔔</div><div><strong>Czas na odczyt!</strong><span>Nowy miesiąc — wpisz stan licznika</span></div>
       </div>
       
       <div class="hero-grid">
-        <div class="stat-card glass">
-          <div class="stat-label">Stan licznika</div>
-          <div class="stat-val blue" id="lastKwh">—</div>
-          <div class="stat-unit">kWh narastająco</div>
-          <div class="stat-accent-line" style="background:linear-gradient(90deg,var(--accent),transparent)"></div>
-        </div>
-        <div class="stat-card glass">
-          <div class="stat-label">Zużycie m-c</div>
-          <div class="stat-val green" id="lastMonth">—</div>
-          <div class="stat-unit">kWh w miesiącu</div>
-          <div class="stat-accent-line" style="background:linear-gradient(90deg,var(--green),transparent)"></div>
-        </div>
-        <div class="stat-card glass">
-          <div class="stat-label">Starty sprężarki</div>
-          <div class="stat-val orange" id="lastStarts">—</div>
-          <div class="stat-unit">w miesiącu</div>
-          <div class="stat-accent-line" style="background:linear-gradient(90deg,var(--orange),transparent)"></div>
-        </div>
-        <div class="stat-card glass">
-          <div class="stat-label">Śr. dziennie</div>
-          <div class="stat-val" id="lastDaily">—</div>
-          <div class="stat-unit">kWh / dzień</div>
-          <div class="stat-accent-line" style="background:linear-gradient(90deg,rgba(255,255,255,0.3),transparent)"></div>
-        </div>
+        <div class="stat-card glass"><div class="stat-label">Stan licznika</div><div class="stat-val blue" id="lastKwh">—</div><div class="stat-unit">kWh narastająco</div><div class="stat-accent-line" style="background:linear-gradient(90deg,var(--accent),transparent)"></div></div>
+        <div class="stat-card glass"><div class="stat-label">Zużycie m-c</div><div class="stat-val green" id="lastMonth">—</div><div class="stat-unit">kWh w miesiącu</div><div class="stat-accent-line" style="background:linear-gradient(90deg,var(--green),transparent)"></div></div>
+        <div class="stat-card glass"><div class="stat-label">Starty sprężarki</div><div class="stat-val orange" id="lastStarts">—</div><div class="stat-unit">w miesiącu</div><div class="stat-accent-line" style="background:linear-gradient(90deg,var(--orange),transparent)"></div></div>
+        <div class="stat-card glass"><div class="stat-label">Śr. dziennie</div><div class="stat-val" id="lastDaily">—</div><div class="stat-unit">kWh / dzień</div><div class="stat-accent-line" style="background:linear-gradient(90deg,rgba(255,255,255,0.3),transparent)"></div></div>
       </div>
       
       <div class="desktop-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:14px; align-items:start;">
         <div>
-          <div class="chart-card glass">
-            <div class="chart-title" id="lastReadLabel">Ostatni odczyt</div>
-            <div class="chart-sub">Zużycie kWh — ostatnie 6 miesięcy</div>
-            <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
-          </div>
-          <div class="glass" style="padding:20px;margin-bottom:12px;">
-            <div class="section-label">Szacunki COP × 4</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-              <div>
-                <div class="stat-label">Ciepło (est.)</div>
-                <div class="stat-val green" id="dashHeat" style="font-size:22px;">—</div>
-                <div class="stat-unit">kWh / miesiąc</div>
-              </div>
-              <div>
-                <div class="stat-label">Koszt (est.)</div>
-                <div class="stat-val orange" id="dashCost" style="font-size:22px;">—</div>
-                <div class="stat-unit" id="dashCostUnit">PLN</div>
-              </div>
-            </div>
-          </div>
+          <div class="chart-card glass"><div class="chart-title" id="lastReadLabel">Ostatni odczyt</div><div class="chart-sub">Zużycie kWh — ostatnie 6 miesięcy</div><div class="chart-wrap"><canvas id="trendChart"></canvas></div></div>
+          <div class="glass" style="padding:20px;margin-bottom:12px;"><div class="section-label">Szacunki COP × 4</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"><div><div class="stat-label">Ciepło (est.)</div><div class="stat-val green" id="dashHeat" style="font-size:22px;">—</div><div class="stat-unit">kWh / miesiąc</div></div><div><div class="stat-label">Koszt (est.)</div><div class="stat-val orange" id="dashCost" style="font-size:22px;">—</div><div class="stat-unit" id="dashCostUnit">PLN</div></div></div></div>
         </div>
-        <div class="glass" style="padding:20px;margin-bottom:12px;">
-          <div class="section-label">Roczne porównanie</div>
-          <div id="yearCompare"></div>
-        </div>
+        <div class="glass" style="padding:20px;margin-bottom:12px;"><div class="section-label">Roczne porównanie</div><div id="yearCompare"></div></div>
       </div>
     </div>
   </div>
@@ -387,53 +290,20 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
     <div class="form-section glass">
       <div class="auth-warn" id="authWarning" style="color:var(--danger); padding:10px; display:none;">🔒 Zaloguj się aby dodawać wpisy</div>
       <div class="form-period" id="formPeriodInfo" style="margin-bottom:20px; font-size:13px; color:var(--text2);">—</div>
-      
-      <div class="field">
-        <label class="field-label">Stan licznika (kWh narastająco)</label>
-        <input class="field-input" type="number" id="inputKwh" placeholder="np. 9500" step="1">
-        <div class="field-hint" id="prevKwhHint" style="font-size:11px; margin-top:5px; color:var(--text3);"></div>
-      </div>
-      
-      <div class="field">
-        <label class="field-label">Starty sprężarki (narastająco)</label>
-        <input class="field-input" type="number" id="inputStarts" placeholder="np. 1650" step="1">
-        <div class="field-hint" id="prevStartsHint" style="font-size:11px; margin-top:5px; color:var(--text3);"></div>
-      </div>
-      
-      <div class="field">
-        <label class="field-label">Uwagi (opcjonalnie)</label>
-        <input class="field-input" type="text" id="inputNote" placeholder="np. mróz, awaria..." style="font-size:16px;">
-      </div>
-      
-      <div id="calcPreview" class="calc-preview glass" style="display:none; padding:15px; margin-bottom:15px; border-left: 3px solid var(--green);">
-        <div id="calcContent"></div>
-      </div>
-      
-      <button class="action-btn primary" onclick="saveEntry()">Zapisz odczyt</button>
-      <button class="action-btn secondary" onclick="showPage('dashboard')">Anuluj</button>
+      <div class="field"><label class="field-label">Stan licznika (kWh narastająco)</label><input class="field-input" type="number" id="inputKwh" placeholder="np. 9500" step="1"><div class="field-hint" id="prevKwhHint" style="font-size:11px; margin-top:5px; color:var(--text3);"></div></div>
+      <div class="field"><label class="field-label">Starty sprężarki (narastająco)</label><input class="field-input" type="number" id="inputStarts" placeholder="np. 1650" step="1"><div class="field-hint" id="prevStartsHint" style="font-size:11px; margin-top:5px; color:var(--text3);"></div></div>
+      <div class="field"><label class="field-label">Uwagi (opcjonalnie)</label><input class="field-input" type="text" id="inputNote" placeholder="np. mróz, awaria..." style="font-size:16px;"></div>
+      <div id="calcPreview" class="calc-preview glass" style="display:none; padding:15px; margin-bottom:15px; border-left: 3px solid var(--green);"><div id="calcContent"></div></div>
+      <button class="action-btn primary" onclick="saveEntry()">Zapisz odczyt</button><button class="action-btn secondary" onclick="showPage('dashboard')">Anuluj</button>
     </div>
   </div>
 
   <div class="page" id="page-historia">
     <div class="hist-card glass">
-      <div class="hist-filters">
-        <div class="filter-chip active" onclick="filterYear(0,this)">Wszystkie</div>
-        <div class="filter-chip" onclick="filterYear(2024,this)">2024</div>
-        <div class="filter-chip" onclick="filterYear(2025,this)">2025</div>
-        <div class="filter-chip" onclick="filterYear(2026,this)">2026</div>
-      </div>
+      <div class="hist-filters"><div class="filter-chip active" onclick="filterYear(0,this)">Wszystkie</div><div class="filter-chip" onclick="filterYear(2024,this)">2024</div><div class="filter-chip" onclick="filterYear(2025,this)">2025</div><div class="filter-chip" onclick="filterYear(2026,this)">2026</div></div>
       <div class="table-wrap">
         <table>
-          <thead>
-            <tr>
-              <th onclick="sortHistory('miesiac')" id="th-miesiac">Miesiąc</th>
-              <th onclick="sortHistory('stan')" id="th-stan">Stan kWh</th>
-              <th onclick="sortHistory('kwhMc')" id="th-kwhMc">kWh m-c</th>
-              <th onclick="sortHistory('srDzien')" id="th-srDzien">Śr/dzień</th>
-              <th onclick="sortHistory('startsMc')" id="th-startsMc">Starty</th>
-              <th>Usuń</th>
-            </tr>
-          </thead>
+          <thead><tr><th onclick="sortHistory('miesiac')" id="th-miesiac">Miesiąc</th><th onclick="sortHistory('stan')" id="th-stan">Stan kWh</th><th onclick="sortHistory('kwhMc')" id="th-kwhMc">kWh m-c</th><th onclick="sortHistory('srDzien')" id="th-srDzien">Śr/dzień</th><th onclick="sortHistory('startsMc')" id="th-startsMc">Starty</th><th>Usuń</th></tr></thead>
           <tbody id="historyTable"></tbody>
         </table>
       </div>
@@ -441,70 +311,31 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
   </div>
 
   <div class="page" id="page-analityka">
-    <div class="anal-tabs">
-      <button class="anal-tab active" onclick="switchAnalView('compare')">📊 Porównanie</button>
-      <button class="anal-tab" onclick="switchAnalView('heatmap')">🟥 Heatmapa</button>
-      <button class="anal-tab" onclick="switchAnalView('versus')">⚡ Versus</button>
-      <button class="anal-tab" onclick="switchAnalView('forecast')">🔮 Prognoza</button>
-    </div>
+    <div class="anal-tabs"><button class="anal-tab active" onclick="switchAnalView('compare')">📊 Porównanie</button><button class="anal-tab" onclick="switchAnalView('heatmap')">🟥 Heatmapa</button><button class="anal-tab" onclick="switchAnalView('versus')">⚡ Versus</button><button class="anal-tab" onclick="switchAnalView('forecast')">🔮 Prognoza</button></div>
     
     <div class="anal-view active" id="anal-compare">
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px; align-items:start;">
-        <div>
-          <div class="anal-card glass">
-            <div class="section-label">Zużycie miesięczne — porównanie lat</div>
-            <div class="chart-wrap" style="height:200px;"><canvas id="compareChart"></canvas></div>
-          </div>
-          <div class="anal-card glass">
-            <div class="section-label">Rekordy</div>
-            <div id="records"></div>
-          </div>
-        </div>
-        <div class="anal-card glass">
-          <div class="section-label">Statystyki roczne</div>
-          <div id="yearStats"></div>
-        </div>
+        <div><div class="anal-card glass"><div class="section-label">Zużycie miesięczne — porównanie lat</div><div class="chart-wrap" style="height:200px;"><canvas id="compareChart"></canvas></div></div><div class="anal-card glass"><div class="section-label">Rekordy</div><div id="records"></div></div></div>
+        <div class="anal-card glass"><div class="section-label">Statystyki roczne</div><div id="yearStats"></div></div>
       </div>
     </div>
     
     <div class="anal-view" id="anal-heatmap">
-      <div class="anal-card glass">
-        <div class="section-label">Heatmapa zużycia kWh</div>
-        <div class="hm-hint" style="font-size:11px; color:var(--text2); margin-bottom:12px;">Kliknij komórkę aby zobaczyć szczegóły miesiąca</div>
-        <div id="heatmapGrid"></div>
-        <div class="hm-legend" style="display:flex; align-items:center; gap:8px; margin-top:12px; font-size:10px; color:var(--text3);">
-          <span>Mniej</span><div class="hm-legend-bar" id="hmLegend" style="display:flex; gap:2px;"></div><span>Więcej</span>
-        </div>
-      </div>
+      <div class="anal-card glass"><div class="section-label">Heatmapa zużycia kWh</div><div class="hm-hint" style="font-size:11px; color:var(--text2); margin-bottom:12px;">Kliknij komórkę aby zobaczyć szczegóły miesiąca</div><div id="heatmapGrid"></div><div class="hm-legend" style="display:flex; align-items:center; gap:8px; margin-top:12px; font-size:10px; color:var(--text3);"><span>Mniej</span><div class="hm-legend-bar" id="hmLegend" style="display:flex; gap:2px;"></div><span>Więcej</span></div></div>
     </div>
     
     <div class="anal-view" id="anal-versus">
-      <div class="anal-card glass">
-        <div class="section-label">Porównaj dwa lata</div>
-        <div class="compare-selectors" style="display:flex; gap:10px; margin-bottom:15px;">
-          <select class="compare-select" id="compareYear1" onchange="renderVersus()"></select>
-          <div style="align-self:center;">vs</div>
-          <select class="compare-select" id="compareYear2" onchange="renderVersus()"></select>
-        </div>
-        <div id="compareResult"></div>
-      </div>
+      <div class="anal-card glass"><div class="section-label">Porównaj dwa lata</div><div class="compare-selectors" style="display:flex; gap:10px; margin-bottom:15px;"><select class="compare-select" id="compareYear1" onchange="renderVersus()"></select><div style="align-self:center;">vs</div><select class="compare-select" id="compareYear2" onchange="renderVersus()"></select></div><div id="compareResult"></div></div>
     </div>
     
     <div class="anal-view" id="anal-forecast">
-      <div class="anal-card glass">
-        <div class="section-label">Prognoza zużycia</div>
-        <div id="forecastContent"></div>
-      </div>
+      <div class="anal-card glass"><div class="section-label">Prognoza zużycia</div><div id="forecastContent"></div></div>
     </div>
   </div>
 
   <div class="page" id="page-security">
     <div class="glass" style="padding:20px;">
-      <div class="anal-tabs" style="margin-bottom: 16px;">
-        <button class="anal-tab log-tab active" onclick="switchLogView('security')">🛡 Logowania</button>
-        <button class="anal-tab log-tab" onclick="switchLogView('audit')">📝 Audyt Danych</button>
-        <button class="anal-tab log-tab" onclick="switchLogView('app')">⚠ Błędy App</button>
-      </div>
+      <div class="anal-tabs" style="margin-bottom: 16px;"><button class="anal-tab log-tab active" onclick="switchLogView('security')">🛡 Logowania</button><button class="anal-tab log-tab" onclick="switchLogView('audit')">📝 Audyt Danych</button><button class="anal-tab log-tab" onclick="switchLogView('app')">⚠ Błędy App</button></div>
       <div id="logWidgetContainer" style="min-height: 150px;"></div>
     </div>
   </div>
@@ -518,20 +349,13 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
   <button class="nav-pill" id="nav-security" style="display:none;" onclick="showPage('security')">Logi</button>
 </nav>
 
-<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
-  <div class="modal" style="position:relative;">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div id="modalPeriod" style="font-size:11px; color:var(--accent); text-transform:uppercase; margin-bottom:6px;">—</div>
-    <div id="modalTitle" style="font-size:22px; font-weight:600; margin-bottom:20px;">—</div>
-    <div id="modalStats" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;"></div>
-    <div id="modalCompare" style="margin-top:20px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.06);"></div>
-  </div>
-</div>
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)"><div class="modal" style="position:relative;"><button class="modal-close" onclick="closeModal()">✕</button><div id="modalPeriod" style="font-size:11px; color:var(--accent); text-transform:uppercase; margin-bottom:6px;">—</div><div id="modalTitle" style="font-size:22px; font-weight:600; margin-bottom:20px;">—</div><div id="modalStats" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;"></div><div id="modalCompare" style="margin-top:20px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.06);"></div></div></div>
 
 <div class="modal-overlay" id="modalSettingsOverlay" onclick="closeSettingsModal(event)">
   <div class="modal" style="position:relative;">
     <button class="modal-close" onclick="closeSettingsModal()">✕</button>
-    <div style="font-size:20px; font-weight:600; margin-bottom:15px;">Edytuj stawkę prądu</div>
+    <div style="font-size:20px; font-weight:600; margin-bottom:15px;">Ustawienia aplikacji</div>
+    
     <div class="field">
       <label class="field-label">Wybierz rok</label>
       <select id="selectRok" style="padding:10px; width:100%; border-radius:10px; background:var(--glass-bg); color:var(--text); border:1px solid var(--glass-border); margin-bottom:12px;" onchange="updateRateInput()"></select>
@@ -541,24 +365,29 @@ body.light .forecast-month { background: rgba(0,0,0,0.05); }
       <input type="number" id="newStawka" placeholder="0.85" step="0.0001" min="0" class="field-input" style="font-size:20px;">
       <div style="font-size:11px; color:var(--text3); margin-top:6px;">Domyślnie: 0.85 PLN</div>
     </div>
-    <button class="action-btn primary" onclick="saveStawka()">Zapisz zmiany</button>
+    <button class="action-btn primary" onclick="saveStawka()" style="margin-bottom:24px;">Zapisz zmiany stawek</button>
+
+    <div style="padding-top:20px; border-top:1px solid rgba(255,255,255,0.08);">
+      <label class="field-label">Powiadomienia Push</label>
+      <button class="action-btn secondary" id="btnPush" onclick="subscribeUser()">Sprawdzam status...</button>
+      <div id="pushStatus" style="font-size:11px; color:var(--text3); margin-top:8px; text-align:center;">Ładowanie stanu powiadomień...</div>
+    </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-
 <script>
 // ============================================================================
-// KONFIGURACJA SUPABASE (Twoje klucze)
+// KONFIGURACJA SUPABASE ORAZ PUSH
 // ============================================================================
 const SUPABASE_URL = 'https://gmipfhbfvorzpmpwuxfl.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtaXBmaGJmdm9yenBtcHd1eGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3NzE5NzUsImV4cCI6MjA4NzM0Nzk3NX0.vZ91Cx-kpY57rdV6Lk94tZZkqo-QfSWiEhJeHLqvKWE';
+const VAPID_PUBLIC_KEY = 'BEK3Pxdz4TkEa-jl3D-maZMp7EzEiEZCfyV3l_ah2BH32_C6QF0L4tR1PYn2k1JQtdYYWwY365v4Q13FsHJ96pk'; 
 const TABLE = 'odczyty';
 const COP_EST = 4;
 const MIESIAC_PL = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
 
-// Inicjalizacja biblioteki
 const { createClient } = window.supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -571,10 +400,65 @@ let sortCol = 'miesiac';
 let sortDir = 'desc';
 
 // ============================================================================
+// SERVICE WORKER I POWIADOMIENIA PUSH
+// ============================================================================
+async function registerSW() {
+  if ('serviceWorker' in navigator && 'PushManager' in window) {
+    try {
+      await navigator.serviceWorker.register('sw.js');
+      checkPushSubscription();
+    } catch (e) { console.error("Rejestracja SW nie powiodła się:", e); }
+  }
+}
+
+async function checkPushSubscription() {
+  const reg = await navigator.serviceWorker.ready;
+  const sub = await reg.pushManager.getSubscription();
+  const btn = document.getElementById('btnPush');
+  if (btn) {
+    if (sub) {
+      btn.textContent = '✅ Powiadomienia aktywne';
+      btn.disabled = true;
+      document.getElementById('pushStatus').textContent = 'Urządzenie jest połączone z systemem powiadomień.';
+    } else {
+      btn.textContent = '🔔 Włącz powiadomienia';
+      btn.disabled = false;
+      document.getElementById('pushStatus').textContent = 'Otrzymuj przypomnienia 1. dnia miesiąca.';
+    }
+  }
+}
+
+async function subscribeUser() {
+  if (!currentUser) return showToast('Zaloguj się najpierw!', true);
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const padding = '='.repeat((4 - VAPID_PUBLIC_KEY.length % 4) % 4);
+    const base64 = (VAPID_PUBLIC_KEY + padding).replace(/\-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
+
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: outputArray
+    });
+
+    const { error } = await sb.from('push_subscriptions').insert({
+      user_id: currentUser.id,
+      subscription: sub
+    });
+    if (error) throw error;
+    showToast('Powiadomienia włączone!');
+    checkPushSubscription();
+  } catch (e) {
+    console.error(e);
+    showToast('Błąd subskrypcji. Sprawdź uprawnienia.', true);
+  }
+}
+
+// ============================================================================
 // FUNKCJE BEZPIECZEŃSTWA (Zalecenia z Audytu)
 // ============================================================================
-
-// Funkcja zabezpieczająca przed atakami XSS - "oczyszcza" tekst z HTMLa
 function escapeHTML(str) {
   if (!str) return '';
   return String(str).replace(/[&<>"']/g, function(match) {
@@ -583,43 +467,24 @@ function escapeHTML(str) {
   });
 }
 
-// Logowanie błędów do bazy (bez publicznego debug panelu!)
 async function logError(akcja, errObj, detale = {}) {
   const msg = errObj.message || JSON.stringify(errObj);
-  console.error(`[${akcja}]`, msg, detale); // Leci tylko do konsoli dewelopera
-  
+  console.error(`[${akcja}]`, msg, detale);
   if (currentUser) {
-    try { 
-      await sb.from('app_logs').insert({ 
-        akcja: akcja, 
-        komunikat: msg, 
-        detale: detale, 
-        user_id: currentUser.id 
-      }); 
-    } catch(e) {
-      // Ignorujemy błędy przy logowaniu błędów, aby nie stworzyć pętli
-    }
+    try { await sb.from('app_logs').insert({ akcja: akcja, komunikat: msg, detale: detale, user_id: currentUser.id }); } catch(e) {}
   }
 }
 
-// Logowanie zdarzeń bezpieczeństwa przez dedykowane RPC
 async function logSecurityEvent(akcja, szczegoly) {
-  try { 
-    await sb.rpc('log_security_event', { p_akcja: akcja, p_szczegoly: szczegoly }); 
-  } catch(e) {
-    console.error("Błąd przy zapisie logu bezpieczeństwa", e);
-  }
+  try { await sb.rpc('log_security_event', { p_akcja: akcja, p_szczegoly: szczegoly }); } catch(e) {}
 }
 
 // ============================================================================
 // LOGOWANIE I AUTORYZACJA
 // ============================================================================
-
 async function initAuth() {
   const { data: { user }, error } = await sb.auth.getUser();
   currentUser = user;
-  
-  // Ukrywanie lub pokazywanie zakładki z logami
   document.getElementById('nav-security').style.display = currentUser ? 'block' : 'none';
   updateAuthUI();
 }
@@ -627,68 +492,44 @@ async function initAuth() {
 function updateAuthUI() {
   const container = document.getElementById('authContainer');
   if (currentUser) {
-    // EscapeHTML użyte na nazwie użytkownika (zabezpieczenie XSS)
     let name = escapeHTML(currentUser.user_metadata?.full_name || currentUser.email || 'User');
-    container.innerHTML = `
-      <button class="pill-btn" onclick="openSettingsModal()">⚙️ Stawki</button>
-      <button class="pill-btn danger" onclick="signOut()">${name.split(' ')[0]} · Wyloguj</button>
-    `;
+    container.innerHTML = `<button class="pill-btn" onclick="openSettingsModal()">⚙️ Stawki</button><button class="pill-btn danger" onclick="signOut()">${name.split(' ')[0]} · Wyloguj</button>`;
   } else {
-    container.innerHTML = `
-      <button class="pill-btn" onclick="signInWithGoogle()">🔐 Zaloguj</button>
-    `;
+    container.innerHTML = `<button class="pill-btn" onclick="signInWithGoogle()">🔐 Zaloguj</button>`;
   }
 }
 
 async function signInWithGoogle() {
-  // Bezpieczne przekierowanie (zapobiega Open Redirect)
   const bezpiecznyUrl = window.location.origin + window.location.pathname;
   await logSecurityEvent('LOGIN_CLICK', 'Użytkownik klika logowanie Google');
-  await sb.auth.signInWithOAuth({ 
-    provider: 'google', 
-    options: { redirectTo: bezpiecznyUrl } 
-  });
+  await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: bezpiecznyUrl } });
 }
 
-async function signOut() { 
-  await sb.auth.signOut(); 
-  location.reload(); 
-}
+async function signOut() { await sb.auth.signOut(); location.reload(); }
 
 // ============================================================================
 // POBIERANIE I OBRÓBKA DANYCH
 // ============================================================================
-
 async function loadData() {
   setSyncStatus('syncing');
   try {
-    // 1. Pobranie stawek
     const { data: sData, error: sErr } = await sb.from('stawki').select('*');
     if (sErr) throw sErr;
     stawkiMap = {}; 
-    if (sData) {
-      sData.forEach(r => { stawkiMap[r.rok] = r.stawka_kwh; });
-    }
+    if (sData) sData.forEach(r => { stawkiMap[r.rok] = r.stawka_kwh; });
     
-    // 2. Pobranie odczytów
     const { data: rData, error: rErr } = await sb.from(TABLE).select('*').order('dzien', { ascending: true });
     if (rErr) throw rErr;
     allData = (rData || []).map(r => ({ ...r, dzien: new Date(r.dzien) }));
     
-    setSyncStatus('ok'); 
-    return true;
+    setSyncStatus('ok'); return true;
   } catch(e) { 
-    setSyncStatus('err'); 
-    await logError('loadData', e);
-    return false; 
+    setSyncStatus('err'); await logError('loadData', e); return false; 
   }
 }
 
-function getStawka(rok) { 
-  return stawkiMap[rok] || 0.85; 
-}
+function getStawka(rok) { return stawkiMap[rok] || 0.85; }
 
-// Funkcja dodająca wyliczane statystyki (zużycie miesięczne, średnie, itp.)
 function enrichData(data) {
   return data.map((d, i) => {
     const prev = i > 0 ? data[i-1] : null;
@@ -696,7 +537,6 @@ function enrichData(data) {
     const dni = prev ? Math.round((d.dzien - prev.dzien) / 86400000) : null;
     const srDzien = (kwhMc && dni) ? Math.round(kwhMc/dni*10)/10 : null;
     const startsMc = (d.starts != null && prev && prev.starts != null) ? d.starts - prev.starts : null;
-    
     return { ...d, kwhMc, dni, srDzien, startsMc };
   });
 }
@@ -704,7 +544,6 @@ function enrichData(data) {
 // ============================================================================
 // RENDEROWANIE GŁÓWNYCH STRON
 // ============================================================================
-
 function renderDashboard() {
   document.getElementById('loadingDashboard').style.display = 'none';
   document.getElementById('dashboardContent').style.display = 'block';
@@ -726,36 +565,24 @@ function renderDashboard() {
   document.getElementById('dashCost').textContent = last.kwhMc ? Math.round(last.kwhMc * currentStawka) + ' zł' : '—';
   document.getElementById('dashCostUnit').textContent = `PLN @ ${currentStawka}/kWh`;
   
-  if (now.getDate() === 1) {
-    document.getElementById('notifyBanner').style.display = 'flex';
-  } else {
-    document.getElementById('notifyBanner').style.display = 'none';
-  }
+  if (now.getDate() === 1) document.getElementById('notifyBanner').style.display = 'flex';
+  else document.getElementById('notifyBanner').style.display = 'none';
 
-  // Wyliczenie roczne do pasków
   const yt = {}; 
-  rich.forEach(d => { 
-    if(d.kwhMc) {
-      yt[d.rok] = (yt[d.rok] || 0) + d.kwhMc; 
-    }
-  });
+  rich.forEach(d => { if(d.kwhMc) yt[d.rok] = (yt[d.rok] || 0) + d.kwhMc; });
   
   const maxY = Math.max(...Object.values(yt));
   document.getElementById('yearCompare').innerHTML = Object.entries(yt).sort().map(([yr, total], i) => `
     <div class="year-row">
       <div class="year-lbl">${yr}</div>
-      <div class="year-track">
-        <div class="year-fill yf${i%5}" style="width:${Math.round(total/maxY*100)}%">${total.toLocaleString()} kWh</div>
-      </div>
+      <div class="year-track"><div class="year-fill yf${i%5}" style="width:${Math.round(total/maxY*100)}%">${total.toLocaleString()} kWh</div></div>
     </div>
   `).join('');
   
-  // Rysowanie małego wykresu
   const last6 = rich.filter(d => d.kwhMc !== null).slice(-6);
   drawBars('trendChart', last6.map(d => d.miesiac.slice(0,3)), last6.map(d => d.kwhMc), 'rgba(79,195,247,0.8)');
 }
 
-// Funkcja odpowiedzialna za widok dodawania
 function renderForm() {
   if (!allData.length) return;
   document.getElementById('authWarning').style.display = currentUser ? 'none' : 'block';
@@ -763,8 +590,7 @@ function renderForm() {
   const rich = enrichData(allData);
   const last = rich[rich.length - 1];
   
-  const rDate = new Date(last.dzien); 
-  rDate.setMonth(rDate.getMonth() + 1);
+  const rDate = new Date(last.dzien); rDate.setMonth(rDate.getMonth() + 1);
   const repMonthIdx = rDate.getMonth() - 1 < 0 ? 11 : rDate.getMonth() - 1;
   const repYear = rDate.getMonth() === 0 ? rDate.getFullYear() - 1 : rDate.getFullYear();
   
@@ -774,115 +600,68 @@ function renderForm() {
   
   document.getElementById('inputKwh').oninput = () => {
     const kwh = parseInt(document.getElementById('inputKwh').value);
-    if (!kwh || kwh <= last.stan) { 
-      document.getElementById('calcPreview').style.display = 'none'; 
-      return; 
-    }
+    if (!kwh || kwh <= last.stan) { document.getElementById('calcPreview').style.display = 'none'; return; }
     const kwhMc = kwh - last.stan;
     const dni = Math.round((rDate - new Date(last.dzien)) / 86400000);
     const srDzien = Math.round(kwhMc/dni*10)/10;
     
     document.getElementById('calcPreview').style.display = 'block';
     document.getElementById('calcContent').innerHTML = `
-      <div style="display:flex; justify-content:space-between; padding:6px 0; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.05);">
-        <span style="color:var(--text2);">Zużycie w miesiącu</span><span style="font-family:var(--mono); font-weight:500; color:var(--green);">${kwhMc} kWh</span>
-      </div>
-      <div style="display:flex; justify-content:space-between; padding:6px 0; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.05);">
-        <span style="color:var(--text2);">Śr. dziennie</span><span style="font-family:var(--mono); font-weight:500;">${srDzien} kWh/d</span>
-      </div>
-      <div style="display:flex; justify-content:space-between; padding:6px 0; font-size:13px;">
-        <span style="color:var(--text2);">Koszt (est.)</span><span style="font-family:var(--mono); font-weight:500; color:var(--orange);">${Math.round(kwhMc*getStawka(repYear))} PLN</span>
-      </div>
+      <div style="display:flex; justify-content:space-between; padding:6px 0; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:var(--text2);">Zużycie w miesiącu</span><span style="font-family:var(--mono); font-weight:500; color:var(--green);">${kwhMc} kWh</span></div>
+      <div style="display:flex; justify-content:space-between; padding:6px 0; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:var(--text2);">Śr. dziennie</span><span style="font-family:var(--mono); font-weight:500;">${srDzien} kWh/d</span></div>
+      <div style="display:flex; justify-content:space-between; padding:6px 0; font-size:13px;"><span style="color:var(--text2);">Koszt (est.)</span><span style="font-family:var(--mono); font-weight:500; color:var(--orange);">${Math.round(kwhMc*getStawka(repYear))} PLN</span></div>
     `;
   };
 }
 
 async function saveEntry() {
   if (!currentUser) return showToast('🔒 Zaloguj się!', true);
-  
   const kwhInput = parseInt(document.getElementById('inputKwh').value);
   const startsInput = document.getElementById('inputStarts').value;
-  // Ochrona XSS przez escapeHTML przed wysłaniem do bazy
   const noteInput = escapeHTML(document.getElementById('inputNote').value);
   
-  const rich = enrichData(allData); 
-  const last = rich[rich.length - 1];
+  const rich = enrichData(allData); const last = rich[rich.length - 1];
+  if (!kwhInput || kwhInput <= (last?.stan || 0)) return showToast('⚠ Błędny stan!', true);
   
-  if (!kwhInput || kwhInput <= (last?.stan || 0)) {
-    return showToast('⚠ Błędny stan!', true);
-  }
-  
-  const dDate = new Date(last.dzien); 
-  dDate.setMonth(dDate.getMonth() + 1);
+  const dDate = new Date(last.dzien); dDate.setMonth(dDate.getMonth() + 1);
   const rm = dDate.getMonth() - 1 < 0 ? 11 : dDate.getMonth() - 1;
   const ry = dDate.getMonth() === 0 ? dDate.getFullYear() - 1 : dDate.getFullYear();
 
   setSyncStatus('syncing');
+  const { error } = await sb.from(TABLE).insert({ rok: ry, miesiac: MIESIAC_PL[rm], dzien: dDate.toISOString().slice(0,10), stan: kwhInput, starts: startsInput ? parseInt(startsInput) : null, note: noteInput || null, user_id: currentUser.id });
   
-  const { error } = await sb.from(TABLE).insert({ 
-    rok: ry, 
-    miesiac: MIESIAC_PL[rm], 
-    dzien: dDate.toISOString().slice(0,10), 
-    stan: kwhInput, 
-    starts: startsInput ? parseInt(startsInput) : null, 
-    note: noteInput || null, 
-    user_id: currentUser.id 
-  });
-  
-  if (error) { 
-    showToast('Błąd RLS/Bazy', true); 
-    setSyncStatus('err'); 
-    await logError('saveEntry', error);
-  } else { 
+  if (error) { showToast('Błąd RLS/Bazy', true); setSyncStatus('err'); await logError('saveEntry', error); } 
+  else { 
     showToast('✅ Zapisano!'); 
-    document.getElementById('inputKwh').value = '';
-    document.getElementById('inputStarts').value = '';
-    document.getElementById('inputNote').value = '';
-    document.getElementById('calcPreview').style.display = 'none';
-    
-    await loadData(); 
-    showPage('dashboard'); 
+    document.getElementById('inputKwh').value = ''; document.getElementById('inputStarts').value = ''; document.getElementById('inputNote').value = ''; document.getElementById('calcPreview').style.display = 'none';
+    await loadData(); showPage('dashboard'); 
   }
 }
 
 async function saveStawka() {
   if (!currentUser) return showToast('Zaloguj się', true);
-  
   const r = parseInt(document.getElementById('selectRok').value);
   const s = parseFloat(document.getElementById('newStawka').value);
   
-  // Walidacja przeciwko stawce ujemnej na poziomie JS
-  if (!r || isNaN(s) || s < 0) {
-    return showToast('Stawka nie może być ujemna', true);
-  }
+  if (!r || isNaN(s) || s < 0) return showToast('Stawka nie może być ujemna', true);
   
   setSyncStatus('syncing');
-  const { error } = await sb.from('stawki').upsert(
-    { rok: r, stawka_kwh: s, user_id: currentUser.id }, 
-    { onConflict: 'rok, user_id' }
-  );
+  const { error } = await sb.from('stawki').upsert({ rok: r, stawka_kwh: s, user_id: currentUser.id }, { onConflict: 'rok, user_id' });
   
-  if (error) { 
-    showToast('Błąd zapisu stawki', true); 
-    setSyncStatus('err'); 
-    await logError('saveStawka', error);
-  } else { 
-    showToast('Zaktualizowano'); 
-    closeSettingsModal(); 
-    await loadData(); 
+  if (error) { showToast('Błąd zapisu stawki', true); setSyncStatus('err'); await logError('saveStawka', error); } 
+  else { 
+    showToast('Zaktualizowano'); closeSettingsModal(); await loadData(); 
     if (document.getElementById('page-dashboard').classList.contains('active')) renderDashboard();
     if (document.getElementById('page-analityka').classList.contains('active')) renderAnalityka();
   }
 }
 
 // ============================================================================
-// SYSTEM ZAKŁADEK I NAWIGACJA
+// ZAKŁADKI I NAWIGACJA
 // ============================================================================
-
 function showPage(n) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-pill').forEach(b => b.classList.remove('active'));
-  
   document.getElementById('page-' + n).classList.add('active');
   const btn = document.getElementById('nav-' + n) || document.querySelector(`[onclick="showPage('${n}')"]`);
   if(btn) btn.classList.add('active');
@@ -894,645 +673,307 @@ function showPage(n) {
   if(n === 'security') switchLogView('security');
 }
 
-function filterYear(yr, el) { 
-  activeYearFilter = yr; 
-  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active')); 
-  el.classList.add('active'); 
-  renderHistory(); 
-}
-
-function sortHistory(col) { 
-  sortDir = (sortCol === col) ? (sortDir === 'asc' ? 'desc' : 'asc') : 'desc'; 
-  sortCol = col; 
-  renderHistory(); 
-}
+function filterYear(yr, el) { activeYearFilter = yr; document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active')); el.classList.add('active'); renderHistory(); }
+function sortHistory(col) { sortDir = (sortCol === col) ? (sortDir === 'asc' ? 'desc' : 'asc') : 'desc'; sortCol = col; renderHistory(); }
 
 function renderHistory() {
   const rich = enrichData(allData); 
   let filtered = activeYearFilter ? rich.filter(d => d.rok == activeYearFilter) : rich;
-  
   filtered.sort((a, b) => {
     let av = a[sortCol], bv = b[sortCol];
-    if (av == null) av = -Infinity; 
-    if (bv == null) bv = -Infinity;
-    if (sortCol === 'miesiac') { 
-      av = new Date(a.dzien).getTime(); 
-      bv = new Date(b.dzien).getTime(); 
-    }
+    if (av == null) av = -Infinity; if (bv == null) bv = -Infinity;
+    if (sortCol === 'miesiac') { av = new Date(a.dzien).getTime(); bv = new Date(b.dzien).getTime(); }
     if (typeof av === 'string') return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
     return sortDir === 'asc' ? av - bv : bv - av;
   });
 
-  ['miesiac','stan','kwhMc','srDzien','startsMc'].forEach(col => { 
-    const th = document.getElementById('th-'+col); 
-    if(th) { 
-      th.classList.remove('sort-asc','sort-desc'); 
-      if(col===sortCol) th.classList.add('sort-'+sortDir); 
-    } 
-  });
+  ['miesiac','stan','kwhMc','srDzien','startsMc'].forEach(col => { const th = document.getElementById('th-'+col); if(th) { th.classList.remove('sort-asc','sort-desc'); if(col===sortCol) th.classList.add('sort-'+sortDir); } });
 
   document.getElementById('historyTable').innerHTML = filtered.map(d => `
-    <tr>
-      <td>${d.miesiac} ${d.rok}</td>
-      <td>${d.stan.toLocaleString()}</td>
-      <td>${d.kwhMc || '—'}</td>
-      <td>${d.srDzien || '—'}</td>
-      <td>${d.startsMc || '—'}</td>
-      <td>${(d.id && currentUser) ? `<button class="del-btn" onclick="deleteEntry('${d.id}')">✕</button>` : '—'}</td>
-    </tr>
+    <tr><td>${d.miesiac} ${d.rok}</td><td>${d.stan.toLocaleString()}</td><td>${d.kwhMc || '—'}</td><td>${d.srDzien || '—'}</td><td>${d.startsMc || '—'}</td><td>${(d.id && currentUser) ? `<button class="del-btn" onclick="deleteEntry('${d.id}')">✕</button>` : '—'}</td></tr>
   `).join('');
 }
 
 async function deleteEntry(id) { 
   if(!confirm('Czy na pewno chcesz usunąć ten wpis?')) return; 
-  
   setSyncStatus('syncing');
   const { error } = await sb.from(TABLE).delete().eq('id', id); 
-  
-  if(error) {
-    showToast('Błąd usuwania', true);
-    setSyncStatus('err');
-  } else {
-    showToast('Wpis usunięty');
-    await loadData(); 
-    renderHistory(); 
-  }
+  if(error) { showToast('Błąd usuwania', true); setSyncStatus('err'); } else { showToast('Wpis usunięty'); await loadData(); renderHistory(); }
 }
 
 // ============================================================================
-// LOGI I SYSTEM AUDYTU (Widok UI)
+// LOGI UI
 // ============================================================================
-
 async function switchLogView(t) {
   document.querySelectorAll('.log-tab').forEach(b => b.classList.remove('active'));
-  const idx = ['security','audit','app'].indexOf(t); 
-  document.querySelectorAll('.log-tab')[idx].classList.add('active');
-  
-  const container = document.getElementById('logWidgetContainer'); 
-  container.innerHTML = '<div class="spinner" style="margin: 30px auto;"></div>';
-  
+  const idx = ['security','audit','app'].indexOf(t); document.querySelectorAll('.log-tab')[idx].classList.add('active');
+  const container = document.getElementById('logWidgetContainer'); container.innerHTML = '<div class="spinner" style="margin: 30px auto;"></div>';
   let tableName = t === 'security' ? 'security_logs' : (t === 'audit' ? 'audit_logs' : 'app_logs');
   
   const { data, error } = await sb.from(tableName).select('*').order('created_at', { ascending: false }).limit(20);
-  
-  if (error) {
-    container.innerHTML = `<div style="color:var(--danger)">Błąd: ${error.message}</div>`;
-    return;
-  }
-  
-  if (!data || !data.length) { 
-    container.innerHTML = '<div style="text-align:center;color:var(--text3);padding:20px;">Brak wpisów.</div>'; 
-    return; 
-  }
+  if (error) { container.innerHTML = `<div style="color:var(--danger)">Błąd: ${error.message}</div>`; return; }
+  if (!data || !data.length) { container.innerHTML = '<div style="text-align:center;color:var(--text3);padding:20px;">Brak wpisów.</div>'; return; }
   
   container.innerHTML = data.map(log => {
     let tagClass = '';
-    if (t === 'audit') {
-      if (log.akcja === 'INSERT') tagClass = 'tag-insert';
-      else if (log.akcja === 'UPDATE') tagClass = 'tag-update';
-      else tagClass = 'tag-delete';
-    } else if (t === 'security') {
-      if (log.akcja.includes('ERROR')) tagClass = 'tag-error';
-      else tagClass = 'tag-login';
-    } else {
-      tagClass = 'tag-error';
-    }
-
-    // Bezpieczne renderowanie szczegółów
-    let rawDetails = log.szczegoly || log.komunikat || (log.detale ? JSON.stringify(log.detale) : '');
-    let safeDetails = escapeHTML(rawDetails);
-
+    if (t === 'audit') { if (log.akcja === 'INSERT') tagClass = 'tag-insert'; else if (log.akcja === 'UPDATE') tagClass = 'tag-update'; else tagClass = 'tag-delete'; } 
+    else if (t === 'security') { if (log.akcja.includes('ERROR')) tagClass = 'tag-error'; else tagClass = 'tag-login'; } 
+    else { tagClass = 'tag-error'; }
+    let safeDetails = escapeHTML(log.szczegoly || log.komunikat || (log.detale ? JSON.stringify(log.detale) : ''));
     return `
       <div class="log-item">
-        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-          <span class="log-tag ${tagClass}">${log.akcja}</span>
-          <span style="color:var(--text3)">${new Date(log.created_at).toLocaleString()}</span>
-        </div>
-        <div style="color:var(--text2); font-size:10px; margin-bottom:6px;">
-          ${log.ip_address ? `IP: <span style="color:var(--text)">${log.ip_address}</span>` : ''}
-          ${log.tabela ? ` · Tabela: <span style="color:var(--text)">${log.tabela}</span>` : ''}
-          ${log.user_id ? ` · User: ...${log.user_id.slice(-6)}` : ''}
-        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span class="log-tag ${tagClass}">${log.akcja}</span><span style="color:var(--text3)">${new Date(log.created_at).toLocaleString()}</span></div>
+        <div style="color:var(--text2); font-size:10px; margin-bottom:6px;">${log.ip_address ? `IP: <span style="color:var(--text)">${log.ip_address}</span>` : ''} ${log.tabela ? ` · Tabela: <span style="color:var(--text)">${log.tabela}</span>` : ''} ${log.user_id ? ` · User: ...${log.user_id.slice(-6)}` : ''}</div>
         ${safeDetails ? `<div class="log-details">${safeDetails}</div>` : ''}
-      </div>
-    `;
+      </div>`;
   }).join('');
 }
 
 // ============================================================================
-// SYSTEM ANALITYCZNY I WYKRESY
+// ANALITYKA
 // ============================================================================
-
 function switchAnalView(v) {
   document.querySelectorAll('.anal-tab:not(.log-tab)').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.anal-view').forEach(av => av.classList.remove('active'));
-  
   const idx = ['compare','heatmap','versus','forecast'].indexOf(v);
   document.querySelectorAll('.anal-tab:not(.log-tab)')[idx].classList.add('active');
   document.getElementById('anal-' + v).classList.add('active');
-  
-  if(v === 'compare') renderAnalityka(); 
-  if(v === 'heatmap') renderHeatmap(); 
-  if(v === 'versus') renderVersus(); 
-  if(v === 'forecast') renderForecast();
+  if(v === 'compare') renderAnalityka(); if(v === 'heatmap') renderHeatmap(); if(v === 'versus') renderVersus(); if(v === 'forecast') renderForecast();
 }
 
 function renderAnalityka() {
   const rich = enrichData(allData).filter(d => d.kwhMc !== null);
-  const yearMap = {};
-  
-  for (const d of rich) { 
-    if (!yearMap[d.rok]) yearMap[d.rok] = []; 
-    yearMap[d.rok].push(d); 
-  }
+  const yearMap = {}; for (const d of rich) { if (!yearMap[d.rok]) yearMap[d.rok] = []; yearMap[d.rok].push(d); }
 
   document.getElementById('yearStats').innerHTML = Object.entries(yearMap).sort().map(([yr, entries]) => {
-    const total = entries.reduce((s, e) => s + e.kwhMc, 0);
-    const cost = entries.reduce((s, e) => s + (e.kwhMc * getStawka(e.rok)), 0);
-    const max = Math.max(...entries.map(e => e.kwhMc));
-    const min = Math.min(...entries.map(e => e.kwhMc));
-    
+    const total = entries.reduce((s, e) => s + e.kwhMc, 0); const cost = entries.reduce((s, e) => s + (e.kwhMc * getStawka(e.rok)), 0);
+    const max = Math.max(...entries.map(e => e.kwhMc)); const min = Math.min(...entries.map(e => e.kwhMc));
     return `
       <div style="display:flex; justify-content:space-between; align-items:baseline; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
-        <div>
-          <div style="font-size:13px; font-weight:500;">${yr}</div>
-          <div style="font-size:10px; color:var(--text3); margin-top:1px;">${entries.length} m-cy · min ${min} / max ${max} kWh</div>
-        </div>
-        <div style="text-align:right;">
-          <div style="font-family:var(--mono); font-size:15px; font-weight:500; color:var(--accent);">${total.toLocaleString()} kWh</div>
-          <div style="font-size:10px; color:var(--text3); margin-top:1px;">~${Math.round(cost)} PLN</div>
-        </div>
-      </div>
-    `;
+        <div><div style="font-size:13px; font-weight:500;">${yr}</div><div style="font-size:10px; color:var(--text3); margin-top:1px;">${entries.length} m-cy · min ${min} / max ${max} kWh</div></div>
+        <div style="text-align:right;"><div style="font-family:var(--mono); font-size:15px; font-weight:500; color:var(--accent);">${total.toLocaleString()} kWh</div><div style="font-size:10px; color:var(--text3); margin-top:1px;">~${Math.round(cost)} PLN</div></div>
+      </div>`;
   }).join('');
 
   const sorted = [...rich].sort((a,b) => b.kwhMc - a.kwhMc);
   if(sorted[0] && sorted[sorted.length-1]) {
     document.getElementById('records').innerHTML = `
-      <div style="display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
-        <div style="font-size:20px;">🔴</div>
-        <div style="flex:1;">
-          <div style="font-size:12px; color:var(--text2);">Rekord MAX · ${sorted[0].miesiac} ${sorted[0].rok}</div>
-          <div style="font-family:var(--mono); font-size:18px; font-weight:500; color:var(--danger);">${sorted[0].kwhMc} kWh</div>
-        </div>
-      </div>
-      <div style="display:flex; align-items:center; gap:12px; padding:12px 0;">
-        <div style="font-size:20px;">🟢</div>
-        <div style="flex:1;">
-          <div style="font-size:12px; color:var(--text2);">Rekord MIN · ${sorted[sorted.length-1].miesiac} ${sorted[sorted.length-1].rok}</div>
-          <div style="font-family:var(--mono); font-size:18px; font-weight:500; color:var(--green);">${sorted[sorted.length-1].kwhMc} kWh</div>
-        </div>
-      </div>
-    `;
+      <div style="display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05);"><div style="font-size:20px;">🔴</div><div style="flex:1;"><div style="font-size:12px; color:var(--text2);">Rekord MAX · ${sorted[0].miesiac} ${sorted[0].rok}</div><div style="font-family:var(--mono); font-size:18px; font-weight:500; color:var(--danger);">${sorted[0].kwhMc} kWh</div></div></div>
+      <div style="display:flex; align-items:center; gap:12px; padding:12px 0;"><div style="font-size:20px;">🟢</div><div style="flex:1;"><div style="font-size:12px; color:var(--text2);">Rekord MIN · ${sorted[sorted.length-1].miesiac} ${sorted[sorted.length-1].rok}</div><div style="font-family:var(--mono); font-size:18px; font-weight:500; color:var(--green);">${sorted[sorted.length-1].kwhMc} kWh</div></div></div>`;
   }
 
   const years = [...new Set(rich.map(d => d.rok))];
   const colors = ['rgba(100,120,220,0.75)','rgba(79,195,247,0.75)','rgba(77,208,160,0.75)','rgba(255,179,71,0.75)','rgba(200,100,255,0.7)'];
-  
-  drawGrouped('compareChart', years.map((yr, i) => ({ 
-    year: yr, 
-    color: colors[i % colors.length], 
-    values: MIESIAC_PL.map((_, mi) => { 
-      const f = rich.find(d => d.rok == yr && new Date(d.dzien).getMonth() == mi); 
-      return f ? f.kwhMc : null; 
-    }) 
-  })));
+  drawGrouped('compareChart', years.map((yr, i) => ({ year: yr, color: colors[i % colors.length], values: MIESIAC_PL.map((_, mi) => { const f = rich.find(d => d.rok == yr && new Date(d.dzien).getMonth() == mi); return f ? f.kwhMc : null; }) })));
 
   const yearList = Object.keys(yearMap).sort();
   ['compareYear1','compareYear2'].forEach((id, idx) => {
-    const sel = document.getElementById(id); 
-    sel.innerHTML = yearList.map(y => `<option value="${y}">${y}</option>`).join('');
+    const sel = document.getElementById(id); sel.innerHTML = yearList.map(y => `<option value="${y}">${y}</option>`).join('');
     if(yearList.length > 0) sel.value = yearList[idx < yearList.length ? idx : 0];
   });
-  if (yearList.length > 1) {
-    document.getElementById('compareYear2').value = yearList[yearList.length - 1];
-  }
+  if (yearList.length > 1) document.getElementById('compareYear2').value = yearList[yearList.length - 1];
 }
 
 function renderHeatmap() {
-  const rich = enrichData(allData).filter(d => d.kwhMc); 
-  if(!rich.length) return;
-  
+  const rich = enrichData(allData).filter(d => d.kwhMc); if(!rich.length) return;
   const years = [...new Set(rich.map(d => d.rok))].sort();
-  const vals = rich.map(d => d.kwhMc); 
-  const minV = Math.min(...vals);
-  const maxV = Math.max(...vals);
+  const vals = rich.map(d => d.kwhMc); const minV = Math.min(...vals); const maxV = Math.max(...vals);
   
   function getC(v) { 
     let t = (v-minV)/(maxV-minV || 1); 
-    if (t < 0.5) {
-      return `rgb(${Math.round(30+t*2*180)}, ${Math.round(144+t*2*60)}, ${Math.round(220-t*2*100)})`;
-    } else {
-      let tt = (t-0.5)*2;
-      return `rgb(${Math.round(210+tt*45)}, ${Math.round(204-tt*150)}, ${Math.round(120-tt*100)})`;
-    }
+    if (t < 0.5) return `rgb(${Math.round(30+t*2*180)}, ${Math.round(144+t*2*60)}, ${Math.round(220-t*2*100)})`;
+    else { let tt = (t-0.5)*2; return `rgb(${Math.round(210+tt*45)}, ${Math.round(204-tt*150)}, ${Math.round(120-tt*100)})`; }
   }
   
   let h = `<div class="heatmap-grid"><div></div>` + MIESIAC_PL.map(m => `<div class="hm-header">${m.slice(0,3)}</div>`).join('');
-  
   years.forEach(yr => {
     h += `<div class="hm-label">${yr}</div>`;
     for(let i=0; i<12; i++) {
       const e = rich.find(d => d.rok==yr && d.dzien.getMonth()==i);
-      if (e) {
-        let opacity = 0.3 + ((e.kwhMc - minV) / (maxV - minV || 1)) * 0.7;
-        h += `<div class="hm-cell" style="background:${getC(e.kwhMc)}; opacity:${opacity.toFixed(2)};" onclick="openModal(${yr},${i})" title="${e.kwhMc} kWh"></div>`;
-      } else {
-        h += `<div class="hm-cell empty"></div>`;
-      }
+      if (e) { let opacity = 0.3 + ((e.kwhMc - minV) / (maxV - minV || 1)) * 0.7; h += `<div class="hm-cell" style="background:${getC(e.kwhMc)}; opacity:${opacity.toFixed(2)};" onclick="openModal(${yr},${i})" title="${e.kwhMc} kWh"></div>`; } 
+      else { h += `<div class="hm-cell empty"></div>`; }
     }
   });
-  
   document.getElementById('heatmapGrid').innerHTML = h + '</div>';
 
-  // Legenda
   let legendHtml = '';
-  for(let i=0; i<7; i++) {
-    const v = minV + (maxV - minV) * i / 6;
-    legendHtml += `<div style="width:14px; height:14px; border-radius:3px; background:${getC(v)}; opacity:${(0.3 + i/6*0.7).toFixed(2)};"></div>`;
-  }
+  for(let i=0; i<7; i++) { const v = minV + (maxV - minV) * i / 6; legendHtml += `<div style="width:14px; height:14px; border-radius:3px; background:${getC(v)}; opacity:${(0.3 + i/6*0.7).toFixed(2)};"></div>`; }
   document.getElementById('hmLegend').innerHTML = legendHtml;
 }
 
 function openModal(r, m) {
-  const rich = enrichData(allData); 
-  const e = rich.find(d => d.rok==r && d.dzien.getMonth()==m); 
-  if(!e) return;
-  
-  document.getElementById('modalPeriod').textContent = r;
-  document.getElementById('modalTitle').textContent = `${MIESIAC_PL[m]} ${r}`;
-  
+  const rich = enrichData(allData); const e = rich.find(d => d.rok==r && d.dzien.getMonth()==m); if(!e) return;
+  document.getElementById('modalPeriod').textContent = r; document.getElementById('modalTitle').textContent = `${MIESIAC_PL[m]} ${r}`;
   const cost = Math.round(e.kwhMc * getStawka(r));
-  
   document.getElementById('modalStats').innerHTML = `
-    <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:14px;">
-      <div style="font-size:10px; color:var(--text2); text-transform:uppercase; margin-bottom:6px;">Zużycie</div>
-      <div style="font-family:var(--mono); font-size:22px; color:var(--accent);">${e.kwhMc} <span style="font-size:13px; color:var(--text2);">kWh</span></div>
-    </div>
-    <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:14px;">
-      <div style="font-size:10px; color:var(--text2); text-transform:uppercase; margin-bottom:6px;">Śr. Dziennie</div>
-      <div style="font-family:var(--mono); font-size:22px; color:var(--green);">${e.srDzien || '—'} <span style="font-size:13px; color:var(--text2);">kWh/d</span></div>
-    </div>
-    <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:14px;">
-      <div style="font-size:10px; color:var(--text2); text-transform:uppercase; margin-bottom:6px;">Starty sprężarki</div>
-      <div style="font-family:var(--mono); font-size:22px; color:var(--orange);">${e.startsMc || '—'}</div>
-    </div>
-    <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:14px;">
-      <div style="font-size:10px; color:var(--text2); text-transform:uppercase; margin-bottom:6px;">Koszt</div>
-      <div style="font-family:var(--mono); font-size:22px;">${cost} <span style="font-size:13px; color:var(--text2);">PLN</span></div>
-    </div>
+    <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:14px;"><div style="font-size:10px; color:var(--text2); text-transform:uppercase; margin-bottom:6px;">Zużycie</div><div style="font-family:var(--mono); font-size:22px; color:var(--accent);">${e.kwhMc} <span style="font-size:13px; color:var(--text2);">kWh</span></div></div>
+    <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:14px;"><div style="font-size:10px; color:var(--text2); text-transform:uppercase; margin-bottom:6px;">Śr. Dziennie</div><div style="font-family:var(--mono); font-size:22px; color:var(--green);">${e.srDzien || '—'} <span style="font-size:13px; color:var(--text2);">kWh/d</span></div></div>
+    <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:14px;"><div style="font-size:10px; color:var(--text2); text-transform:uppercase; margin-bottom:6px;">Starty sprężarki</div><div style="font-family:var(--mono); font-size:22px; color:var(--orange);">${e.startsMc || '—'}</div></div>
+    <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:14px;"><div style="font-size:10px; color:var(--text2); text-transform:uppercase; margin-bottom:6px;">Koszt</div><div style="font-family:var(--mono); font-size:22px;">${cost} <span style="font-size:13px; color:var(--text2);">PLN</span></div></div>
   `;
-  
   document.getElementById('modalOverlay').classList.add('open');
 }
 
-function closeModal(e) { 
-  if (!e || e.target === document.getElementById('modalOverlay')) {
-    document.getElementById('modalOverlay').classList.remove('open'); 
-  }
-}
+function closeModal(e) { if (!e || e.target === document.getElementById('modalOverlay')) document.getElementById('modalOverlay').classList.remove('open'); }
 
 function renderVersus() {
-  const y1 = parseInt(document.getElementById('compareYear1').value);
-  const y2 = parseInt(document.getElementById('compareYear2').value);
-  if(!y1 || !y2) return;
-  
+  const y1 = parseInt(document.getElementById('compareYear1').value); const y2 = parseInt(document.getElementById('compareYear2').value); if(!y1 || !y2) return;
   const rich = enrichData(allData).filter(d => d.kwhMc !== null);
   const d1 = MIESIAC_PL.map((_, mi) => { const f = rich.find(d => d.rok == y1 && d.dzien.getMonth() == mi); return f ? f.kwhMc : null; });
   const d2 = MIESIAC_PL.map((_, mi) => { const f = rich.find(d => d.rok == y2 && d.dzien.getMonth() == mi); return f ? f.kwhMc : null; });
 
-  const t1 = d1.filter(v=>v!==null).reduce((s,v)=>s+v, 0);
-  const t2 = d2.filter(v=>v!==null).reduce((s,v)=>s+v, 0);
-  const diff = t2 - t1;
-  const pct = t1 > 0 ? Math.round(diff/t1*100) : 0;
-  const bet = diff < 0;
+  const t1 = d1.filter(v=>v!==null).reduce((s,v)=>s+v, 0); const t2 = d2.filter(v=>v!==null).reduce((s,v)=>s+v, 0);
+  const diff = t2 - t1; const pct = t1 > 0 ? Math.round(diff/t1*100) : 0; const bet = diff < 0;
 
   document.getElementById('compareResult').innerHTML = `
-    <div style="text-align:center; padding:12px; border-radius:12px; margin-bottom:10px; font-size:13px; font-weight:600; background:${bet?'rgba(77,208,160,0.1)':'rgba(255,107,107,0.1)'}; color:${bet?'var(--green)':'var(--danger)'}; border:1px solid ${bet?'rgba(77,208,160,0.2)':'rgba(255,107,107,0.2)'};">
-      ${bet ? '✅' : '⚠'} ${y2} zużył ${Math.abs(diff).toLocaleString()} kWh ${bet ? 'mniej' : 'więcej'} niż ${y1} (${pct > 0 ? '+' : ''}${pct}%)
-    </div>
-    <div style="height:180px; position:relative; margin-bottom:16px;">
-      <canvas id="versusChart"></canvas>
-    </div>
+    <div style="text-align:center; padding:12px; border-radius:12px; margin-bottom:10px; font-size:13px; font-weight:600; background:${bet?'rgba(77,208,160,0.1)':'rgba(255,107,107,0.1)'}; color:${bet?'var(--green)':'var(--danger)'}; border:1px solid ${bet?'rgba(77,208,160,0.2)':'rgba(255,107,107,0.2)'};">${bet ? '✅' : '⚠'} ${y2} zużył ${Math.abs(diff).toLocaleString()} kWh ${bet ? 'mniej' : 'więcej'} niż ${y1} (${pct > 0 ? '+' : ''}${pct}%)</div>
+    <div style="height:180px; position:relative; margin-bottom:16px;"><canvas id="versusChart"></canvas></div>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-      <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:14px;">
-        <div style="font-family:var(--mono); font-size:11px; color:var(--text2); margin-bottom:4px;">${y1}</div>
-        <div style="font-family:var(--mono); font-size:20px; font-weight:500; color:var(--accent);">${t1.toLocaleString()} kWh</div>
-        <div style="font-size:11px; color:var(--text3); margin-top:2px;">~${Math.round(t1*getStawka(y1))} PLN</div>
-      </div>
-      <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:14px;">
-        <div style="font-family:var(--mono); font-size:11px; color:var(--text2); margin-bottom:4px;">${y2}</div>
-        <div style="font-family:var(--mono); font-size:20px; font-weight:500; color:var(--green);">${t2.toLocaleString()} kWh</div>
-        <div style="font-size:11px; color:var(--text3); margin-top:2px;">~${Math.round(t2*getStawka(y2))} PLN</div>
-      </div>
-    </div>
-  `;
-  setTimeout(() => drawGrouped('versusChart', [
-    { year: y1, color: 'rgba(79,195,247,0.75)', values: d1 },
-    { year: y2, color: 'rgba(255,179,71,0.75)', values: d2 }
-  ]), 50);
+      <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:14px;"><div style="font-family:var(--mono); font-size:11px; color:var(--text2); margin-bottom:4px;">${y1}</div><div style="font-family:var(--mono); font-size:20px; font-weight:500; color:var(--accent);">${t1.toLocaleString()} kWh</div><div style="font-size:11px; color:var(--text3); margin-top:2px;">~${Math.round(t1*getStawka(y1))} PLN</div></div>
+      <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:14px;"><div style="font-family:var(--mono); font-size:11px; color:var(--text2); margin-bottom:4px;">${y2}</div><div style="font-family:var(--mono); font-size:20px; font-weight:500; color:var(--green);">${t2.toLocaleString()} kWh</div><div style="font-size:11px; color:var(--text3); margin-top:2px;">~${Math.round(t2*getStawka(y2))} PLN</div></div>
+    </div>`;
+  setTimeout(() => drawGrouped('versusChart', [{ year: y1, color: 'rgba(79,195,247,0.75)', values: d1 }, { year: y2, color: 'rgba(255,179,71,0.75)', values: d2 }]), 50);
 }
 
 function renderForecast() {
   const rich = enrichData(allData).filter(d => d.kwhMc !== null);
-  const now = new Date();
-  const cYear = now.getFullYear();
-  const cMonth = now.getMonth();
+  const now = new Date(); const cYear = now.getFullYear(); const cMonth = now.getMonth();
 
   const mAvgs = MIESIAC_PL.map((_, mi) => {
     const h = rich.filter(d => d.dzien.getMonth() === mi && d.rok < cYear);
     if (h.length === 0) return null;
-    const vs = h.map(d => d.kwhMc);
-    return { 
-      avg: Math.round(vs.reduce((s,v)=>s+v, 0)/vs.length), 
-      min: Math.min(...vs), 
-      max: Math.max(...vs) 
-    };
+    const vs = h.map(d => d.kwhMc); return { avg: Math.round(vs.reduce((s,v)=>s+v, 0)/vs.length), min: Math.min(...vs), max: Math.max(...vs) };
   });
 
   const fMonths = [];
-  for (let i = 0; i < 6; i++) {
-    const mi = (cMonth + i) % 12;
-    const yr = cYear + Math.floor((cMonth + i) / 12);
-    fMonths.push({ 
-      mi, yr, 
-      existing: rich.find(d => d.rok === yr && d.dzien.getMonth() === mi), 
-      avg: mAvgs[mi] 
-    });
-  }
+  for (let i = 0; i < 6; i++) { const mi = (cMonth + i) % 12; const yr = cYear + Math.floor((cMonth + i) / 12); fMonths.push({ mi, yr, existing: rich.find(d => d.rok === yr && d.dzien.getMonth() === mi), avg: mAvgs[mi] }); }
 
   const tYear = rich.filter(d => d.rok === cYear).reduce((s,d)=>s+d.kwhMc, 0);
   const tForc = fMonths.filter(f => !f.existing && f.avg).reduce((s,f)=>s+f.avg.avg, 0);
   
-  let html = `
-    <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:16px;">
-      <div style="font-size:15px; font-weight:600;">Prognoza na 6 miesięcy</div>
-      <div style="font-size:11px; color:var(--text2);">na bazie historii</div>
-    </div>
-    <div style="height:180px; position:relative; margin-bottom:16px;">
-      <canvas id="forecastChart"></canvas>
-    </div>
-    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px;">
-  `;
+  let html = `<div style="display:flex; align-items:baseline; gap:10px; margin-bottom:16px;"><div style="font-size:15px; font-weight:600;">Prognoza na 6 miesięcy</div><div style="font-size:11px; color:var(--text2);">na bazie historii</div></div><div style="height:180px; position:relative; margin-bottom:16px;"><canvas id="forecastChart"></canvas></div><div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px;">`;
   
   fMonths.forEach(f => {
-    if (f.existing) {
-      html += `
-        <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:12px; border-left:3px solid transparent;">
-          <div style="font-size:11px; color:var(--text2); margin-bottom:4px;">${MIESIAC_PL[f.mi].slice(0,3)} ${f.yr} ✓</div>
-          <div style="font-family:var(--mono); font-size:16px; font-weight:500; color:var(--green);">${f.existing.kwhMc}</div>
-          <div style="font-size:10px; color:var(--text3); margin-top:2px;">rzeczywiste</div>
-        </div>`;
-    } else if (f.avg) {
-      html += `
-        <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:12px; border-left:3px solid rgba(79,195,247,0.5);">
-          <div style="font-size:11px; color:var(--text2); margin-bottom:4px;">${MIESIAC_PL[f.mi].slice(0,3)} ${f.yr}</div>
-          <div style="font-family:var(--mono); font-size:16px; font-weight:500; color:var(--accent);">${f.avg.avg}</div>
-          <div style="font-size:10px; color:var(--text3); margin-top:2px;">${f.avg.min}–${f.avg.max} kWh</div>
-        </div>`;
-    } else {
-      html += `
-        <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:12px; border-left:3px solid transparent;">
-          <div style="font-size:11px; color:var(--text2); margin-bottom:4px;">${MIESIAC_PL[f.mi].slice(0,3)} ${f.yr}</div>
-          <div style="font-family:var(--mono); font-size:16px; font-weight:500; color:var(--text3);">—</div>
-          <div style="font-size:10px; color:var(--text3); margin-top:2px;">brak danych</div>
-        </div>`;
-    }
+    if (f.existing) html += `<div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:12px; border-left:3px solid transparent;"><div style="font-size:11px; color:var(--text2); margin-bottom:4px;">${MIESIAC_PL[f.mi].slice(0,3)} ${f.yr} ✓</div><div style="font-family:var(--mono); font-size:16px; font-weight:500; color:var(--green);">${f.existing.kwhMc}</div><div style="font-size:10px; color:var(--text3); margin-top:2px;">rzeczywiste</div></div>`;
+    else if (f.avg) html += `<div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:12px; border-left:3px solid rgba(79,195,247,0.5)"><div style="font-size:11px; color:var(--text2); margin-bottom:4px;">${MIESIAC_PL[f.mi].slice(0,3)} ${f.yr}</div><div style="font-family:var(--mono); font-size:16px; font-weight:500; color:var(--accent);">${f.avg.avg}</div><div style="font-size:10px; color:var(--text3); margin-top:2px;">${f.avg.min}–${f.avg.max} kWh</div></div>`;
+    else html += `<div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:12px; border-left:3px solid transparent;"><div style="font-size:11px; color:var(--text2); margin-bottom:4px;">${MIESIAC_PL[f.mi].slice(0,3)} ${f.yr}</div><div style="font-family:var(--mono); font-size:16px; font-weight:500; color:var(--text3);">—</div><div style="font-size:10px; color:var(--text3); margin-top:2px;">brak danych</div></div>`;
   });
 
-  html += `
-    </div>
-    <div style="margin-top:16px; padding:14px; background:rgba(79,195,247,0.06); border-radius:12px; border-left:3px solid var(--accent);">
-      <div style="font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Projekcja ${cYear}</div>
-      <div style="font-family:var(--mono); font-size:20px; font-weight:500; color:var(--accent);">${(tYear + tForc).toLocaleString()} kWh</div>
-      <div style="font-size:11px; color:var(--text3); margin-top:2px;">${tYear} kWh (rzeczywiste) + ${tForc} kWh (prognoza)</div>
-    </div>
-  `;
+  html += `</div><div style="margin-top:16px; padding:14px; background:rgba(79,195,247,0.06); border-radius:12px; border-left:3px solid var(--accent);"><div style="font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Projekcja ${cYear}</div><div style="font-family:var(--mono); font-size:20px; font-weight:500; color:var(--accent);">${(tYear + tForc).toLocaleString()} kWh</div><div style="font-size:11px; color:var(--text3); margin-top:2px;">${tYear} kWh (rzeczywiste) + ${tForc} kWh (prognoza)</div></div>`;
   document.getElementById('forecastContent').innerHTML = html;
 
-  setTimeout(() => drawForecastChart(
-    'forecastChart', 
-    fMonths.map(f => MIESIAC_PL[f.mi].slice(0,3)), 
-    fMonths.map(f => f.existing ? f.existing.kwhMc : null), 
-    fMonths.map(f => !f.existing && f.avg ? f.avg.avg : null), 
-    fMonths.map(f => f.avg ? f.avg.min : null), 
-    fMonths.map(f => f.avg ? f.avg.max : null)
-  ), 50);
+  setTimeout(() => drawForecastChart('forecastChart', fMonths.map(f => MIESIAC_PL[f.mi].slice(0,3)), fMonths.map(f => f.existing ? f.existing.kwhMc : null), fMonths.map(f => !f.existing && f.avg ? f.avg.avg : null), fMonths.map(f => f.avg ? f.avg.min : null), fMonths.map(f => f.avg ? f.avg.max : null)), 50);
 }
 
 // ============================================================================
-// SYSTEM RYSOWANIA WYKRESÓW (CANVAS HTML5)
+// CANVAS HTML5 (Wykresy)
 // ============================================================================
-
 function drawBars(id, lbs, vls, clr) {
-  const cv = document.getElementById(id); 
-  if(!cv) return;
-  const ctx = cv.getContext('2d');
-  const W = cv.parentElement.clientWidth, H = 160; 
-  cv.width = W; cv.height = H;
-  
-  const max = Math.max(...vls) * 1.1; 
-  const gap = (W-40) / lbs.length;
-  
+  const cv = document.getElementById(id); if(!cv) return;
+  const ctx = cv.getContext('2d'); const W = cv.parentElement.clientWidth, H = 160; cv.width = W; cv.height = H;
+  const max = Math.max(...vls) * 1.1; const gap = (W-40) / lbs.length;
   ctx.clearRect(0,0,W,H);
   
-  // Linie pomocnicze tła
   for(let i=0; i<=3; i++) {
-    const y = 20 + (H-40)*(1 - i/3);
-    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    const y = 20 + (H-40)*(1 - i/3); ctx.strokeStyle = 'rgba(255,255,255,0.06)';
     ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(W, y); ctx.stroke();
-    ctx.fillStyle = 'rgba(255,255,255,0.25)';
-    ctx.font = '9px monospace'; ctx.textAlign = 'right';
-    ctx.fillText(Math.round(max * i/3), 35, y + 3);
+    ctx.fillStyle = 'rgba(255,255,255,0.25)'; ctx.font = '9px monospace'; ctx.textAlign = 'right'; ctx.fillText(Math.round(max * i/3), 35, y + 3);
   }
 
-  // Rysowanie słupków
   vls.forEach((v,i) => {
     if(v === null) return;
     const bh = (v/max)*(H-40), x = 40 + i*gap + gap/2 - gap*0.3, y = H-20-bh;
     const grad = ctx.createLinearGradient(0, y, 0, y+bh);
     grad.addColorStop(0, clr); grad.addColorStop(1, clr.replace('0.8','0.2'));
-    
-    ctx.fillStyle = grad; 
-    ctx.beginPath(); ctx.roundRect(x, y, gap*0.6, bh, [4,4,0,0]); ctx.fill();
-    
-    ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.font = '9px monospace'; ctx.textAlign = 'center';
-    ctx.fillText(lbs[i], x + gap*0.3, H-5);
+    ctx.fillStyle = grad; ctx.beginPath(); ctx.roundRect(x, y, gap*0.6, bh, [4,4,0,0]); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.font = '9px monospace'; ctx.textAlign = 'center'; ctx.fillText(lbs[i], x + gap*0.3, H-5);
   });
 }
 
 function drawGrouped(id, datasets) {
-  const cv = document.getElementById(id); 
-  if(!cv) return;
-  const ctx = cv.getContext('2d');
-  const W = cv.parentElement.clientWidth, H = 200; 
-  cv.width = W; cv.height = H;
-  
-  const allVals = datasets.flatMap(d => d.values.filter(v => v !== null)); 
-  if(!allVals.length) return;
-  
-  const max = Math.max(...allVals) * 1.1;
-  const nMonths = datasets[0].values.length;
-  const cw = W - 48, ch = H - 64;
-  
+  const cv = document.getElementById(id); if(!cv) return;
+  const ctx = cv.getContext('2d'); const W = cv.parentElement.clientWidth, H = 200; cv.width = W; cv.height = H;
+  const allVals = datasets.flatMap(d => d.values.filter(v => v !== null)); if(!allVals.length) return;
+  const max = Math.max(...allVals) * 1.1; const nMonths = datasets[0].values.length; const cw = W - 48, ch = H - 64;
   ctx.clearRect(0,0,W,H);
   
-  // Siatka
   for(let i=0; i<=3; i++) {
-    const y = 16 + ch*(1 - i/3);
-    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    const y = 16 + ch*(1 - i/3); ctx.strokeStyle = 'rgba(255,255,255,0.06)';
     ctx.beginPath(); ctx.moveTo(38, y); ctx.lineTo(W-10, y); ctx.stroke();
-    ctx.fillStyle = 'rgba(255,255,255,0.25)'; ctx.font = '9px monospace'; ctx.textAlign = 'right';
-    ctx.fillText(Math.round(max * i/3), 33, y+3);
+    ctx.fillStyle = 'rgba(255,255,255,0.25)'; ctx.font = '9px monospace'; ctx.textAlign = 'right'; ctx.fillText(Math.round(max * i/3), 33, y+3);
   }
 
   const slotW = cw/nMonths, bw = Math.max(3, Math.floor(slotW/datasets.length) - 1);
-  
-  // Słupki danych
   datasets.forEach((ds, di) => {
     ds.values.forEach((v, mi) => {
       if (v === null) return;
       const x = 38 + mi*slotW + di*(bw+1) + 2, bh = (v/max)*ch, y = 16 + ch - bh;
-      ctx.fillStyle = ds.color;
-      ctx.beginPath(); ctx.roundRect(x, y, bw, bh, [2,2,0,0]); ctx.fill();
+      ctx.fillStyle = ds.color; ctx.beginPath(); ctx.roundRect(x, y, bw, bh, [2,2,0,0]); ctx.fill();
     });
   });
 
-  // Legenda miesięcy
-  MIESIAC_PL.forEach((m, i) => {
-    ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.textAlign = 'center';
-    ctx.fillText(m.slice(0,3), 38 + i*slotW + slotW/2, H-30);
-  });
-
-  // Legenda Lat
+  MIESIAC_PL.forEach((m, i) => { ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.textAlign = 'center'; ctx.fillText(m.slice(0,3), 38 + i*slotW + slotW/2, H-30); });
   datasets.forEach((ds, i) => {
-    const lx = 38 + i*52;
-    ctx.fillStyle = ds.color; ctx.fillRect(lx, H-16, 12, 8);
-    ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.textAlign = 'left';
-    ctx.fillText(ds.year, lx+15, H-9);
+    const lx = 38 + i*52; ctx.fillStyle = ds.color; ctx.fillRect(lx, H-16, 12, 8);
+    ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.textAlign = 'left'; ctx.fillText(ds.year, lx+15, H-9);
   });
 }
 
 function drawForecastChart(id, labels, realVals, predVals, minVals, maxVals) {
-  const cv = document.getElementById(id); 
-  if(!cv) return;
-  const ctx = cv.getContext('2d');
-  const W = cv.parentElement.clientWidth, H = 180; 
-  cv.width = W; cv.height = H;
-  
-  const allVals = [...realVals, ...predVals, ...minVals, ...maxVals].filter(v => v !== null); 
-  if(!allVals.length) return;
-  
-  const max = Math.max(...allVals) * 1.15;
-  const cw = W - 48, ch = H - 52;
-  const gap = cw / labels.length, bw = gap * 0.45;
-  
+  const cv = document.getElementById(id); if(!cv) return;
+  const ctx = cv.getContext('2d'); const W = cv.parentElement.clientWidth, H = 180; cv.width = W; cv.height = H;
+  const allVals = [...realVals, ...predVals, ...minVals, ...maxVals].filter(v => v !== null); if(!allVals.length) return;
+  const max = Math.max(...allVals) * 1.15; const cw = W - 48, ch = H - 52; const gap = cw / labels.length, bw = gap * 0.45;
   ctx.clearRect(0,0,W,H);
   
-  // Siatka
   for(let i=0; i<=3; i++) {
-    const y = 16 + ch*(1 - i/3);
-    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    const y = 16 + ch*(1 - i/3); ctx.strokeStyle = 'rgba(255,255,255,0.06)';
     ctx.beginPath(); ctx.moveTo(38, y); ctx.lineTo(W-10, y); ctx.stroke();
-    ctx.fillStyle = 'rgba(255,255,255,0.25)'; ctx.font = '9px monospace'; ctx.textAlign = 'right';
-    ctx.fillText(Math.round(max * i/3), 33, y+3);
+    ctx.fillStyle = 'rgba(255,255,255,0.25)'; ctx.font = '9px monospace'; ctx.textAlign = 'right'; ctx.fillText(Math.round(max * i/3), 33, y+3);
   }
 
   labels.forEach((lbl, i) => {
     const cx = 38 + i*gap + gap/2;
-    
-    // Tło dla marginesu prognozy (min-max)
     if (predVals[i] !== null && minVals[i] !== null && maxVals[i] !== null) {
       const yMin = 16 + ch - (minVals[i]/max)*ch, yMax = 16 + ch - (maxVals[i]/max)*ch;
-      ctx.fillStyle = 'rgba(79,195,247,0.08)';
-      ctx.fillRect(cx - bw/2 - 4, yMax, bw + 8, yMin - yMax);
+      ctx.fillStyle = 'rgba(79,195,247,0.08)'; ctx.fillRect(cx - bw/2 - 4, yMax, bw + 8, yMin - yMax);
     }
-    
-    // Rzeczywiste paski
     if (realVals[i] !== null) {
       const bh = (realVals[i]/max)*ch, y = 16 + ch - bh;
-      const grad = ctx.createLinearGradient(0, y, 0, y+bh);
-      grad.addColorStop(0, 'rgba(77,208,160,0.85)'); grad.addColorStop(1, 'rgba(77,208,160,0.2)');
-      ctx.fillStyle = grad;
-      ctx.beginPath(); ctx.roundRect(cx - bw/2, y, bw, bh, [4,4,0,0]); ctx.fill();
+      const grad = ctx.createLinearGradient(0, y, 0, y+bh); grad.addColorStop(0, 'rgba(77,208,160,0.85)'); grad.addColorStop(1, 'rgba(77,208,160,0.2)');
+      ctx.fillStyle = grad; ctx.beginPath(); ctx.roundRect(cx - bw/2, y, bw, bh, [4,4,0,0]); ctx.fill();
     }
-    
-    // Prognozowane paski (z przerywaną krawędzią)
     if (predVals[i] !== null) {
       const bh = (predVals[i]/max)*ch, y = 16 + ch - bh;
-      const grad = ctx.createLinearGradient(0, y, 0, y+bh);
-      grad.addColorStop(0, 'rgba(79,195,247,0.6)'); grad.addColorStop(1, 'rgba(79,195,247,0.1)');
-      ctx.fillStyle = grad; 
-      ctx.setLineDash([4,3]); ctx.strokeStyle = 'rgba(79,195,247,0.8)'; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.roundRect(cx - bw/2, y, bw, bh, [4,4,0,0]); ctx.fill(); ctx.stroke();
-      ctx.setLineDash([]);
+      const grad = ctx.createLinearGradient(0, y, 0, y+bh); grad.addColorStop(0, 'rgba(79,195,247,0.6)'); grad.addColorStop(1, 'rgba(79,195,247,0.1)');
+      ctx.fillStyle = grad; ctx.setLineDash([4,3]); ctx.strokeStyle = 'rgba(79,195,247,0.8)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.roundRect(cx - bw/2, y, bw, bh, [4,4,0,0]); ctx.fill(); ctx.stroke(); ctx.setLineDash([]);
     }
-    
-    ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.textAlign = 'center';
-    ctx.fillText(lbl, cx, H-25);
+    ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.textAlign = 'center'; ctx.fillText(lbl, cx, H-25);
   });
 
-  // Legenda dole
-  ctx.fillStyle = 'rgba(77,208,160,0.8)'; ctx.fillRect(38, H-12, 10, 6);
-  ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.textAlign = 'left'; ctx.fillText('Rzeczywiste', 52, H-6);
-  ctx.fillStyle = 'rgba(79,195,247,0.6)'; ctx.fillRect(138, H-12, 10, 6);
-  ctx.fillText('Prognoza', 152, H-6);
+  ctx.fillStyle = 'rgba(77,208,160,0.8)'; ctx.fillRect(38, H-12, 10, 6); ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.textAlign = 'left'; ctx.fillText('Rzeczywiste', 52, H-6);
+  ctx.fillStyle = 'rgba(79,195,247,0.6)'; ctx.fillRect(138, H-12, 10, 6); ctx.fillText('Prognoza', 152, H-6);
 }
 
 // ============================================================================
-// NARZĘDZIA DODATKOWE (UI, MOTYW)
+// INNE (UI, MOTYW, START)
 // ============================================================================
-
-function setSyncStatus(s) { 
-  document.getElementById('syncDot').className = 'status-dot ' + s; 
-}
-
-function showToast(m, e) { 
-  const t = document.getElementById('toast'); 
-  t.textContent = m; 
-  t.className = 'toast' + (e ? ' err' : ''); 
-  t.classList.add('show'); 
-  setTimeout(() => t.classList.remove('show'), 3000); 
-}
-
-function toggleTheme() { 
-  const isLight = document.body.classList.toggle('light');
-  localStorage.setItem('pc_theme_exp', isLight ? 'light' : 'dark');
-  document.getElementById('themeToggle').textContent = isLight ? '🌙 Ciemny' : '☀ Jasny';
-  document.querySelector('meta[name="theme-color"]').content = isLight ? '#c8dff0' : '#0d1b2a';
-}
-
-function applyTheme() {
-  if (localStorage.getItem('pc_theme_exp') === 'light') {
-    document.body.classList.add('light');
-    document.getElementById('themeToggle').textContent = '🌙 Ciemny';
-    document.querySelector('meta[name="theme-color"]').content = '#c8dff0';
-  }
-}
-
+function setSyncStatus(s) { document.getElementById('syncDot').className = 'status-dot ' + s; }
+function showToast(m, e) { const t = document.getElementById('toast'); t.textContent = m; t.className = 'toast' + (e?' err':''); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 3000); }
+function toggleTheme() { const isLight = document.body.classList.toggle('light'); localStorage.setItem('pc_theme_exp', isLight ? 'light' : 'dark'); document.getElementById('themeToggle').textContent = isLight ? '🌙 Ciemny' : '☀ Jasny'; document.querySelector('meta[name="theme-color"]').content = isLight ? '#c8dff0' : '#0d1b2a'; }
+function applyTheme() { if (localStorage.getItem('pc_theme_exp') === 'light') { document.body.classList.add('light'); document.getElementById('themeToggle').textContent = '🌙 Ciemny'; document.querySelector('meta[name="theme-color"]').content = '#c8dff0'; } }
 function openSettingsModal() { 
-  const sel = document.getElementById('selectRok'); 
-  sel.innerHTML = [2023,2024,2025,2026,2027].map(y => `<option value="${y}">${y}</option>`).join('');
-  const cYear = new Date().getFullYear();
-  if ([2023,2024,2025,2026,2027].includes(cYear)) sel.value = cYear;
-  updateRateInput(); 
-  document.getElementById('modalSettingsOverlay').classList.add('open'); 
+  const sel = document.getElementById('selectRok'); sel.innerHTML = [2023,2024,2025,2026,2027].map(y => `<option value="${y}">${y}</option>`).join('');
+  const cYear = new Date().getFullYear(); if ([2023,2024,2025,2026,2027].includes(cYear)) sel.value = cYear;
+  updateRateInput(); document.getElementById('modalSettingsOverlay').classList.add('open'); 
 }
-
-function closeSettingsModal() { 
-  document.getElementById('modalSettingsOverlay').classList.remove('open'); 
-}
-
-function updateRateInput() { 
-  document.getElementById('newStawka').value = getStawka(document.getElementById('selectRok').value); 
-}
-
-// ============================================================================
-// INICJALIZACJA APLIKACJI
-// ============================================================================
+function closeSettingsModal(e) { if(!e || e.target === document.getElementById('modalSettingsOverlay')) document.getElementById('modalSettingsOverlay').classList.remove('open'); }
+function updateRateInput() { document.getElementById('newStawka').value = getStawka(document.getElementById('selectRok').value); }
 
 async function init() { 
   applyTheme();
+  registerSW();
   await initAuth(); 
   await loadData(); 
   showPage('dashboard'); 
