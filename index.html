@@ -9,9 +9,9 @@
 <meta name="theme-color" content="#0d1b2a">
 <meta name="apple-mobile-web-app-title" content="PC Monitor">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon_v2.svg">
 <title>PC Monitor – Pompa Ciepła</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
@@ -354,8 +354,6 @@ body.light .compare-select { background: rgba(0,0,0,0.05); }
   <button class="nav-pill" id="nav-security" style="display:none;" onclick="showPage('security')">Logi</button>
 </nav>
 
-<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)"><div class="modal" style="position:relative;"><button class="modal-close" onclick="closeModal()">✕</button><div id="modalPeriod" style="font-size:11px; color:var(--accent); text-transform:uppercase; margin-bottom:6px;">—</div><div id="modalTitle" style="font-size:22px; font-weight:600; margin-bottom:20px;">—</div><div id="modalStats" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;"></div><div id="modalCompare" style="margin-top:20px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.06);"></div></div></div>
-
 <div class="modal-overlay" id="modalSettingsOverlay" onclick="closeSettingsModal(event)">
   <div class="modal" style="position:relative;">
     <button class="modal-close" onclick="closeSettingsModal()">✕</button>
@@ -377,6 +375,12 @@ body.light .compare-select { background: rgba(0,0,0,0.05); }
       <button class="action-btn secondary" id="btnPush" onclick="subscribeUser()">Sprawdzam status...</button>
       <div id="pushStatus" style="font-size:11px; color:var(--text3); margin-top:8px; text-align:center;">Ładowanie stanu powiadomień...</div>
     </div>
+
+    <div style="margin-top:28px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.05); text-align:center; font-family:var(--mono); color:var(--text3);">
+      <div style="font-size:10px; margin-bottom:4px;">© 2026 Rafał Chyliński</div>
+      <div style="font-size:8px; opacity:0.7; line-height:1.4;">Aplikacja do użytku prywatnego.<br>Rozpowszechnianie kodu wymaga zgody autora.</div>
+    </div>
+
   </div>
 </div>
 
