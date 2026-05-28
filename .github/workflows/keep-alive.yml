@@ -1,25 +1,48 @@
 name: Keep Supabase Active
+
 on:
   schedule:
-    # Pseudo-losowy harmonogram symulujący ruch człowieka
-    # Skrypt odpali się w różne dni miesiąca o różnych godzinach (odstępy 3-5 dni)
-    - cron: '14 7 2,9,18,26 * *'   # Rano (07:14) w wybrane dni
-    - cron: '47 7 2,9,18,26 * *'   # Rano (07:14) w wybrane dni
-    - cron: '12 16 5,14,22,29 * *' # Po południu (16:42) w inne dni
-    - cron: '42 16 5,14,22,29 * *' # Po południu (16:42) w inne dni
+    - cron: '17 8  * * 1,3,5'   # poniedziałek, środa, piątek o 8:17
+    - cron: '43 19 * * 2,4,6'   # wtorek, czwartek, sobota o 19:43
   workflow_dispatch:
+
+permissions: {}
+
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch latest reading
+      - name: Simulate app activity
         run: |
-          # Dodatkowy jitter: opóźnia wykonanie losowo od 0 do 5 minut.
-          # Dzięki temu zapytanie nigdy nie leci dokładnie w tej samej sekundzie.
-          sleep $((RANDOM % 120))
-          curl -s \
-            -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}" \
-            "${{ secrets.SUPABASE_URL }}/rest/v1/odczyty?select=miesiac,rok,stan&order=dzien.desc&limit=1" \
-            | grep -o '"miesiac":"[^"]*"' \
-            && echo "✓ Baza aktywna"
+          # Losowe opóźnienie 0-5 minut
+          sleep $((RANDOM % 300))
+
+          BASE="${{ secrets.SUPABASE_URL }}/rest/v1"
+          KEY="${{ secrets.SUPABASE_KEY }}"
+          AUTH="Authorization: Bearer $KEY"
+          APIKEY="apikey: $KEY"
+
+          # 1. Pobierz stawki (jak robi to aplikacja przy starcie)
+          curl -sf -H "$APIKEY" -H "$AUTH" \
+            "$BASE/stawki?select=rok,stawka_kwh&order=rok.desc" -o /dev/null
+
+          sleep $((RANDOM % 30 + 5))
+
+          # 2. Pobierz ostatni odczyt (dashboard)
+          curl -sf -H "$APIKEY" -H "$AUTH" \
+            "$BASE/odczyty?select=miesiac,rok,stan,starts&order=dzien.desc&limit=1" \
+            | grep -o '"rok":[0-9]*' && echo ""
+
+          sleep $((RANDOM % 20 + 3))
+
+          # 3. Pobierz ostatnie 6 odczytów (wykres trendu)
+          curl -sf -H "$APIKEY" -H "$AUTH" \
+            "$BASE/odczyty?select=miesiac,rok,stan&order=dzien.desc&limit=6" -o /dev/null
+
+          sleep $((RANDOM % 15 + 2))
+
+          # 4. Pobierz wszystkie odczyty (historia/analityka)
+          curl -sf -H "$APIKEY" -H "$AUTH" \
+            "$BASE/odczyty?select=rok,miesiac,stan,starts,dzien&order=dzien.asc" -o /dev/null
+
+          echo "✓ Aktywność zasymulowana"
