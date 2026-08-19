@@ -12,37 +12,47 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Simulate app activity
+      - name: Update and restore stawka
         run: |
-          # Losowe opóźnienie 0-5 minut
           sleep $((RANDOM % 300))
 
           BASE="${{ secrets.SUPABASE_URL }}/rest/v1"
           KEY="${{ secrets.SUPABASE_KEY }}"
           AUTH="Authorization: Bearer $KEY"
           APIKEY="apikey: $KEY"
+          CONTENT="Content-Type: application/json"
+          ROK=$(date +%Y)
 
-          # 1. Pobierz stawki (jak robi to aplikacja przy starcie)
-          curl -sf -H "$APIKEY" -H "$AUTH" \
-            "$BASE/stawki?select=rok,stawka_kwh&order=rok.desc" -o /dev/null
+          # 1. Pobierz aktualną stawkę dla bieżącego roku
+          CURRENT=$(curl -sf \
+            -H "$APIKEY" -H "$AUTH" \
+            "$BASE/stawki?select=stawka_kwh&rok=eq.$ROK" \
+            | grep -o '[0-9]*\.[0-9]*' | head -1)
 
-          sleep $((RANDOM % 30 + 5))
+          echo "Aktualna stawka: $CURRENT PLN/kWh"
 
-          # 2. Pobierz ostatni odczyt (dashboard)
-          curl -sf -H "$APIKEY" -H "$AUTH" \
-            "$BASE/odczyty?select=miesiac,rok,stan,starts&order=dzien.desc&limit=1" \
-            | grep -o '"rok":[0-9]*' && echo ""
+          if [ -z "$CURRENT" ]; then
+            echo "Brak stawki dla roku $ROK, pomijam UPDATE"
+            exit 0
+          fi
 
-          sleep $((RANDOM % 20 + 3))
+          # 2. Dodaj 1 grosz
+          MODIFIED=$(echo "$CURRENT + 0.01" | bc)
+          echo "Zmieniam na: $MODIFIED"
 
-          # 3. Pobierz ostatnie 6 odczytów (wykres trendu)
-          curl -sf -H "$APIKEY" -H "$AUTH" \
-            "$BASE/odczyty?select=miesiac,rok,stan&order=dzien.desc&limit=6" -o /dev/null
+          curl -sf -X PATCH \
+            -H "$APIKEY" -H "$AUTH" -H "$CONTENT" \
+            "$BASE/stawki?rok=eq.$ROK" \
+            -d "{\"stawka_kwh\": $MODIFIED}" -o /dev/null
 
-          sleep $((RANDOM % 15 + 2))
+          sleep $((RANDOM % 60 + 30))
 
-          # 4. Pobierz wszystkie odczyty (historia/analityka)
-          curl -sf -H "$APIKEY" -H "$AUTH" \
-            "$BASE/odczyty?select=rok,miesiac,stan,starts,dzien&order=dzien.asc" -o /dev/null
+          # 3. Przywróć oryginalną stawkę
+          echo "Przywracam: $CURRENT"
 
-          echo "✓ Aktywność zasymulowana"
+          curl -sf -X PATCH \
+            -H "$APIKEY" -H "$AUTH" -H "$CONTENT" \
+            "$BASE/stawki?rok=eq.$ROK" \
+            -d "{\"stawka_kwh\": $CURRENT}" -o /dev/null
+
+          echo "✓ Stawka przywrócona do $CURRENT PLN/kWh"
