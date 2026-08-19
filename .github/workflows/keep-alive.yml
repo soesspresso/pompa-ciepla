@@ -2,8 +2,8 @@ name: Keep Supabase Active
 
 on:
   schedule:
-    - cron: '17 8  * * 1,3,5'   # poniedziałek, środa, piątek o 8:17
-    - cron: '43 19 * * 2,4,6'   # wtorek, czwartek, sobota o 19:43
+    - cron: '17 8  * * 1,3,5'
+    - cron: '43 19 * * 2,4,6'
   workflow_dispatch:
 
 permissions: {}
@@ -18,41 +18,46 @@ jobs:
 
           BASE="${{ secrets.SUPABASE_URL }}/rest/v1"
           KEY="${{ secrets.SUPABASE_KEY }}"
-          AUTH="Authorization: Bearer $KEY"
-          APIKEY="apikey: $KEY"
+          AUTH="Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_KEY }}"
+          APIKEY="apikey: ${{ secrets.SUPABASE_SERVICE_KEY }}"
           CONTENT="Content-Type: application/json"
+          PREFER="Prefer: return=minimal"
           ROK=$(date +%Y)
 
-          # 1. Pobierz aktualną stawkę dla bieżącego roku
-          CURRENT=$(curl -sf \
-            -H "$APIKEY" -H "$AUTH" \
-            "$BASE/stawki?select=stawka_kwh&rok=eq.$ROK" \
-            | grep -o '[0-9]*\.[0-9]*' | head -1)
+          # 1. Pobierz aktualną stawkę
+          RESPONSE=$(curl -s \
+            -H "apikey: $KEY" -H "Authorization: Bearer $KEY" \
+            "$BASE/stawki?select=stawka_kwh&rok=eq.$ROK")
+          echo "Response: $RESPONSE"
 
+          CURRENT=$(echo "$RESPONSE" | grep -o '[0-9]*\.[0-9]*' | head -1)
           echo "Aktualna stawka: $CURRENT PLN/kWh"
 
           if [ -z "$CURRENT" ]; then
-            echo "Brak stawki dla roku $ROK, pomijam UPDATE"
+            echo "Brak stawki dla roku $ROK"
             exit 0
           fi
 
-          # 2. Dodaj 1 grosz
-          MODIFIED=$(echo "$CURRENT + 0.01" | bc)
+          # 2. Dodaj 1 grosz — wymuszamy format 0.XX
+          MODIFIED=$(printf "%.4f" $(echo "$CURRENT + 0.01" | bc))
           echo "Zmieniam na: $MODIFIED"
 
-          curl -sf -X PATCH \
-            -H "$APIKEY" -H "$AUTH" -H "$CONTENT" \
+          PATCH1=$(curl -s -X PATCH \
+            -H "$APIKEY" -H "$AUTH" -H "$CONTENT" -H "$PREFER" \
             "$BASE/stawki?rok=eq.$ROK" \
-            -d "{\"stawka_kwh\": $MODIFIED}" -o /dev/null
+            -d "{\"stawka_kwh\": $MODIFIED}")
+          echo "PATCH1 response: $PATCH1"
 
           sleep $((RANDOM % 60 + 30))
 
           # 3. Przywróć oryginalną stawkę
-          echo "Przywracam: $CURRENT"
+          ORIGINAL=$(printf "%.4f" $CURRENT)
+          echo "Przywracam: $ORIGINAL"
 
-          curl -sf -X PATCH \
-            -H "$APIKEY" -H "$AUTH" -H "$CONTENT" \
+          PATCH2=$(curl -s -X PATCH \
+            -H "$APIKEY" -H "$AUTH" -H "$CONTENT" -H "$PREFER" \
             "$BASE/stawki?rok=eq.$ROK" \
-            -d "{\"stawka_kwh\": $CURRENT}" -o /dev/null
+            -d "{\"stawka_kwh\": $ORIGINAL}")
+          echo "PATCH2 response: $PATCH2"
 
-          echo "✓ Stawka przywrócona do $CURRENT PLN/kWh"
+          echo "✓ Gotowe"
